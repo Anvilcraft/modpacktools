@@ -1,3 +1,4 @@
 {
-
+    "csvExportFile": "mods.csv",
+    "manifestFile": "src/twitch/manifest.json"
 }

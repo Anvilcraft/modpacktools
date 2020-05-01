@@ -1,7 +1,6 @@
 package ley.anvil.modpacktools.util;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -41,18 +40,7 @@ public class Config {
 	private JsonObject readConfig() {
 		if(CONFIG_LOCATION.exists()) {
 			//parse file to json
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(CONFIG_LOCATION));
-				String inputLine;
-				StringBuffer sb = new StringBuffer();
-				while((inputLine = br.readLine()) != null) {
-					sb.append(inputLine);
-				}
-				br.close();
-				return (JsonObject) JsonParser.parseString(sb.toString());
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
+			return Util.readJsonFile(CONFIG_LOCATION);
 		}else {
 			//copy from resources
 			try {
