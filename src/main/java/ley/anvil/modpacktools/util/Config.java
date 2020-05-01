@@ -2,10 +2,8 @@ package ley.anvil.modpacktools.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.squareup.moshi.Json;
 
 import java.io.*;
-import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 
 public class Config {
@@ -36,8 +34,9 @@ public class Config {
 		CONFIG = readConfig();
 	}
 
-	/*
-	Read The Config if it exist and otherwise copies it from resources
+	/**
+	 * reads the config it it exists and otherwise copies it
+	 * @return the json object of the config file
 	 */
 	private JsonObject readConfig() {
 		if(CONFIG_LOCATION.exists()) {
