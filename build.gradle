@@ -35,7 +35,7 @@ task fatJar(type: Jar) {
     manifest {
         attributes 'Main-Class': mainClassName
     }
-    archiveBaseName = 'MCServerInfo'
+    archiveBaseName = 'ModPackTools'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
