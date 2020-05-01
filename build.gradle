@@ -19,6 +19,14 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources"
+        }
+    }
+}
+
 mainClassName = 'ley.anvil.modpacktools.Main'
 
 //create a single Jar with all dependencies
