@@ -28,31 +28,6 @@ public class ModInfo {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String[] getAuthors() {
-		ArrayList<String> authorArr = new ArrayList<>();
-		for(JsonElement author : authors) {
-			JsonObject authorObj = (JsonObject) author;
-			authorArr.add(authorObj.get("name").getAsString());
-		}
-		return authorArr.toArray(new String[authorArr.size()]);
-	}
-
-	public String getLink() {
-		return link;
-	}
-
-	public int getDownloads() {
-		return downloads;
-	}
-
-	public int getId() {
-		return id;
-	}
-
 	public static ArrayList<ModInfo> getModInfo() {
 		try {
 			System.out.println("Getting Info From Curse API");
@@ -81,6 +56,31 @@ public class ModInfo {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String[] getAuthors() {
+		ArrayList<String> authorArr = new ArrayList<>();
+		for(JsonElement author : authors) {
+			JsonObject authorObj = (JsonObject) author;
+			authorArr.add(authorObj.get("name").getAsString());
+		}
+		return authorArr.toArray(new String[authorArr.size()]);
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public int getDownloads() {
+		return downloads;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 }

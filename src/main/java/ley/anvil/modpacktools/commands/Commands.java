@@ -43,7 +43,6 @@ public class Commands {
 
 	/**
 	 * Adds a mod to the modpack
-	 *
 	 * @param modlink Can be a link to a curseforge file or to a file download
 	 */
 	public static void addMod(String[] modlink) {
@@ -128,7 +127,6 @@ public class Commands {
 
 	/**
 	 * Builds the modpack as a server
-	 *
 	 * @param dir The directory where to create the server
 	 */
 	public static void buildServer(String[] dir) {
@@ -137,7 +135,6 @@ public class Commands {
 
 	/**
 	 * Downloads all mods in this pack
-	 *
 	 * @param dir The mods directory
 	 */
 	public static void downloadMods(String[] dir) {
@@ -146,7 +143,6 @@ public class Commands {
 
 	/**
 	 * Creates a modlist of this pack
-	 *
 	 * @param format 1 Can be html or csv, 2 can be any valid file to write to
 	 */
 	public static void createModlist(String[] format) {
@@ -237,7 +233,6 @@ public class Commands {
 
 	/**
 	 * Creates a server from a modpack zip file
-	 *
 	 * @param args The path to the zip file, The directory where to create the server
 	 */
 	public static void makeServer(String[] args) {

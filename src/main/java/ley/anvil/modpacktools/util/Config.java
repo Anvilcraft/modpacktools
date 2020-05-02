@@ -6,10 +6,10 @@ import java.io.*;
 import java.net.URISyntaxException;
 
 public class Config {
-	private final String CONFIG_NAME = "modpacktoolsconfig.json";
 	public final File JAR_LOCATION;
 	public final File CONFIG_LOCATION;
 	public final JsonObject CONFIG;
+	private final String CONFIG_NAME = "modpacktoolsconfig.json";
 
 	public Config() {
 		//Get the Location of the jarfile
@@ -36,7 +36,6 @@ public class Config {
 
 	/**
 	 * reads the config it it exists and otherwise copies it
-	 *
 	 * @return the json object of the config file
 	 */
 	private JsonObject readConfig() {

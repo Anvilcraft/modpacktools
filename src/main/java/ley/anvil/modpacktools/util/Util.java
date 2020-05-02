@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 public class Util {
 	/**
 	 * Reads a Json File
-	 *
 	 * @param file the file to read
 	 * @return the file content as JsonObject
 	 */
@@ -33,7 +32,6 @@ public class Util {
 
 	/**
 	 * sends a http post request
-	 *
 	 * @param url         the url to send the request to
 	 * @param contentType what content type should be used. Example: "application/json; utf-8"
 	 * @param accept      what content is accepted. Example: "application/json"
