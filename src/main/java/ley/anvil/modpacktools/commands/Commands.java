@@ -1,6 +1,5 @@
 package ley.anvil.modpacktools.commands;
 
-import ley.anvil.modpacktools.Main;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -76,14 +75,16 @@ public class Commands {
 
     /**
      * Creates a modlist of this pack
-     * @param format Can be html or csv
+     * @param format 1 Can be html or csv, 2 can be any valid file to write to
      */
     public static void createModlist(String[] format) {
         if(format[1].equalsIgnoreCase("csv")) {
-            File csvFile = new File(Main.CONFIG.CONFIG.get("csvExportFile").getAsString());
+            File csvFile = new File(format[2]);
             if(csvFile.exists()) {
                 System.out.println("Delete " + csvFile);
                 return;
+            }else if(format.length >= 3) {
+                System.out.println("Syntax: createmodlist <csv/html> <file>");
             }
             System.out.println("Printing CSV into " + csvFile);
             Appendable out;
