@@ -83,8 +83,9 @@ public class Commands {
             if(csvFile.exists()) {
                 System.out.println("Delete " + csvFile);
                 return;
-            }else if(format.length >= 3) {
+            }else if(format.length < 3) {
                 System.out.println("Syntax: createmodlist <csv/html> <file>");
+                return;
             }
             System.out.println("Printing CSV into " + csvFile);
             Appendable out;
