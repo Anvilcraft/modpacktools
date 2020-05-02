@@ -186,6 +186,8 @@ public class Commands {
                     System.out.println("Delete " + htmlFile);
                     return;
                 }
+                ArrayList<ModInfo> mods = ModInfo.getModInfo();
+                Collections.sort(mods, Comparator.comparing(ModInfo :: getName));
                 ContainerTag table = body(
                         TagCreator.table(TagCreator.attrs("#mods"), TagCreator.tbody(
                                 tr(td(b("Name")),
@@ -193,7 +195,7 @@ public class Commands {
                                         td(b("ID")),
                                         td(b("Downloads"))
                                 ),
-                                TagCreator.each(ModInfo.getModInfo(), i -> {
+                                TagCreator.each(mods, i -> {
                                     StringBuilder sb = new StringBuilder();
                                     for(String author : i.getAuthors()) {
                                         sb.append(author);
@@ -202,7 +204,10 @@ public class Commands {
                                     String authors = sb.toString();
                                     authors = authors.substring(0, authors.length() - 2);
 
-                                    return tr(td(a(i.getName()).withHref(i.getLink())),
+                                    return tr(td(a(i.getName())
+                                                    .withHref(i.getLink())
+                                                    .withRel("noopener noreferrer")
+                                                    .withTarget("_blank")),
                                             td(authors),
                                             td(String.valueOf(i.getId())),
                                             td(String.valueOf(i.getDownloads())));
