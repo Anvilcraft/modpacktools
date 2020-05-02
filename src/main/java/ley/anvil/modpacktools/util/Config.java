@@ -10,6 +10,7 @@ public class Config {
 	public final File JAR_LOCATION;
 	public final File CONFIG_LOCATION;
 	public final JsonObject CONFIG;
+
 	public Config() {
 		//Get the Location of the jarfile
 		File JAR_LOCATION1;
@@ -29,19 +30,20 @@ public class Config {
 			e.printStackTrace();
 		}
 		JAR_LOCATION = JAR_LOCATION1;
-		CONFIG_LOCATION  = new File(JAR_LOCATION, CONFIG_NAME);
+		CONFIG_LOCATION = new File(JAR_LOCATION, CONFIG_NAME);
 		CONFIG = readConfig();
 	}
 
 	/**
 	 * reads the config it it exists and otherwise copies it
+	 *
 	 * @return the json object of the config file
 	 */
 	private JsonObject readConfig() {
 		if(CONFIG_LOCATION.exists()) {
 			//parse file to json
 			return Util.readJsonFile(CONFIG_LOCATION);
-		}else {
+		} else {
 			//copy from resources
 			try {
 				InputStream in = ClassLoader.getSystemResourceAsStream(CONFIG_NAME);
@@ -52,9 +54,10 @@ public class Config {
 				in.close();
 				out.close();
 				return readConfig();
-			}catch(IOException e) {
+			} catch(IOException e) {
 				e.printStackTrace();
 			}
-		}return null;
+		}
+		return null;
 	}
 }

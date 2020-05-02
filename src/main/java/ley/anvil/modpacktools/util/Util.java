@@ -6,10 +6,12 @@ import com.google.gson.JsonParser;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class Util {
 	/**
 	 * Reads a Json File
+	 *
 	 * @param file the file to read
 	 * @return the file content as JsonObject
 	 */
@@ -31,10 +33,11 @@ public class Util {
 
 	/**
 	 * sends a http post request
-	 * @param url the url to send the request to
+	 *
+	 * @param url         the url to send the request to
 	 * @param contentType what content type should be used. Example: "application/json; utf-8"
-	 * @param accept what content is accepted. Example: "application/json"
-	 * @param payload the payload to send
+	 * @param accept      what content is accepted. Example: "application/json"
+	 * @param payload     the payload to send
 	 * @return the response as string
 	 */
 	public static String httpPostString(URL url, String payload, String contentType, String accept) {
@@ -46,10 +49,10 @@ public class Util {
 			con.setDoOutput(true);
 
 			OutputStream outs = con.getOutputStream();
-			byte[] input = payload.getBytes("UTF-8");
+			byte[] input = payload.getBytes(StandardCharsets.UTF_8);
 			outs.write(input);
 
-			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
 			StringBuffer sb = new StringBuffer();
 			String responseLine;
 			while((responseLine = br.readLine()) != null) {
@@ -59,6 +62,7 @@ public class Util {
 			return sb.toString();
 		} catch(IOException e) {
 			e.printStackTrace();
-		}return null;
+		}
+		return null;
 	}
 }
