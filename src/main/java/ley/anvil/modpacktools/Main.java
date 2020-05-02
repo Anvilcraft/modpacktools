@@ -1,5 +1,6 @@
 package ley.anvil.modpacktools;
 
+import ley.anvil.modpacktools.commands.Commands;
 import ley.anvil.modpacktools.util.Config;
 
 public class Main {

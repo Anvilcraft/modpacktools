@@ -34,6 +34,7 @@ public class Util {
 	 * @param url the url to send the request to
 	 * @param contentType what content type should be used. Example: "application/json; utf-8"
 	 * @param accept what content is accepted. Example: "application/json"
+	 * @param payload the payload to send
 	 * @return the response as string
 	 */
 	public static String httpPostString(URL url, String payload, String contentType, String accept) {

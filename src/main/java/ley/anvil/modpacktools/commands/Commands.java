@@ -1,17 +1,12 @@
-package ley.anvil.modpacktools;
+package ley.anvil.modpacktools.commands;
 
-import com.google.gson.*;
-import com.google.gson.annotations.SerializedName;
-import ley.anvil.modpacktools.util.ModInfo;
-import ley.anvil.modpacktools.util.Util;
+import ley.anvil.modpacktools.Main;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

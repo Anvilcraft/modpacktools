@@ -1,9 +1,9 @@
-package ley.anvil.modpacktools.util;
+package ley.anvil.modpacktools.commands;
 
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
-import ley.anvil.modpacktools.Commands;
 import ley.anvil.modpacktools.Main;
+import ley.anvil.modpacktools.util.Util;
 
 import java.io.File;
 import java.net.MalformedURLException;
