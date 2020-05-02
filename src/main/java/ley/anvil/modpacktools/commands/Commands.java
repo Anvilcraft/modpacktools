@@ -4,6 +4,8 @@ import com.google.gson.*;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
+import j2html.TagCreator;
+import j2html.tags.ContainerTag;
 import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.util.Util;
 import okhttp3.HttpUrl;
@@ -18,6 +20,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static j2html.TagCreator.*;
 
 public class Commands {
 
@@ -177,7 +181,42 @@ public class Commands {
                     e.printStackTrace();
                 }
             } else if(format[1].equalsIgnoreCase("html")) {
-                //TODO implement html mod list
+                File htmlFile = new File(format[2]);
+                if(htmlFile.exists()) {
+                    System.out.println("Delete " + htmlFile);
+                    return;
+                }
+                ContainerTag table = body(
+                        TagCreator.table(TagCreator.attrs("#mods"), TagCreator.tbody(
+                                tr(td(b("Name")),
+                                        td(b("Authors")),
+                                        td(b("ID")),
+                                        td(b("Downloads"))
+                                ),
+                                TagCreator.each(ModInfo.getModInfo(), i -> {
+                                    StringBuilder sb = new StringBuilder();
+                                    for(String author : i.getAuthors()) {
+                                        sb.append(author);
+                                        sb.append(", ");
+                                    }
+                                    String authors = sb.toString();
+                                    authors = authors.substring(0, authors.length() - 2);
+
+                                    return tr(td(a(i.getName()).withHref(i.getLink())),
+                                            td(authors),
+                                            td(String.valueOf(i.getId())),
+                                            td(String.valueOf(i.getDownloads())));
+                                })
+                        ))
+                );
+                try {
+                    System.out.println("Writing HTML");
+                    FileWriter htmlWrite = new FileWriter(htmlFile);
+                    htmlWrite.write(table.render());
+                    htmlWrite.close();
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
             }else {
                 System.out.println("Expected Either HTML or CSV as format");
             }
