@@ -46,7 +46,6 @@ public class Util {
 			con.setDoOutput(true);
 
 			OutputStream outs = con.getOutputStream();
-			String s;
 			byte[] input = payload.getBytes("UTF-8");
 			outs.write(input);
 
@@ -56,6 +55,7 @@ public class Util {
 			while((responseLine = br.readLine()) != null) {
 				sb.append(responseLine.trim());
 			}
+			br.close();
 			return sb.toString();
 		} catch(IOException e) {
 			e.printStackTrace();
