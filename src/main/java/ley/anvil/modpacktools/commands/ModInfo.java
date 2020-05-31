@@ -1,6 +1,9 @@
 package ley.anvil.modpacktools.commands;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.util.Util;
@@ -31,15 +34,15 @@ public class ModInfo {
 	public static ArrayList<ModInfo> getModInfo() {
 		try {
 			System.out.println("Getting Info From Curse API");
-			File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG.get("manifestFile").getAsString());
+			File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG
+					.getTable("Locations")
+					.getString("manifestFile"));
 			//Read manifest
 			JsonObject manifest = Util.readJsonFile(manifestFile);
 			JsonArray files = manifest.getAsJsonArray("files");
 
 			ArrayList<Integer> fileIds = new ArrayList<>();
-			for(JsonElement file : files) {
-				fileIds.add(((JsonObject) file).get("projectID").getAsInt());
-			}
+			files.forEach(file -> fileIds.add(((JsonObject) file).get("projectID").getAsInt()));
 			String responseStr = Util.httpPostString(new URL("https://addons-ecs.forgesvc.net/api/v2/addon"),
 					fileIds.toString(),
 					"application/json; utf-8",
@@ -48,9 +51,7 @@ public class ModInfo {
 
 			ArrayList<ModInfo> modInfos = new ArrayList<>();
 			Gson gson = new Gson();
-			for(JsonElement mod : response) {
-				modInfos.add(gson.fromJson(mod, ModInfo.class));
-			}
+			response.forEach(mod -> modInfos.add(gson.fromJson(mod, ModInfo.class)));
 			return modInfos;
 		} catch(MalformedURLException e) {
 			e.printStackTrace();
@@ -64,10 +65,9 @@ public class ModInfo {
 
 	public String[] getAuthors() {
 		ArrayList<String> authorArr = new ArrayList<>();
-		for(JsonElement author : authors) {
-			JsonObject authorObj = (JsonObject) author;
-			authorArr.add(authorObj.get("name").getAsString());
-		}
+		authors.forEach(author -> {
+			authorArr.add(((JsonObject) author).get("name").getAsString());
+		});
 		return authorArr.toArray(new String[authorArr.size()]);
 	}
 

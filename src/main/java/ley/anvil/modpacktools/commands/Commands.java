@@ -1,6 +1,5 @@
 package ley.anvil.modpacktools.commands;
 
-import com.google.gson.*;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
@@ -9,7 +8,6 @@ import j2html.tags.ContainerTag;
 import ley.anvil.addonscript.curse.CurseTools;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 import ley.anvil.modpacktools.Main;
-import ley.anvil.modpacktools.util.Util;
 import okhttp3.HttpUrl;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -85,7 +83,9 @@ public class Commands {
 					if(matcher.find()) {
 						fileID = Integer.parseInt(matcher.group(0));
 					}
-					File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG.get("manifestFile").getAsString());
+					File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG
+							.getTable("Locations")
+							.getString("manifestFile"));
 					System.out.println("Reading Addonscript");
 					//Get Mods in manifest file
 					//Check if Mod already exsits

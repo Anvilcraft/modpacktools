@@ -1,6 +1,6 @@
 package ley.anvil.modpacktools.util;
 
-import com.google.gson.JsonObject;
+import com.moandjiezana.toml.Toml;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -8,8 +8,8 @@ import java.net.URISyntaxException;
 public class Config {
 	public final File JAR_LOCATION;
 	public final File CONFIG_LOCATION;
-	public final JsonObject CONFIG;
-	private final String CONFIG_NAME = "modpacktoolsconfig.json";
+	public final Toml CONFIG;
+	private final String CONFIG_NAME = "modpacktoolsconfig.toml";
 
 	public Config() {
 		//Get the Location of the jarfile
@@ -36,12 +36,12 @@ public class Config {
 
 	/**
 	 * reads the config it it exists and otherwise copies it
-	 * @return the json object of the config file
+	 * @return the Toml object of the config file
 	 */
-	private JsonObject readConfig() {
+	private Toml readConfig() {
 		if(CONFIG_LOCATION.exists()) {
 			//parse file to json
-			return Util.readJsonFile(CONFIG_LOCATION);
+			return new Toml().read(CONFIG_LOCATION);
 		} else {
 			//copy from resources
 			try {
