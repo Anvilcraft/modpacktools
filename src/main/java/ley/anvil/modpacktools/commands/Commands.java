@@ -6,6 +6,8 @@ import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
 import j2html.TagCreator;
 import j2html.tags.ContainerTag;
+import ley.anvil.addonscript.curse.CurseTools;
+import ley.anvil.addonscript.v1.AddonscriptJSON;
 import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.util.Util;
 import okhttp3.HttpUrl;
@@ -45,13 +47,32 @@ public class Commands {
 	 * Adds a mod to the modpack
 	 * @param modlink Can be a link to a curseforge file or to a file download
 	 */
+	//TODO Renaming?
 	public static void addMod(String[] modlink) {
 		//Check if the command has the correct number of args
 		if(modlink.length >= 2) {
+			AddonscriptJSON json = getJSON();
+			AddonscriptJSON.Version version = null;
+			if (json != null && json.versions != null) {
+				if (json.versions.size() == 1) {
+					version = json.versions.get(0);
+				} else {
+					for (AddonscriptJSON.Version v : json.versions) {
+						if (v.versionid == -1) {
+							version = v;
+							break;
+						}
+					}
+				}
+			}
+			if (version == null) {
+				throw new RuntimeException("Error: The modpack.json does not include a version with id -1");
+			}
 			//The url must match this
 			String regex = "(?m)^(http)(s)?://(www\\.)?(curseforge.com/minecraft/mc-mods/)[0-z,\\-]+/(files)/[0-9]+$";
 			String endPartRegex = "(/files/)[0-9]+$";
 			if(modlink[1].matches(regex)) {
+				CurseTools.addCurseRepo(json);
 				try {
 					//remove fileID
 					System.out.println("Getting ID");
@@ -65,39 +86,49 @@ public class Commands {
 						fileID = Integer.parseInt(matcher.group(0));
 					}
 					File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG.get("manifestFile").getAsString());
-					System.out.println("Reading Manifest");
-					JsonObject manifest = Util.readJsonFile(manifestFile);
+					System.out.println("Reading Addonscript");
 					//Get Mods in manifest file
-					JsonArray files = manifest.getAsJsonArray("files");
 					//Check if Mod already exsits
-					for(JsonElement file : files) {
-						if(file.getAsJsonObject().get("projectID").getAsInt() == projectID) {
-							System.out.println("The mod is already installed!");
-							return;
+					for(AddonscriptJSON.Relation file : version.relations) {
+						if (file.file != null) {
+							String[] parts = file.file.split(":");
+							if (parts.length == 3 && parts[0].equals("curse")) { //TODO check, if it is a Curse repo, waiting for Addonscript to update this
+								int projID = Integer.parseInt(parts[1]);
+								if (projID == projectID) {
+									System.out.println("The mod is already installed!");
+									return;
+								}
+							}
 						}
 					}
 					System.out.println("Adding Mod " + project.name());
 					//Construct Mod
-					JsonObject mod = new JsonObject();
-					mod.addProperty("projectID", projectID);
-					mod.addProperty("fileID", fileID);
+					AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
+					rel.file = CurseTools.toArtifact(projectID, fileID);
+					rel.type = "included";
+					rel.installer = "internal.dir";
 					//Add Mod to array
-					files.add(mod);
-					//Remove old file array from manifest
-					manifest.remove("files");
-					//Add new file array to manifest
-					manifest.add("files", files);
-					Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					if (version.relations == null) {
+						version.relations = new ArrayList<>();
+					}
+					version.relations.add(rel);
 					//Overwrite Old Manifest File
 					FileWriter manifestWriter = new FileWriter(manifestFile, false);
 					System.out.println("Printing Manifest");
-					gson.toJson(manifest, manifestWriter);
+					json.write(manifestWriter);
 					manifestWriter.close();
 				} catch(CurseException | IOException e) {
 					e.printStackTrace();
 				}
 			} else {
-				System.out.println("Link Must match " + regex);
+				AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
+				rel.file = modlink[1];
+				rel.type = "included";
+				rel.installer = "internal.dir";
+				if (version.relations == null) {
+					version.relations = new ArrayList<>();
+				}
+				version.relations.add(rel);
 			}
 		} else {
 			System.out.println("Syntax: addmod <curseforge url>");
@@ -237,6 +268,11 @@ public class Commands {
 	 */
 	public static void makeServer(String[] args) {
 
+	}
+
+	public static AddonscriptJSON getJSON() {
+		//TODO Return the current AddonscriptJSON/ModpackJSON
+		return null;
 	}
 
 
