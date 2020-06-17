@@ -1,2 +1,4 @@
 [Locations]
     manifestFile = "src/twitch/manifest.json"
+[Local]
+    selectedVersion = -1
