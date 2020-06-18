@@ -1,5 +1,7 @@
 package ley.anvil.modpacktools;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import ley.anvil.modpacktools.command.CommandLoader;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.util.Config;
@@ -13,6 +15,7 @@ public class Main {
     public static final Config CONFIG = new Config();
     public static final CommandLoader LOADER = new CommandLoader("ley.anvil.modpacktools.commands");
     public static ModpackJsonHandler MPJH;
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) {
         if(CONFIG.configExists())
