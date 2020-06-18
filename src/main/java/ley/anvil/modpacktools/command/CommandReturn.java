@@ -11,6 +11,7 @@ public class CommandReturn {
 
     /**
      * Get a failed {@link CommandReturn}. This should be used if something went wrong
+     *
      * @param ret the error message
      * @return the {@link CommandReturn}
      */
@@ -33,7 +34,7 @@ public class CommandReturn {
      * @return the {@link CommandReturn}
      */
     public static CommandReturn success(String ret) {
-        return  new CommandReturn(ret, true);
+        return new CommandReturn(ret, true);
     }
 
     /**

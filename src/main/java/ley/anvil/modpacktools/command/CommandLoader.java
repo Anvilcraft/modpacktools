@@ -23,6 +23,12 @@ public class CommandLoader {
         loadCommands();
     }
 
+    public static CommandReturn runStatic(ICommand cmd, String[] args) {
+        if(cmd.needsConfig() && !Main.CONFIG.configExists())
+            return CommandReturn.fail("Config is needed for this command yet it is not present. Run \'init\' to generate");
+        return cmd.execute(args);
+    }
+
     private void loadCommands() {
         Reflections reflections = new Reflections(commandsPkg, new SubTypesScanner(false));
         //Get ICommands in package
@@ -46,12 +52,6 @@ public class CommandLoader {
             throw new NoSuchElementException("Command " + x + " Not Found");
         });
         return runStatic(cmd, args);
-    }
-
-    public static CommandReturn runStatic(ICommand cmd, String[] args) {
-        if(cmd.needsConfig() && !Main.CONFIG.configExists())
-            return CommandReturn.fail("Config is needed for this command yet it is not present. Run \'init\' to generate");
-        return cmd.execute(args);
     }
 
     /**

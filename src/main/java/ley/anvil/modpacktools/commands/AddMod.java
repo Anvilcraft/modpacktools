@@ -29,19 +29,19 @@ public class AddMod implements ICommand {
             //TODO Theres no way this command will work in this state of course
             AddonscriptJSON json = null;
             AddonscriptJSON.Version version = null;
-            if (json != null && json.versions != null) {
-                if (json.versions.size() == 1) {
+            if(json != null && json.versions != null) {
+                if(json.versions.size() == 1) {
                     version = json.versions.get(0);
-                } else {
-                    for (AddonscriptJSON.Version v : json.versions) {
-                        if (v.versionid == -1) {
+                }else {
+                    for(AddonscriptJSON.Version v : json.versions) {
+                        if(v.versionid == -1) {
                             version = v;
                             break;
                         }
                     }
                 }
             }
-            if (version == null) {
+            if(version == null) {
                 throw new RuntimeException("Error: The modpack.json does not include a version with id -1");
             }
             //The url must match this
@@ -68,11 +68,11 @@ public class AddMod implements ICommand {
                     //Get Mods in manifest file
                     //Check if Mod already exsits
                     for(AddonscriptJSON.Relation file : version.relations) {
-                        if (file.file != null) {
+                        if(file.file != null) {
                             String[] parts = file.file.split(":");
-                            if (parts.length == 3 && parts[0].equals("curse")) { //TODO check, if it is a Curse repo, waiting for Addonscript to update this
+                            if(parts.length == 3 && parts[0].equals("curse")) { //TODO check, if it is a Curse repo, waiting for Addonscript to update this
                                 int projID = Integer.parseInt(parts[1]);
-                                if (projID == projectID) {
+                                if(projID == projectID) {
                                     return CommandReturn.fail("The Mod Is already Installed");
                                 }
                             }
@@ -85,7 +85,7 @@ public class AddMod implements ICommand {
                     rel.type = "included";
                     rel.installer = "internal.dir";
                     //Add Mod to array
-                    if (version.relations == null) {
+                    if(version.relations == null) {
                         version.relations = new ArrayList<>();
                     }
                     version.relations.add(rel);
@@ -94,20 +94,20 @@ public class AddMod implements ICommand {
                     System.out.println("Printing Manifest");
                     json.write(manifestWriter);
                     manifestWriter.close();
-                } catch(CurseException | IOException e) {
+                }catch(CurseException | IOException e) {
                     e.printStackTrace();
                 }
-            } else {
+            }else {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
                 rel.file = args[1];
                 rel.type = "included";
                 rel.installer = "internal.dir";
-                if (version.relations == null) {
+                if(version.relations == null) {
                     version.relations = new ArrayList<>();
                 }
                 version.relations.add(rel);
             }
-        } else {
+        }else {
             return CommandReturn.fail("Syntax: addmod <curseforge url>");
         }
         return CommandReturn.success();
