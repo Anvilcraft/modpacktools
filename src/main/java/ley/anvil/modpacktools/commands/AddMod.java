@@ -60,7 +60,6 @@ public class AddMod implements ICommand {
                     if(matcher.find()) {
                         fileID = Integer.parseInt(matcher.group(0));
                     }
-                    File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG.getPath(String.class, "Locations", "manifestFile"));
                     System.out.println("Reading Addonscript");
                     //Get Mods in manifest file
                     //Check if Mod already exsits
@@ -86,12 +85,7 @@ public class AddMod implements ICommand {
                         version.relations = new ArrayList<>();
                     }
                     version.relations.add(rel);
-                    //Overwrite Old Manifest File
-                    FileWriter manifestWriter = new FileWriter(manifestFile, false);
-                    System.out.println("Printing Manifest");
-                    json.write(manifestWriter);
-                    manifestWriter.close();
-                }catch(CurseException | IOException e) {
+                }catch(CurseException e) {
                     e.printStackTrace();
                 }
             }else {
@@ -103,6 +97,16 @@ public class AddMod implements ICommand {
                     version.relations = new ArrayList<>();
                 }
                 version.relations.add(rel);
+            }
+            //Overwrite Old Manifest File
+            FileWriter manifestWriter = null;
+            try {
+                manifestWriter = new FileWriter(Main.MPJH.getFile(), false);
+                System.out.println("Printing Manifest");
+                json.write(manifestWriter);
+                manifestWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }else {
             return CommandReturn.fail("Syntax: addmod <curseforge url>");

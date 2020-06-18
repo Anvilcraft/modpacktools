@@ -21,4 +21,9 @@ public class ModpackJsonHandler {
         }
         return null;
     }
+
+    public File getFile() {
+        return modpackJsonFile;
+    }
+
 }
