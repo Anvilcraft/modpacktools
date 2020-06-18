@@ -15,13 +15,13 @@ import java.util.ArrayList;
 
 public class ModInfo {
 
-	private String name;
-	private JsonArray authors;
+	private final String name;
+	private final JsonArray authors;
 	@SerializedName("websiteUrl")
-	private String link;
+	private final String link;
 	@SerializedName("downloadCount")
-	private int downloads;
-	private int id;
+	private final int downloads;
+	private final int id;
 
 	private ModInfo(String name, JsonArray authors, String link, int downloads, int id) {
 		this.name = name;

@@ -4,6 +4,7 @@ import ley.anvil.modpacktools.command.CommandLoader;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.util.Config;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class Main {
@@ -11,10 +12,10 @@ public class Main {
     public static final CommandLoader LOADER = new CommandLoader("ley.anvil.modpacktools.commands");
 
     public static void main(String[] args) {
-    	if(args.length <= 0) {
-		    printHelp();
-		    return;
-	    }
+        if(args.length <= 0) {
+            printHelp();
+            return;
+        }
 
         try {
             CommandReturn ret = LOADER.runCommand(args[0], args);
@@ -27,7 +28,11 @@ public class Main {
     }
 
     private static void printHelp() {
-	    System.out.println("Commands:");
-	    LOADER.getCommands().forEach((k, v) -> System.out.println(k + ": " + v.getHelpMessage()));
+        System.out.println("Commands:");
+        LOADER.getCommands()
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue().getHelpMessage()));
     }
 }

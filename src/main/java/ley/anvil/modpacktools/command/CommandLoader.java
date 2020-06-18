@@ -1,5 +1,6 @@
 package ley.anvil.modpacktools.command;
 
+import ley.anvil.modpacktools.Main;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
@@ -41,9 +42,16 @@ public class CommandLoader {
      * @throws NoSuchElementException if there's no command with the given name
      */
     public CommandReturn runCommand(String name, String[] args) throws NoSuchElementException {
-        return commands.computeIfAbsent(name.toLowerCase(), x -> {
+        ICommand cmd = commands.computeIfAbsent(name.toLowerCase(), x -> {
             throw new NoSuchElementException("Command " + x + " Not Found");
-        }).execute(args);
+        });
+        return runStatic(cmd, args);
+    }
+
+    public static CommandReturn runStatic(ICommand cmd, String[] args) {
+        if(cmd.needsConfig() && !Main.CONFIG.configExists())
+            return CommandReturn.fail("Config is needed for this command yet it is not present. Run \'init\' to generate");
+        return cmd.execute(args);
     }
 
     /**
