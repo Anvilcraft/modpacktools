@@ -1,5 +1,6 @@
 [Locations]
     #The location of the twitch manifest file (will be replaced with addonscript in later versions)
     manifestFile = "src/twitch/manifest.json"
+    addonscript = "src/modpack.json"
 [Local]
     selectedVersion = -1
