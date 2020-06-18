@@ -1,7 +1,5 @@
 package ley.anvil.modpacktools.util;
 
-import com.moandjiezana.toml.Toml;
-
 import java.io.*;
 import java.net.URISyntaxException;
 
@@ -9,7 +7,7 @@ public class Config {
     public final File JAR_LOCATION;
     public final File CONFIG_LOCATION;
     private final String CONFIG_NAME = "modpacktoolsconfig.toml";
-    public Toml CONFIG;
+    public CustomToml CONFIG;
 
     public Config() {
         //Get the Location of the jarfile
@@ -39,10 +37,10 @@ public class Config {
      *
      * @return the Toml object of the config file
      */
-    private Toml readConfig() {
+    private CustomToml readConfig() {
         if(configExists()) {
             //parse file to toml
-            return new Toml().read(CONFIG_LOCATION);
+            return (CustomToml)new CustomToml().read(CONFIG_LOCATION);
         }
         return null;
     }

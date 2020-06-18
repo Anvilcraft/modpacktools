@@ -35,8 +35,10 @@ public class ModInfo {
         try {
             System.out.println("Getting Info From Curse API");
             File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG
-                    .getTable("Locations")
-                    .getString("manifestFile"));
+                    .getPath(String.class,
+                            "Locations",
+                            "manifestFile"
+                    ));
             //Read manifest
             JsonObject manifest = Util.readJsonFile(manifestFile);
             JsonArray files = manifest.getAsJsonArray("files");

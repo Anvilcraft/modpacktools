@@ -3,15 +3,21 @@ package ley.anvil.modpacktools;
 import ley.anvil.modpacktools.command.CommandLoader;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.util.Config;
+import ley.anvil.modpacktools.util.ModpackJsonHandler;
 
+import java.io.File;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class Main {
     public static final Config CONFIG = new Config();
     public static final CommandLoader LOADER = new CommandLoader("ley.anvil.modpacktools.commands");
+    public static ModpackJsonHandler MPJH;
 
     public static void main(String[] args) {
+        if(CONFIG.configExists())
+            MPJH = new ModpackJsonHandler(new File((CONFIG.CONFIG.getPath(String.class, "Locations", "modpackjsonFile"))));
+
         if(args.length <= 0) {
             printHelp();
             return;

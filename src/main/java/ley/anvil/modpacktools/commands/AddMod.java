@@ -26,8 +26,7 @@ public class AddMod implements ICommand {
     public CommandReturn execute(String[] args) {
         //Check if the command has the correct number of args
         if(args.length >= 2) {
-            //TODO Theres no way this command will work in this state of course
-            AddonscriptJSON json = null;
+            AddonscriptJSON json = Main.MPJH.getJson();
             AddonscriptJSON.Version version = null;
             if(json != null && json.versions != null) {
                 if(json.versions.size() == 1) {
@@ -61,9 +60,7 @@ public class AddMod implements ICommand {
                     if(matcher.find()) {
                         fileID = Integer.parseInt(matcher.group(0));
                     }
-                    File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG
-                            .getTable("Locations")
-                            .getString("manifestFile"));
+                    File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG.getPath(String.class, "Locations", "manifestFile"));
                     System.out.println("Reading Addonscript");
                     //Get Mods in manifest file
                     //Check if Mod already exsits
