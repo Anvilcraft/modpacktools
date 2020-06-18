@@ -9,10 +9,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface LoadCommand {
-    /**
-     * the name of this command, must be lower case
-     *
-     * @return the name of this command
-     */
-    String value();
 }

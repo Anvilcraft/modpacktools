@@ -28,14 +28,8 @@ public class CommandLoader {
         reflections.getSubTypesOf(ICommand.class).stream()
                 //Only use ones with @LoadCommand annotation
                 .filter(t -> t.isAnnotationPresent(LoadCommand.class))
-                //Add to HashMap
-                .forEach(t -> {
-                    try {
-                        addCommand(t.getAnnotation(LoadCommand.class).value(), t.newInstance());
-                    }catch(InstantiationException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                });
+                //Add to Command List
+                .forEach(this::addClass);
     }
 
     /**
@@ -62,16 +56,29 @@ public class CommandLoader {
     }
 
     /**
-     * Adds a command to the command list
+     * Adds a command to the command list with the name that getName() returns
      *
-     * @param name the name of the command to add
      * @param command the command to add
      * @return if it was successful
      */
-    public boolean addCommand(String name, ICommand command) {
-        if(commands.containsKey(name))
+    public boolean addCommand(ICommand command) {
+        if(commands.containsKey(command.getName()))
             return false;
-        commands.put(name, command);
+        commands.put(command.getName(), command);
         return true;
+    }
+
+    /**
+     * Creates a new instance of the given class and adds it to the command list
+     *
+     * @param clazz the class to add
+     * @return if it was successful
+     */
+    public boolean addClass(Class<? extends ICommand> clazz) {
+        try {
+            return addCommand(clazz.newInstance());
+        }catch(InstantiationException | IllegalAccessException e) {
+            return false;
+        }
     }
 }

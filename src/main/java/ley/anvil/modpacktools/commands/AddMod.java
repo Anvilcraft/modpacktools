@@ -11,6 +11,7 @@ import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
 import okhttp3.HttpUrl;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@LoadCommand("addmod")
+@LoadCommand
 public class AddMod implements ICommand {
 
     @Override
@@ -110,5 +111,17 @@ public class AddMod implements ICommand {
             return CommandReturn.fail("Syntax: addmod <curseforge url>");
         }
         return CommandReturn.success();
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "addmod";
+    }
+
+    @Nonnull
+    @Override
+    public String getHelpMessage() {
+        return "This command adds a mod to the pack";
     }
 }

@@ -9,6 +9,7 @@ import ley.anvil.modpacktools.commandhelper.ModInfo;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.Comparator;
 
 import static j2html.TagCreator.*;
 
-@LoadCommand("createmodlist")
+@LoadCommand
 public class CreateModList implements ICommand {
     @Override
     public CommandReturn execute(String[] args) {
@@ -101,5 +102,17 @@ public class CreateModList implements ICommand {
             return CommandReturn.fail("Syntax: createmodlist <csv/html> <file>");
         }
         return CommandReturn.success();
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "createmodlist";
+    }
+
+    @Nonnull
+    @Override
+    public String getHelpMessage() {
+        return "This creates a modlist either as html or csv file";
     }
 }

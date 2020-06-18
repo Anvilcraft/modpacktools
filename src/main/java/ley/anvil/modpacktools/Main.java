@@ -28,6 +28,6 @@ public class Main {
 
     private static void printHelp() {
 	    System.out.println("Commands:");
-	    LOADER.getCommands().forEach((k, v) -> System.out.println(k));
+	    LOADER.getCommands().forEach((k, v) -> System.out.println(k + ": " + v.getHelpMessage()));
     }
 }
