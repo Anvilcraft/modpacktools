@@ -1,4 +1,4 @@
-package ley.anvil.modpacktools.commands;
+package ley.anvil.modpacktools.commandhelper;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
