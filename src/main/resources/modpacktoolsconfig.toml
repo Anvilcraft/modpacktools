@@ -5,3 +5,8 @@
     modpackjsonFile = "src/modpack.json"
 [Local]
     selectedVersion = -1
+[Downloads]
+    #The maximum number of threads that will be used for downloads
+    maxThreads = 5
+    #The timeout of http requests in ms
+    httpTimeout = 2147483647

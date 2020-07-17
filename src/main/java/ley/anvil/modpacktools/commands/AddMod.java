@@ -12,7 +12,6 @@ import ley.anvil.modpacktools.command.LoadCommand;
 import okhttp3.HttpUrl;
 
 import javax.annotation.Nonnull;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,7 +104,7 @@ public class AddMod implements ICommand {
                 System.out.println("Printing Manifest");
                 json.write(manifestWriter);
                 manifestWriter.close();
-            } catch (IOException e) {
+            }catch(IOException e) {
                 e.printStackTrace();
             }
         }else {

@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class CustomToml extends Toml {
+    public <T> T getPath(Class<T> type, String path) {
+        return getPath(type, path.split("/"));
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getPath(Class<T> type, String... path) {
         LinkedList<String> paths = new LinkedList<>(Arrays.asList(path));
@@ -26,7 +30,6 @@ public class CustomToml extends Toml {
             method.setAccessible(true);
             return method.invoke(clazz, key);
         }catch(IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            System.out.println("get fail");
             e.printStackTrace();
         }
         return null;

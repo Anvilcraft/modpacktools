@@ -2,10 +2,10 @@ package ley.anvil.modpacktools.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ley.anvil.modpacktools.Main;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class Util {
@@ -47,6 +47,7 @@ public class Util {
             con.setRequestProperty("Content-Type", contentType);
             con.setRequestProperty("Accept", accept);
             con.setDoOutput(true);
+            con.setConnectTimeout(Main.CONFIG.CONFIG.getPath(Long.class,"Downloads/httpTimeout").intValue());
 
             OutputStream outs = con.getOutputStream();
             byte[] input = payload.getBytes(StandardCharsets.UTF_8);
@@ -62,6 +63,26 @@ public class Util {
             return sb.toString();
         }catch(IOException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Sanitizes a URL to be valid by encoding illegal chars like spaces
+     * @param url the URL to sanitize
+     * @return the sanitized URL
+     */
+    public static URL sanitizeURL(URL url) {
+        try {
+            URI uri = new URI(url.getProtocol(),
+                    url.getUserInfo(),
+                    url.getHost(),
+                    url.getPort(),
+                    url.getPath(),
+                    url.getQuery(),
+                    url.getRef());
+            return uri.toURL();
+        }catch(MalformedURLException | URISyntaxException ignored) {
         }
         return null;
     }

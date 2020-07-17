@@ -22,13 +22,15 @@ public class ModInfo {
     @SerializedName("downloadCount")
     private final int downloads;
     private final int id;
+    private final JsonArray latestFiles;
 
-    private ModInfo(String name, JsonArray authors, String link, int downloads, int id) {
+    private ModInfo(String name, JsonArray authors, String link, int downloads, int id, JsonArray latestFiles) {
         this.name = name;
         this.authors = authors;
         this.link = link;
         this.downloads = downloads;
         this.id = id;
+        this.latestFiles = latestFiles;
     }
 
     public static ArrayList<ModInfo> getModInfo() {
@@ -83,6 +85,10 @@ public class ModInfo {
 
     public int getId() {
         return id;
+    }
+
+    public String getDownload() {
+        return latestFiles.get(0).getAsJsonObject().get("downloadUrl").getAsString();
     }
 
 }

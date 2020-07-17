@@ -3,6 +3,7 @@ package ley.anvil.modpacktools.util;
 import java.io.*;
 import java.net.URISyntaxException;
 
+//TODO add config integrity check to make sure each key is present (and maybe of correct type?)
 public class Config {
     public final File JAR_LOCATION;
     public final File CONFIG_LOCATION;
