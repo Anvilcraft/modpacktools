@@ -27,23 +27,17 @@ public class FileDownloader {
      * @param nThreads how many worker threads to use
      * @param callback this callback will get the return code of each HTTP request and the file once a file has finished
      * @param tries how many times a download will be tried in case it fails
-     * @param threadTimeout the time after which the download will be canceled
-     * @param threadTimeoutUnit the unit of the threadTimeout time
      */
     public static void downloadAsync(Map<URL, File> files,
                                      int nThreads,
                                      Consumer<AsyncDownloader.DownloadFileTask.Return> callback,
                                      int tries,
-                                     long threadTimeout,
-                                     TimeUnit threadTimeoutUnit,
                                      int httpTimeout,
                                      AsyncDownloader.ExistingFileBehaviour existingFileBehaviour) {
         new AsyncDownloader(files,
                 nThreads,
                 callback,
                 tries,
-                threadTimeout,
-                threadTimeoutUnit,
                 httpTimeout,
                 existingFileBehaviour);
     }
@@ -62,15 +56,11 @@ public class FileDownloader {
                                 int nThreads,
                                 Consumer<DownloadFileTask.Return> callback,
                                 int tries,
-                                long threadTimeout,
-                                TimeUnit threadTimeoutUnit,
                                 int httpTimeout,
                                 ExistingFileBehaviour existingFileBehaviour) {
             this.files = files;
             this.callback = callback;
             this.tries = tries;
-            this.threadTimeout = threadTimeout;
-            this.threadTimeoutUnit = threadTimeoutUnit;
             this.service = Executors.newFixedThreadPool(nThreads);
             this.httpTimeout = httpTimeout;
             this.existingFileBehaviour = existingFileBehaviour;

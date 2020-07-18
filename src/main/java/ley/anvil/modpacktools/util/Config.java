@@ -1,6 +1,10 @@
 package ley.anvil.modpacktools.util;
 
-import java.io.*;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 //TODO add config integrity check to make sure each key is present (and maybe of correct type?)
@@ -56,18 +60,14 @@ public class Config {
     }
 
     /**
-     * Copes the Config file from the resources into the tool's folder
+     * Copies the Config file from the resources into the tool's folder
      */
     public void copyConfig() {
         //copy from resources
         try {
             InputStream in = ClassLoader.getSystemResourceAsStream(CONFIG_NAME);
-            byte[] buff = new byte[in.available()];
-            in.read(buff);
-            OutputStream out = new FileOutputStream(CONFIG_LOCATION);
-            out.write(buff);
+            FileUtils.copyInputStreamToFile(in, CONFIG_LOCATION);
             in.close();
-            out.close();
             CONFIG = readConfig();
         }catch(IOException e) {
             e.printStackTrace();

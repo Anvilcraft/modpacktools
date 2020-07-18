@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,7 @@ public class DownloadMods implements ICommand {
     public CommandReturn execute(String[] args) {
         if(args.length < 2)
             return CommandReturn.fail("Invalid args");
+
         Function<String, URL> toURL = spec -> {
             try {
                 return new URL(spec);
@@ -42,15 +42,16 @@ public class DownloadMods implements ICommand {
                         )),
                 Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/maxThreads").intValue(),
                 r -> {
-                    System.out.println(r.getResponseCode() + " " + r.getResponseMessage() + " " + r.getUrl() + " " + r.getFile());
-                    if(r.getException() != null)
-                        System.out.println(r.getException().getMessage());
+                    //Synced to prevent the exception being printed too late
+                    synchronized(this) {
+                        System.out.println(r.getResponseCode() + " " + r.getResponseMessage() + " " + r.getUrl() + " " + r.getFile());
+                        if(r.getException() != null)
+                            System.out.println(r.getException().getMessage());
+                    }
                 },
-                1,
-                2,
-                TimeUnit.MINUTES,
+                5,
                 Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/httpTimeout").intValue(),
-                Arrays.stream(args).anyMatch("force"::equals) ? FileDownloader.AsyncDownloader.ExistingFileBehaviour.OVERWRITE : FileDownloader.AsyncDownloader.ExistingFileBehaviour.SKIP
+                Arrays.asList(args).contains("force") ? FileDownloader.AsyncDownloader.ExistingFileBehaviour.OVERWRITE : FileDownloader.AsyncDownloader.ExistingFileBehaviour.SKIP
         );
         return CommandReturn.success();
     }
@@ -69,6 +70,6 @@ public class DownloadMods implements ICommand {
     @Nonnull
     @Override
     public String getHelpMessage() {
-        return "Downloads all mods. force always downloads files even if they are already presentSyntax: <OutDir> [force]";
+        return "Downloads all mods. force always downloads files even if they are already present Syntax: <OutDir> [force]";
     }
 }
