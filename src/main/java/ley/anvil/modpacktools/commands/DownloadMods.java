@@ -1,6 +1,5 @@
 package ley.anvil.modpacktools.commands;
 
-import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
@@ -40,7 +39,6 @@ public class DownloadMods implements ICommand {
                                 i -> Util.sanitizeURL(toURL.apply(i.getDownload())),
                                 i -> new File(args[1], Paths.get(toURL.apply(i.getDownload()).getPath()).getFileName().toString())
                         )),
-                Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/maxThreads").intValue(),
                 r -> {
                     //Synced to prevent the exception being printed too late
                     synchronized(this) {
@@ -49,8 +47,6 @@ public class DownloadMods implements ICommand {
                             System.out.println(r.getException().getMessage());
                     }
                 },
-                5,
-                Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/httpTimeout").intValue(),
                 Arrays.asList(args).contains("force") ? FileDownloader.AsyncDownloader.ExistingFileBehaviour.OVERWRITE : FileDownloader.AsyncDownloader.ExistingFileBehaviour.SKIP
         );
         return CommandReturn.success();

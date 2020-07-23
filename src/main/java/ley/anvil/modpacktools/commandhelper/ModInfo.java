@@ -9,9 +9,10 @@ import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.util.Util;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ModInfo {
 
@@ -49,15 +50,16 @@ public class ModInfo {
             files.forEach(file -> fileIds.add(((JsonObject)file).get("projectID").getAsInt()));
             String responseStr = Util.httpPostString(new URL("https://addons-ecs.forgesvc.net/api/v2/addon"),
                     fileIds.toString(),
-                    "application/json; utf-8",
-                    "application/json");
+                    "application/json; charset=utf-8",
+                    Collections.singletonMap("Accept", "application/json")
+            );
             JsonArray response = (JsonArray)JsonParser.parseString(responseStr);
 
             ArrayList<ModInfo> modInfos = new ArrayList<>();
             Gson gson = new Gson();
             response.forEach(mod -> modInfos.add(gson.fromJson(mod, ModInfo.class)));
             return modInfos;
-        }catch(MalformedURLException e) {
+        }catch(IOException e) {
             e.printStackTrace();
         }
         return null;
