@@ -63,9 +63,9 @@ public class AddMod implements ICommand {
                     //Get Mods in manifest file
                     //Check if Mod already exsits
                     for(AddonscriptJSON.Relation file : version.relations) {
-                        if(file.file != null) {
-                            String[] parts = file.file.split(":");
-                            if(parts.length == 3 && parts[0].equals("curse")) { //TODO check, if it is a Curse repo, waiting for Addonscript to update this
+                        if(file.file != null && file.file.artifact != null) {
+                            String[] parts = file.file.artifact.split(":");
+                            if(parts.length == 3 && parts[0].equals("curse")) {
                                 int projID = Integer.parseInt(parts[1]);
                                 if(projID == projectID) {
                                     return CommandReturn.fail("The Mod Is already Installed");
@@ -78,7 +78,7 @@ public class AddMod implements ICommand {
                     AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
                     rel.file = CurseTools.toArtifact(projectID, fileID);
                     rel.type = "included";
-                    rel.installer = "internal.dir";
+                    rel.file.installer = "internal.dir";
                     //Add Mod to array
                     if(version.relations == null) {
                         version.relations = new ArrayList<>();
@@ -89,9 +89,10 @@ public class AddMod implements ICommand {
                 }
             }else {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
-                rel.file = args[1];
+                rel.file = new AddonscriptJSON.File();
+                rel.file.link = args[1];
                 rel.type = "included";
-                rel.installer = "internal.dir";
+                rel.file.installer = "internal.dir";
                 if(version.relations == null) {
                     version.relations = new ArrayList<>();
                 }

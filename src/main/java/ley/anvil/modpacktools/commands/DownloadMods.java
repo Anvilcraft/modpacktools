@@ -1,5 +1,6 @@
 package ley.anvil.modpacktools.commands;
 
+import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
@@ -33,11 +34,10 @@ public class DownloadMods implements ICommand {
         };
 
         FileDownloader.downloadAsync(
-                ModInfo.getModInfo()
-                        .stream()
+                Main.MPJH.getJson().getDefaultVersion().getRelLinks(Main.MPJH.getJson().indexes, "client", false, "internal.dir:mods", null).stream()
                         .collect(Collectors.toMap(
-                                i -> Util.sanitizeURL(toURL.apply(i.getDownload())),
-                                i -> new File(args[1], Paths.get(toURL.apply(i.getDownload()).getPath()).getFileName().toString())
+                                i -> Util.sanitizeURL(toURL.apply(i.getKey())),
+                                i -> new File(args[1], Paths.get(toURL.apply(i.getKey()).getPath()).getFileName().toString())
                         )),
                 r -> {
                     //Synced to prevent the exception being printed too late

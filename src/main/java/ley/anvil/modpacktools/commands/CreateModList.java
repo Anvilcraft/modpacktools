@@ -2,6 +2,8 @@ package ley.anvil.modpacktools.commands;
 
 import j2html.TagCreator;
 import j2html.tags.ContainerTag;
+import ley.anvil.addonscript.v1.AddonscriptJSON;
+import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
@@ -33,23 +35,24 @@ public class CreateModList implements ICommand {
                 try(CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.EXCEL.withDelimiter(';'))) {
                     printer.printRecord("Name", "Authors", "Link", "Downloads", "ID");
                     printer.println();
-                    ArrayList<ModInfo> modlist = ModInfo.getModInfo();
-                    Collections.sort(modlist, Comparator.comparing(a -> a.getName().toLowerCase()));
-                    for(ModInfo mod : modlist) {
-                        String name = mod.getName();
-                        String[] authorArr = mod.getAuthors();
-                        String link = mod.getLink();
-                        int downloads = mod.getDownloads();
-                        int id = mod.getId();
+                    ArrayList<AddonscriptJSON.Meta> modlist = new ArrayList<>();
+                    for (AddonscriptJSON.Relation rel : Main.MPJH.getJson().getDefaultVersion().getRelations("client", false, null)) {
+                        modlist.add(rel.getMeta(Main.MPJH.getJson().indexes));
+                    }
+                    Collections.sort(modlist, Comparator.comparing(a -> a.name.toLowerCase()));
+                    for(AddonscriptJSON.Meta mod : modlist) {
+                        String name = mod.name;
+                        AddonscriptJSON.Contributor[] authorArr = mod.contributors.toArray(new AddonscriptJSON.Contributor[0]);
+                        String link = mod.website;
                         StringBuilder sb = new StringBuilder();
-                        for(String author : authorArr) {
-                            sb.append(author);
+                        for(AddonscriptJSON.Contributor author : authorArr) {
+                            sb.append(author.name);
                             sb.append(", ");
                         }
                         String authors = sb.toString();
                         authors = authors.substring(0, authors.length() - 2);
 
-                        printer.printRecord(name, authors, link, downloads, id);
+                        printer.printRecord(name, authors, link);
                     }
                 }catch(IOException e) {
                     e.printStackTrace();
@@ -59,8 +62,11 @@ public class CreateModList implements ICommand {
                 if(htmlFile.exists()) {
                     return CommandReturn.fail("Delete " + htmlFile);
                 }
-                ArrayList<ModInfo> mods = ModInfo.getModInfo();
-                Collections.sort(mods, Comparator.comparing(a -> a.getName().toLowerCase()));
+                ArrayList<AddonscriptJSON.Meta> mods = new ArrayList<>();
+                for (AddonscriptJSON.Relation rel : Main.MPJH.getJson().getDefaultVersion().getRelations("client", false, null)) {
+                    mods.add(rel.getMeta(Main.MPJH.getJson().indexes));
+                }
+                Collections.sort(mods, Comparator.comparing(a -> a.name.toLowerCase()));
                 ContainerTag table = body(
                         TagCreator.table(TagCreator.attrs("#mods"), TagCreator.tbody(
                                 tr(td(b("Name")),
@@ -70,20 +76,18 @@ public class CreateModList implements ICommand {
                                 ),
                                 TagCreator.each(mods, i -> {
                                     StringBuilder sb = new StringBuilder();
-                                    for(String author : i.getAuthors()) {
-                                        sb.append(author);
+                                    for(AddonscriptJSON.Contributor author : i.contributors) {
+                                        sb.append(author.name);
                                         sb.append(", ");
                                     }
                                     String authors = sb.toString();
                                     authors = authors.substring(0, authors.length() - 2);
 
-                                    return tr(td(a(i.getName())
-                                                    .withHref(i.getLink())
+                                    return tr(td(a(i.name)
+                                                    .withHref(i.website)
                                                     .withRel("noopener noreferrer")
                                                     .withTarget("_blank")),
-                                            td(authors),
-                                            td(String.valueOf(i.getId())),
-                                            td(String.valueOf(i.getDownloads())));
+                                            td(authors));
                                 })
                         ))
                 );

@@ -47,7 +47,7 @@ public class ConvertManifestToModpackJSON implements ICommand {
     @Nonnull
     @Override
     public String getName() {
-        return "convertmanifesttomodpackjson";
+        return "import";
     }
 
     @Nonnull
