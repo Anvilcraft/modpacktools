@@ -5,8 +5,6 @@ import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
 
-import javax.annotation.Nonnull;
-
 @LoadCommand
 public class Init implements ICommand {
     @Override
@@ -18,7 +16,6 @@ public class Init implements ICommand {
         return CommandReturn.success();
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "init";
@@ -29,7 +26,6 @@ public class Init implements ICommand {
         return false;
     }
 
-    @Nonnull
     @Override
     public String getHelpMessage() {
         return "initializes the MPT dev environment (currently only creates config file)";

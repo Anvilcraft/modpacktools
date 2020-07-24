@@ -4,11 +4,9 @@ import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
-import ley.anvil.modpacktools.commandhelper.ModInfo;
 import ley.anvil.modpacktools.util.FileDownloader;
 import ley.anvil.modpacktools.util.Util;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,7 +50,6 @@ public class DownloadMods implements ICommand {
         return CommandReturn.success();
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "downloadmods";
@@ -63,7 +60,6 @@ public class DownloadMods implements ICommand {
         return true;
     }
 
-    @Nonnull
     @Override
     public String getHelpMessage() {
         return "Downloads all mods. force always downloads files even if they are already present Syntax: <OutDir> [force]";

@@ -7,11 +7,9 @@ import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
-import ley.anvil.modpacktools.commandhelper.ModInfo;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -108,13 +106,11 @@ public class CreateModList implements ICommand {
         return CommandReturn.success();
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "createmodlist";
     }
 
-    @Nonnull
     @Override
     public String getHelpMessage() {
         return "This creates a modlist either as html or csv file";

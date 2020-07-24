@@ -8,7 +8,6 @@ import ley.anvil.modpacktools.command.CommandReturn;
 import ley.anvil.modpacktools.command.ICommand;
 import ley.anvil.modpacktools.command.LoadCommand;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 
 @LoadCommand
@@ -44,13 +43,11 @@ public class ConvertManifestToModpackJSON implements ICommand {
         return CommandReturn.success();
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "import";
     }
 
-    @Nonnull
     @Override
     public String getHelpMessage() {
         return "Converts a given manifest file to a modpackjson file";

@@ -1,7 +1,5 @@
 package ley.anvil.modpacktools.command;
 
-import javax.annotation.Nonnull;
-
 /**
  * This must be implemented by all commands
  */
@@ -19,7 +17,6 @@ public interface ICommand {
      *
      * @return command name
      */
-    @Nonnull
     String getName();
 
     /**
@@ -36,7 +33,6 @@ public interface ICommand {
      *
      * @return the help message
      */
-    @Nonnull
     default String getHelpMessage() {
         return "";
     }
