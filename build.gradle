@@ -2,8 +2,6 @@ plugins {
     id 'java'
     id 'application'
     id 'idea'
-    id 'groovy'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
 }
 
 group 'ley.anvil'
@@ -28,9 +26,6 @@ dependencies {
     compile 'com.j2html:j2html:1.4.0'
     compile 'org.reflections:reflections:0.9.12'
     compile 'commons-io:commons-io:2.7'
-    compile 'org.codehaus.groovy:groovy-all:2.3.11'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8"
 }
 
 sourceSets {
@@ -38,27 +33,18 @@ sourceSets {
         resources {
             srcDirs "src/main/resources"
         }
-        java { srcDirs = [] }
-        groovy { srcDirs += ['src/main/java'] }
     }
 }
 
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    mainClassName = 'ley.anvil.modpacktools.Main'
+mainClassName = 'ley.anvil.modpacktools.Main'
 
 //create a single Jar with all dependencies
-    task fatJar(type: Jar) {
-        clean
-        manifest {
-            attributes 'Main-Class': mainClassName
-        }
-        archiveBaseName = 'ModPackTools'
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-        with jar
+task fatJar(type: Jar) {
+    clean
+    manifest {
+        attributes 'Main-Class': mainClassName
     }
+    archiveBaseName = 'ModPackTools'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
