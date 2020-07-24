@@ -34,8 +34,8 @@ public class DownloadMods implements ICommand {
         FileDownloader.downloadAsync(
                 Main.MPJH.getJson().getDefaultVersion().getRelLinks(Main.MPJH.getJson().indexes, "client", false, "internal.dir:mods", null).stream()
                         .collect(Collectors.toMap(
-                                i -> Util.sanitizeURL(toURL.apply(i.getKey())),
-                                i -> new File(args[1], Paths.get(toURL.apply(i.getKey()).getPath()).getFileName().toString())
+                                i -> Util.sanitizeURL(toURL.apply(i.getLink())),
+                                i -> new File(args[1], Paths.get(toURL.apply(i.getLink()).getPath()).getFileName().toString())
                         )),
                 r -> {
                     //Synced to prevent the exception being printed too late
