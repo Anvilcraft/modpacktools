@@ -23,12 +23,12 @@ public class Main {
 
     private static final long httpTimeout = Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/httpTimeout");
     public static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
-            .callTimeout(httpTimeout, TimeUnit.MICROSECONDS)
-            .connectTimeout(httpTimeout, TimeUnit.MICROSECONDS)
-            .readTimeout(httpTimeout, TimeUnit.MICROSECONDS)
-            .writeTimeout(httpTimeout, TimeUnit.MICROSECONDS)
-            .dispatcher(new Dispatcher(Executors.newFixedThreadPool(Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/maxThreads").intValue())))
-            .build();
+        .callTimeout(httpTimeout, TimeUnit.MICROSECONDS)
+        .connectTimeout(httpTimeout, TimeUnit.MICROSECONDS)
+        .readTimeout(httpTimeout, TimeUnit.MICROSECONDS)
+        .writeTimeout(httpTimeout, TimeUnit.MICROSECONDS)
+        .dispatcher(new Dispatcher(Executors.newFixedThreadPool(Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/maxThreads").intValue())))
+        .build();
 
     public static void main(String[] args) {
         if(CONFIG.configExists())
@@ -41,7 +41,7 @@ public class Main {
 
         try {
             CommandReturn ret = LOADER.runCommand(args[0], args);
-            if(!ret.hadSuccess())
+            if(!ret.getRet().equals(""))
                 System.out.println(ret.getRet());
         }catch(NoSuchElementException e) {
             System.out.println(e.getMessage());
@@ -55,9 +55,9 @@ public class Main {
     private static void printHelp() {
         System.out.println("Commands:");
         LOADER.getCommands()
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue().getHelpMessage()));
+            .entrySet()
+            .stream()
+            .sorted(Map.Entry.comparingByKey())
+            .forEach(e -> System.out.println(e.getKey() + ": " + e.getValue().getHelpMessage()));
     }
 }
