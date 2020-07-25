@@ -8,9 +8,8 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.FileDownloader
-import ley.anvil.modpacktools.util.FileDownloader.AsyncDownloader.ExistingFileBehaviour.OVERWRITE
-import ley.anvil.modpacktools.util.FileDownloader.AsyncDownloader.ExistingFileBehaviour.SKIP
-import ley.anvil.modpacktools.util.FileDownloader.downloadAsync
+import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.OVERWRITE
+import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.SKIP
 import ley.anvil.modpacktools.util.sanitize
 import java.io.File
 import java.net.URL
@@ -27,7 +26,7 @@ class DownloadMods : ICommand {
             return fail("Invalid Args")
 
         val json = MPJH.json
-        downloadAsync(
+        FileDownloader(
             json.defaultVersion.getRelLinks(json.indexes, "client", false, "internal.dir:mods", null).stream()
                 .filter {it.isURL}
                 .collect(toMap<LinkInstPair, URL, File>(
@@ -35,7 +34,7 @@ class DownloadMods : ICommand {
                     {File(args[1], Paths.get(URL(it.link).path).fileName.toString())}
                 )),
             //Synced to prevent the exception being printed too late
-            {r: FileDownloader.AsyncDownloader.DownloadFileTask.Return ->
+            {r: FileDownloader.DownloadFileTask.Return ->
                 synchronized(this) {
                     println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
                     if(r.exception != null)

@@ -26,7 +26,7 @@ class CommandLoader(private val pkg: String) {
         loadCommands()
     }
 
-    fun loadCommands() {
+    private fun loadCommands() {
         //Get ICommands in package
         val refs = Reflections(pkg, SubTypesScanner(false))
 
