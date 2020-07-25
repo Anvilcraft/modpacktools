@@ -25,58 +25,59 @@ class CreateModlist : ICommand {
         if(outFile.exists())
             return CommandReturn.fail("File already exists!")
 
-        when(args[1]) {
-            "csv" -> {
-                println("Making CSV file $outFile")
-                val printer = CSVPrinter(FileWriter(outFile), CSVFormat.EXCEL.withDelimiter(';'))
+        return if(args[1] == "html")
+            doHtml(outFile)
+        else
+            doCsv(outFile)
+    }
 
-                printer.printRecord("Name", "Contributors", "Link")
-                printer.println()
+    private fun doCsv(outFile: File): CommandReturn {
+        println("Making CSV file $outFile")
+        val printer = CSVPrinter(FileWriter(outFile), CSVFormat.EXCEL.withDelimiter(';'))
 
-                for(mod in getMods()) {
-                    printer.printRecord(
-                        mod.name,
-                        mod.contributors.joinToString {c -> c.name},
-                        mod.website
+        printer.printRecord("Name", "Contributors", "Link")
+        printer.println()
+
+        for(mod in getMods()) {
+            printer.printRecord(
+                mod.name,
+                mod.contributors.joinToString {c -> c.name},
+                mod.website
+            )
+        }
+        printer.close()
+        return CommandReturn.success("Wrote CSV file")
+    }
+
+    private fun doHtml(outFile: File): CommandReturn {
+        println("Making HTML file $outFile")
+        val writer = FileWriter(outFile)
+        val html = body(
+            table(
+                tr(
+                    td(b("Name")),
+                    td(b("Contributors"))
+                ),
+                each(getMods()) {
+                    tr(s(it.name),
+                        a(it.name)
+                            .withHref(it.website)
+                            //Open in new tab
+                            .withRel("noopener noreferrer")
+                            .withTarget("_blank"),
+                        ul(
+                            each(it.contributors) {contr ->
+                                li(contr.name)
+                            }
+                        )
                     )
                 }
-                printer.close()
-                return CommandReturn.success("Wrote CSV file")
-            }
+            )
+        ).render()
 
-            "html" -> {
-                println("Making HTML file $outFile")
-                val writer = FileWriter(outFile)
-                val html = body(
-                    table(
-                        tr(
-                            td(b("Name")),
-                            td(b("Contributors"))
-                        ),
-                        each(getMods()) {
-                            tr(s(it.name),
-                                a(it.name)
-                                    .withHref(it.website)
-                                    //Open in new tab
-                                    .withRel("noopener noreferrer")
-                                    .withTarget("_blank"),
-                                ul(
-                                    each(it.contributors) {contr ->
-                                        li(contr.name)
-                                    }
-                                )
-                            )
-                        }
-                    )
-                ).render()
-
-                writer.write(html)
-                writer.close()
-                return CommandReturn.success("Wrote HTML file")
-            }
-
-            else -> throw IllegalStateException("Unreachable")
-        }
+        writer.write(html)
+        writer.close()
+        return CommandReturn.success("Wrote HTML file")
     }
 
     private fun getMods(): List<AddonscriptJSON.Meta> {
