@@ -10,6 +10,7 @@ import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.util.concurrent.CountDownLatch
+import java.util.stream.Collectors
 
 open class FileDownloader(
     private val files: Map<URL, File>,
@@ -23,18 +24,21 @@ open class FileDownloader(
     }
 
     private fun dispatchTasks() {
-        latch = CountDownLatch(files.entries.stream()
-            .filter {existingFileBehaviour == ExistingFileBehaviour.OVERWRITE || it.value.exists()}
-            .map {DownloadFileTask(it.key, it.value, callback, latch!!)}
-            .peek {HTTP_CLIENT.newCall(it.request).enqueue(it)}
-            .count().toInt())
+        val tasks = files.entries.stream()
+            .filter {existingFileBehaviour == ExistingFileBehaviour.OVERWRITE || !it.value.exists()}
+            .collect(Collectors.toList())
+        latch = CountDownLatch(tasks.size)
+        tasks.forEach {
+            val req = DownloadFileTask(it.key, it.value, callback, latch!!)
+            HTTP_CLIENT.newCall(req.request).enqueue(req)
+        }
         latch!!.await()
     }
 
-    open class DownloadFileTask(private val url: URL,
-                                private val file: File,
-                                private val callback: (Return) -> Unit,
-                                private val latch: CountDownLatch) : Callback {
+    class DownloadFileTask(private val url: URL,
+                           private val file: File,
+                           private val callback: (Return) -> Unit,
+                           private val latch: CountDownLatch) : Callback {
         val request = Request.Builder()
             .get()
             .url(url)

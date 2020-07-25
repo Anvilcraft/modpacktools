@@ -10,7 +10,6 @@ import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.FileDownloader
 import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.OVERWRITE
 import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.SKIP
-import ley.anvil.modpacktools.util.sanitize
 import java.io.File
 import java.net.URL
 import java.nio.file.Paths
@@ -26,14 +25,15 @@ class DownloadMods : ICommand {
             return fail("Invalid Args")
 
         val json = MPJH.json
+        json.load()
         FileDownloader(
             json.defaultVersion.getRelLinks(json.indexes, "client", false, "internal.dir:mods", null).stream()
                 .filter {it.isURL}
                 .collect(toMap<LinkInstPair, URL, File>(
-                    {URL(it.link).sanitize()},
-                    {File(args[1], Paths.get(URL(it.link).path).fileName.toString())}
+                    {it.asURL()},
+                    {File(args[1], Paths.get(URL(it.link).path).fileName.toString())},
+                    {_: File, f: File -> f}
                 )),
-            //Synced to prevent the exception being printed too late
             {r: FileDownloader.DownloadFileTask.Return ->
                 synchronized(this) {
                     println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
