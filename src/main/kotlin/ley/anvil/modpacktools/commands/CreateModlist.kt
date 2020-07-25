@@ -4,8 +4,8 @@ import j2html.TagCreator.*
 import ley.anvil.addonscript.v1.AddonscriptJSON
 import ley.anvil.modpacktools.Main
 import ley.anvil.modpacktools.command.CommandReturn
-import ley.anvil.modpacktools.command.CommandReturn.fail
-import ley.anvil.modpacktools.command.CommandReturn.success
+import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
+import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import org.apache.commons.csv.CSVFormat
@@ -15,8 +15,8 @@ import java.io.FileWriter
 
 @LoadCommand
 class CreateModlist : ICommand {
-    override fun getName(): String = "createmodlist"
-    override fun getHelpMessage(): String = "This creates a modlist either as html or csv file. Syntax: <html/csv> outFile"
+    override val name: String = "createmodlist"
+    override val helpMessage: String = "This creates a modlist either as html or csv file. Syntax: <html/csv> outFile"
 
     override fun execute(args: Array<out String>): CommandReturn {
         if(!args.checkArgs())

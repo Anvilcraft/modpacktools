@@ -5,8 +5,8 @@ import ley.anvil.addonscript.curse.ManifestJSON
 import ley.anvil.modpacktools.Main.GSON
 import ley.anvil.modpacktools.Main.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
-import ley.anvil.modpacktools.command.CommandReturn.fail
-import ley.anvil.modpacktools.command.CommandReturn.success
+import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
+import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import java.io.File
@@ -15,8 +15,8 @@ import java.io.FileWriter
 
 @LoadCommand
 class Import : ICommand {
-    override fun getName(): String = "import"
-    override fun getHelpMessage(): String = "Converts a given manifest file to a modpackjson file"
+    override val name: String = "import"
+    override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
 
     override fun execute(args: Array<out String>): CommandReturn {
         if(!args.checkArgs())

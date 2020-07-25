@@ -37,9 +37,17 @@ dependencies {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions {
+        //without this option, kotlin interfaces dont support default methods in java (will be changed in kt 1.4)
+        freeCompilerArgs = ['-Xjvm-default=compatibility']
+    }
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions {
+        //without this option, kotlin interfaces dont support default methods in java (will be changed in kt 1.4)
+        freeCompilerArgs = ['-Xjvm-default=compatibility']
+    }
 }
 
 
