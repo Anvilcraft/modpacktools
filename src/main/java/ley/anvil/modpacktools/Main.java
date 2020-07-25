@@ -41,7 +41,7 @@ public class Main {
 
         try {
             CommandReturn ret = LOADER.runCommand(args[0], args);
-            if(!ret.getRet().equals(""))
+            if(ret.hasRet())
                 System.out.println(ret.getRet());
         }catch(NoSuchElementException e) {
             System.out.println(e.getMessage());
