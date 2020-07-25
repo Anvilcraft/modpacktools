@@ -4,6 +4,8 @@ import j2html.TagCreator.*
 import ley.anvil.addonscript.v1.AddonscriptJSON
 import ley.anvil.modpacktools.Main
 import ley.anvil.modpacktools.command.CommandReturn
+import ley.anvil.modpacktools.command.CommandReturn.fail
+import ley.anvil.modpacktools.command.CommandReturn.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import org.apache.commons.csv.CSVFormat
@@ -18,12 +20,12 @@ class CreateModlist : ICommand {
 
     override fun execute(args: Array<out String>): CommandReturn {
         if(!args.checkArgs())
-            return CommandReturn.fail("invalid args")
+            return fail("invalid args")
 
         val outFile = File(args[2])
 
         if(outFile.exists())
-            return CommandReturn.fail("File already exists!")
+            return fail("File already exists!")
 
         return if(args[1] == "html")
             doHtml(outFile)
@@ -46,7 +48,7 @@ class CreateModlist : ICommand {
             )
         }
         printer.close()
-        return CommandReturn.success("Wrote CSV file")
+        return success("Wrote CSV file")
     }
 
     private fun doHtml(outFile: File): CommandReturn {
@@ -77,7 +79,7 @@ class CreateModlist : ICommand {
 
         writer.write(html)
         writer.close()
-        return CommandReturn.success("Wrote HTML file")
+        return success("Wrote HTML file")
     }
 
     private fun getMods(): List<AddonscriptJSON.Meta> {
