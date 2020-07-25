@@ -21,7 +21,7 @@ public class Main {
     public static ModpackJsonHandler MPJH;
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final long httpTimeout = Main.CONFIG.CONFIG.getPath(Long.class, "Downloads/httpTimeout");
+    private static final long httpTimeout = CONFIG.CONFIG.getPath(Long.class, "Downloads/httpTimeout");
     public static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
         .callTimeout(httpTimeout, TimeUnit.MICROSECONDS)
         .connectTimeout(httpTimeout, TimeUnit.MICROSECONDS)

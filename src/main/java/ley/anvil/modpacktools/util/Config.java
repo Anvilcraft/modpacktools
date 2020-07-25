@@ -19,11 +19,11 @@ public class Config {
         File JAR_LOCATION1;
         try {
             JAR_LOCATION1 = new File(this
-                    .getClass()
-                    .getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .toURI());
+                .getClass()
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .toURI());
             //Ensure That JAR_LOCATION is the jarfiles directory and not the file itself
             if(JAR_LOCATION1.isFile()) {
                 JAR_LOCATION1 = JAR_LOCATION1.getParentFile();
@@ -38,7 +38,7 @@ public class Config {
     }
 
     /**
-     * reads the config it it exists
+     * reads the config it it exists and the default config otherwise
      *
      * @return the Toml object of the config file
      */
@@ -47,7 +47,8 @@ public class Config {
             //parse file to toml
             return (CustomToml)new CustomToml().read(CONFIG_LOCATION);
         }
-        return null;
+        //reads config from resources if no config file exists as a default value. commands that require the config still won't run without it
+        return (CustomToml)new CustomToml().read(ClassLoader.getSystemResourceAsStream(CONFIG_NAME));
     }
 
     /**
