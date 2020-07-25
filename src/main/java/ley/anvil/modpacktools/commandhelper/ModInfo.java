@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import ley.anvil.modpacktools.Main;
-import ley.anvil.modpacktools.util.Util;
+import ley.anvil.modpacktools.util.UtilKt;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,20 +38,20 @@ public class ModInfo {
         try {
             System.out.println("Getting Info From Curse API");
             File manifestFile = new File(Main.CONFIG.JAR_LOCATION, Main.CONFIG.CONFIG
-                    .getPath(String.class,
-                            "Locations",
-                            "manifestFile"
-                    ));
+                .getPath(String.class,
+                    "Locations",
+                    "manifestFile"
+                ));
             //Read manifest
-            JsonObject manifest = Util.readJsonFile(manifestFile);
+            JsonObject manifest = UtilKt.readAsJson(manifestFile);
             JsonArray files = manifest.getAsJsonArray("files");
 
             ArrayList<Integer> fileIds = new ArrayList<>();
             files.forEach(file -> fileIds.add(((JsonObject)file).get("projectID").getAsInt()));
-            String responseStr = Util.httpPostString(new URL("https://addons-ecs.forgesvc.net/api/v2/addon"),
-                    fileIds.toString(),
-                    "application/json; charset=utf-8",
-                    Collections.singletonMap("Accept", "application/json")
+            String responseStr = UtilKt.httpPostStr(new URL("https://addons-ecs.forgesvc.net/api/v2/addon"),
+                fileIds.toString(),
+                "application/json; charset=utf-8",
+                Collections.singletonMap("Accept", "application/json")
             );
             JsonArray response = (JsonArray)JsonParser.parseString(responseStr);
 

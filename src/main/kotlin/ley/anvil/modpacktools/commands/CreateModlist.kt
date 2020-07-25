@@ -54,28 +54,40 @@ class CreateModlist : ICommand {
     private fun doHtml(outFile: File): CommandReturn {
         println("Making HTML file $outFile")
         val writer = FileWriter(outFile)
-        val html = body(
-            table(
-                tr(
-                    td(b("Name")),
-                    td(b("Contributors"))
-                ),
-                each(getMods()) {
-                    tr(s(it.name),
-                        a(it.name)
-                            .withHref(it.website)
-                            //Open in new tab
-                            .withRel("noopener noreferrer")
-                            .withTarget("_blank"),
-                        ul(
-                            each(it.contributors) {contr ->
-                                li(contr.name)
-                            }
+        val html = html(
+            head(
+                style(
+                    ".img {width:100px;}"
+                )
+            ),
+            body(
+                table(
+                    tr(
+                        td(),
+                        td(b("Name")),
+                        td(b("Contributors"))
+                    ),
+                    each(getMods()) {
+                        tr(
+                            td(a(
+                                img().withSrc(it.icon)
+                                    .withClass("img")
+                            ).withHref(it.website)
+                            ),
+                            td(a(it.name)
+                                .withHref(it.website)
+                                //Open in new tab
+                                .withRel("noopener noreferrer")
+                                .withTarget("_blank")),
+                            td(ul(
+                                each(it.contributors) {contr ->
+                                    li(contr.name)
+                                }
+                            ))
                         )
-                    )
-                }
-            )
-        ).render()
+                    }
+                )
+            )).render()
 
         writer.write(html)
         writer.close()
@@ -83,6 +95,7 @@ class CreateModlist : ICommand {
     }
 
     private fun getMods(): List<AddonscriptJSON.Meta> {
+        println("Getting mods... this may take a while (TODO)")
         val asJson = Main.MPJH.json
         val mods = ArrayList<AddonscriptJSON.Meta>()
 
@@ -90,6 +103,7 @@ class CreateModlist : ICommand {
 
         for(rel in asJson.defaultVersion.getRelations("client", false, null)) {
             val meta = rel.getMeta(asJson.indexes)
+            println("got info for file ${meta.name}")
             if(meta.name != null) mods.add(meta) else println("meta name == null")
         }
         return mods.sortedBy {m -> m.name.toLowerCase()}
