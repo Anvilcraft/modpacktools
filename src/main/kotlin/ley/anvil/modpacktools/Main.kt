@@ -13,10 +13,12 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MICROSECONDS
 
+//Lazy initialization will prevent objects from being initilized if not needed
 val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
 val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.getPath<String>("Locations/modpackjsonFile")!!))}
 val GSON by lazy {GsonBuilder().setPrettyPrinting().create()}
+//for checking if the client has been initialized when closing it
 private val httpClient0 = lazy {
     val timeout = CONFIG.config.getPath<Long>("Downloads/httpTimeout")!!
     OkHttpClient.Builder()
@@ -44,6 +46,8 @@ fun main(args: Array<out String>) {
             printHelp()
         }
     }
+
+    //Only close if initialized to prevent creation directly before closing
     if(httpClient0.isInitialized()) {
         HTTP_CLIENT.dispatcher.executorService.shutdown()
         HTTP_CLIENT.connectionPool.evictAll()
@@ -53,6 +57,7 @@ fun main(args: Array<out String>) {
 fun printHelp() {
     println("Commands:")
     LOADER.commands.entries.stream()
+        //Sort by name
         .sorted(Comparator.comparing {e: MutableMap.MutableEntry<String, ICommand> -> e.key})
         .forEach {println("${it.key}: ${it.value.helpMessage}")}
 }

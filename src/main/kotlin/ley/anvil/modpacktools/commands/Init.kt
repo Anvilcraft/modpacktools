@@ -1,6 +1,6 @@
 package ley.anvil.modpacktools.commands
 
-import ley.anvil.modpacktools.Main.CONFIG
+import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success

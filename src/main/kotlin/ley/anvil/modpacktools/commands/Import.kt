@@ -2,8 +2,8 @@ package ley.anvil.modpacktools.commands
 
 import com.google.gson.stream.JsonReader
 import ley.anvil.addonscript.curse.ManifestJSON
-import ley.anvil.modpacktools.Main.GSON
-import ley.anvil.modpacktools.Main.MPJH
+import ley.anvil.modpacktools.GSON
+import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success

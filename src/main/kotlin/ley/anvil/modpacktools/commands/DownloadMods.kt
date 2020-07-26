@@ -1,7 +1,7 @@
 package ley.anvil.modpacktools.commands
 
 import ley.anvil.addonscript.wrapper.ASWrapper
-import ley.anvil.modpacktools.Main.MPJH
+import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
@@ -40,6 +40,7 @@ object DownloadMods : ICommand {
                     {_: File, f: File -> f}
                 )),
             {r: FileDownloader.DownloadFileTask.Return ->
+                //synced so error message gets printed under response
                 synchronized(this) {
                     println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
                     if(r.exception != null)

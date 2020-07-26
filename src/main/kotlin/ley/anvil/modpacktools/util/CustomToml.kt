@@ -15,8 +15,22 @@ class CustomToml : Toml() {
         }
     }
 
+    /**
+     * gets a path from a config.
+     * when getting an Int do NOT supply int to T. instead supply Long and then convert to Int!
+     *
+     * @param T what to get from the config
+     * @param path the path to get from the config separated by /, . or \
+     */
     fun <T> getPath(path: String): T? = getPath(*path.split('/', '.', '\\').toTypedArray())
 
+    /**
+     * gets a path from a config.
+     * when getting an Int do NOT supply int to T. instead supply Long and then convert to Int!
+     *
+     * @param T what to get from the config
+     * @param path the path to get from the config
+     */
     @Suppress("UNCHECKED_CAST")
     fun <T> getPath(vararg path: String): T? {
         var toml: Toml = this

@@ -13,7 +13,7 @@ class Config(val configName: String) {
                 .location
                 .toURI()
         )
-        //Ensure That JAR_LOCATION is the jarfiles directory and not the file itself
+        //Ensure That JAR_LOCATION is the jarfile's directory and not the file itself
         if(file.isFile)
             file = file.parentFile
         file

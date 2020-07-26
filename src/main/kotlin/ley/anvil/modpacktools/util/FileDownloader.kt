@@ -1,6 +1,6 @@
 package ley.anvil.modpacktools.util
 
-import ley.anvil.modpacktools.Main.HTTP_CLIENT
+import ley.anvil.modpacktools.HTTP_CLIENT
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
@@ -25,6 +25,7 @@ open class FileDownloader(
 
     private fun dispatchTasks() {
         val tasks = files.entries.stream()
+            //remove if it should be skipped
             .filter {existingFileBehaviour == ExistingFileBehaviour.OVERWRITE || !it.value.exists()}
             .collect(Collectors.toList())
         latch = CountDownLatch(tasks.size)

@@ -4,7 +4,7 @@ package ley.anvil.modpacktools.util
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import ley.anvil.modpacktools.Main.HTTP_CLIENT
+import ley.anvil.modpacktools.HTTP_CLIENT
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
