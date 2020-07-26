@@ -126,7 +126,7 @@ object CreateModlist : ICommand {
         println("Getting mods... this may take a while (TODO)")
         val asJson = MPJH.asWrapper
         val mods = mutableListOf<MetaData>()
-        val toGet = ArrayList<ArtifactDestination>()
+        val toGet = mutableListOf<ArtifactDestination>()
 
         for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), null)) {
             if (rel.hasLocalMeta())
@@ -134,7 +134,7 @@ object CreateModlist : ICommand {
             else if (rel.hasFile() && rel.file.isArtifact)
                 toGet.add(rel.file.artifact)
         }
-        mods.addAll(ASWrapper.getMetaData(toGet.toArray(emptyArray())).values)
+        mods.addAll(ASWrapper.getMetaData(toGet.toTypedArray()).values)
         return mods.sortedBy {m -> m.name?.toLowerCase() }
     }
 

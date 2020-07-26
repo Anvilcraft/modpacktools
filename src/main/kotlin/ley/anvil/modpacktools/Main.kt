@@ -1,4 +1,5 @@
 @file:JvmName("Main")
+
 package ley.anvil.modpacktools
 
 import com.google.gson.GsonBuilder
@@ -18,6 +19,7 @@ val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
 val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.getPath<String>("Locations/modpackjsonFile")!!))}
 val GSON by lazy {GsonBuilder().setPrettyPrinting().create()}
+
 //for checking if the client has been initialized when closing it
 private val httpClient0 = lazy {
     val timeout = CONFIG.config.getPath<Long>("Downloads/httpTimeout")!!
