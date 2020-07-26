@@ -1,7 +1,6 @@
 package ley.anvil.modpacktools.commands
 
 import ley.anvil.addonscript.wrapper.ASWrapper
-import ley.anvil.addonscript.wrapper.LinkInstPair
 import ley.anvil.modpacktools.Main.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
@@ -26,8 +25,8 @@ object DownloadMods : ICommand {
             return fail("Invalid Args")
 
 
-        val json = MPJH.json
-        var filelist = ArrayList<ASWrapper.FileWrapper>()
+        val json = MPJH.asWrapper
+        val filelist = ArrayList<ASWrapper.FileWrapper>()
         for (rel in json?.defaultVersion?.getRelations(arrayOf("client"), "mod")!!) {
             if (rel.hasFile())
                 filelist.add(rel.file)

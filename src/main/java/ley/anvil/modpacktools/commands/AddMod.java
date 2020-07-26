@@ -24,7 +24,7 @@ public class AddMod implements ICommand {
     public CommandReturn execute(String[] args) {
         //Check if the command has the correct number of args
         if(args.length >= 2) {
-            AddonscriptJSON json = Main.MPJH.getJson().getJson();
+            AddonscriptJSON json = Main.MPJH.getJson();
             AddonscriptJSON.Version version = null;
             if(json != null && json.versions != null) {
                 if(json.versions.size() == 1) {

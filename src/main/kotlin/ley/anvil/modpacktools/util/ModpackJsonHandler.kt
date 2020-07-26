@@ -6,7 +6,7 @@ import java.io.File
 import java.io.FileReader
 
 class ModpackJsonHandler(val modpackJsonFile: File) {
-    var json: ASWrapper? = null
+    var asWrapper: ASWrapper? = null
         private set
         get() = field ?: run {
             if(modpackJsonFile.exists()) {
@@ -16,4 +16,7 @@ class ModpackJsonHandler(val modpackJsonFile: File) {
             }
             field
         }
+
+    val json: AddonscriptJSON?
+        get() = asWrapper?.json
 }

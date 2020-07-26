@@ -1,7 +1,6 @@
 package ley.anvil.modpacktools.commands
 
 import j2html.TagCreator.*
-import ley.anvil.addonscript.v1.AddonscriptJSON
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.Main
 import ley.anvil.modpacktools.command.CommandReturn
@@ -97,7 +96,7 @@ object CreateModlist : ICommand {
 
     private fun getMods(): List<MetaData> {
         println("Getting mods... this may take a while (TODO)")
-        val asJson = Main.MPJH.json
+        val asJson = Main.MPJH.asWrapper
         val mods = ArrayList<MetaData>()
         val toGet = ArrayList<String>()
 
