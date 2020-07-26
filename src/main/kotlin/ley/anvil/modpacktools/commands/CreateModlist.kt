@@ -1,6 +1,8 @@
 package ley.anvil.modpacktools.commands
 
 import j2html.TagCreator.*
+import ley.anvil.addonscript.maven.ArtifactDestination
+import ley.anvil.addonscript.wrapper.ASWrapper
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
@@ -124,7 +126,7 @@ object CreateModlist : ICommand {
         println("Getting mods... this may take a while (TODO)")
         val asJson = MPJH.asWrapper
         val mods = mutableListOf<MetaData>()
-        val toGet = mutableListOf<String>()
+        val toGet = ArrayList<ArtifactDestination>()
 
         for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), null)) {
             if (rel.hasLocalMeta())
@@ -132,7 +134,7 @@ object CreateModlist : ICommand {
             else if (rel.hasFile() && rel.file.isArtifact)
                 toGet.add(rel.file.artifact)
         }
-        mods.addAll(asJson.repositories.getMeta(toGet.toTypedArray()).values)
+        mods.addAll(ASWrapper.getMetaData(toGet.toArray(emptyArray())).values)
         return mods.sortedBy {m -> m.name?.toLowerCase() }
     }
 

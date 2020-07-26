@@ -3,7 +3,6 @@ package ley.anvil.modpacktools.commands;
 import com.therandomlabs.curseapi.CurseAPI;
 import com.therandomlabs.curseapi.CurseException;
 import com.therandomlabs.curseapi.project.CurseProject;
-import ley.anvil.addonscript.curse.CurseTools;
 import ley.anvil.addonscript.v1.AddonscriptJSON;
 import ley.anvil.modpacktools.Main;
 import ley.anvil.modpacktools.command.CommandReturn;
@@ -45,7 +44,6 @@ public class AddMod implements ICommand {
             String regex = "(?m)^(http)(s)?://(www\\.)?(curseforge.com/minecraft/mc-mods/)[0-z,\\-]+/(files)/[0-9]+$";
             String endPartRegex = "(/files/)[0-9]+$";
             if(args[1].matches(regex)) {
-                CurseTools.addCurseRepo(json);
                 try {
                     //remove fileID
                     System.out.println("Getting ID");
@@ -75,9 +73,17 @@ public class AddMod implements ICommand {
                     System.out.println("Adding Mod " + project.name());
                     //Construct Mod
                     AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
-                    rel.file = CurseTools.toArtifact(projectID, fileID);
-                    rel.type = "included";
-                    rel.file.installer = "internal.dir";
+                    rel.file = new AddonscriptJSON.File();
+                    rel.file.repository = "curse";
+                    rel.file.artifact = "curse.maven:" + projectID + ":" + fileID;
+                    rel.type = "mod";
+                    rel.options  = new ArrayList<>();
+                    rel.options.add("client");
+                    rel.options.add("server");
+                    rel.options.add("required");
+                    rel.options.add("included");
+                    rel.id = ""+ projectID;
+                    rel.file.installer = "internal.dir:mods";
                     //Add Mod to array
                     if(version.relations == null) {
                         version.relations = new ArrayList<>();
@@ -90,8 +96,14 @@ public class AddMod implements ICommand {
                 AddonscriptJSON.Relation rel = new AddonscriptJSON.Relation();
                 rel.file = new AddonscriptJSON.File();
                 rel.file.link = args[1];
-                rel.type = "included";
-                rel.file.installer = "internal.dir";
+                rel.id = args[1];
+                rel.type = "mod";
+                rel.options  = new ArrayList<>();
+                rel.options.add("client");
+                rel.options.add("server");
+                rel.options.add("required");
+                rel.options.add("included");
+                rel.file.installer = "internal.dir:mods";
                 if(version.relations == null) {
                     version.relations = new ArrayList<>();
                 }
