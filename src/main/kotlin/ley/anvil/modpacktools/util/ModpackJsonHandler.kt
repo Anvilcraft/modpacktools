@@ -6,16 +6,14 @@ import java.io.File
 import java.io.FileReader
 
 class ModpackJsonHandler(val modpackJsonFile: File) {
-    var asWrapper: ASWrapper? = null
-        private set
-        get() = field ?: run {
-            if(modpackJsonFile.exists()) {
-                val reader = FileReader(modpackJsonFile)
-                field = ASWrapper(AddonscriptJSON.read(reader, AddonscriptJSON::class.java))
-                reader.close()
-            }
-            field
-        }
+    val asWrapper: ASWrapper? by lazy {
+        if(modpackJsonFile.exists()) {
+            val reader = FileReader(modpackJsonFile)
+            val ret = ASWrapper(AddonscriptJSON.read(reader, AddonscriptJSON::class.java))
+            reader.close()
+            ret
+        } else null
+    }
 
     val json: AddonscriptJSON?
         get() = asWrapper?.json
