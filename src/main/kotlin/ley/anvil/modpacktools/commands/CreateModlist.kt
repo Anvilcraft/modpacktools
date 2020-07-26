@@ -97,19 +97,16 @@ object CreateModlist : ICommand {
     private fun getMods(): List<MetaData> {
         println("Getting mods... this may take a while (TODO)")
         val asJson = Main.MPJH.asWrapper
-        val mods = ArrayList<MetaData>()
-        val toGet = ArrayList<String>()
+        val mods = mutableListOf<MetaData>()
+        val toGet = mutableListOf<String>()
 
         for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), null)) {
-            if (rel.hasLocalMeta()) {
-                println("got info for file ${rel.localMeta.name}")
+            if (rel.hasLocalMeta())
                 mods.add(rel.localMeta)
-            }
             else if (rel.hasFile() && rel.file.isArtifact)
                 toGet.add(rel.file.artifact)
         }
-        val metaMap = asJson.repositories.getMeta(toGet.toArray(emptyArray()))
-        mods.addAll(metaMap.values)
+        mods.addAll(asJson.repositories.getMeta(toGet.toTypedArray()).values)
         return mods.sortedBy {m -> m.name?.toLowerCase() }
     }
 

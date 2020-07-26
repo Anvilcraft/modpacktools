@@ -26,17 +26,16 @@ object DownloadMods : ICommand {
 
 
         val json = MPJH.asWrapper
-        val filelist = ArrayList<ASWrapper.FileWrapper>()
-        for (rel in json?.defaultVersion?.getRelations(arrayOf("client"), "mod")!!) {
+        val fileList = mutableListOf<ASWrapper.FileWrapper>()
+        for (rel in json!!.defaultVersion!!.getRelations(arrayOf("client"), "mod")!!)
             if (rel.hasFile())
-                filelist.add(rel.file)
-        }
+                fileList.add(rel.file)
 
         FileDownloader(
-            filelist.stream()
+            fileList.stream()
                 .filter {it.isURL}
                 .collect(toMap<ASWrapper.FileWrapper, URL, File>(
-                    {URL(it.link)}, //TODO Get the link using Multithreadding
+                    {URL(it.link)}, //TODO Get the link using Multithreading
                     {File(args[1], Paths.get(URL(it.link).path).fileName.toString())},
                     {_: File, f: File -> f}
                 )),
