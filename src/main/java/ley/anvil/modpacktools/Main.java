@@ -21,18 +21,18 @@ public class Main {
     public static ModpackJsonHandler MPJH;
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final long httpTimeout = CONFIG.getConfig().getPath(Long.class, "Downloads/httpTimeout");
+    private static final long httpTimeout = ((Long)CONFIG.getConfig().getPath("Downloads/httpTimeout")).intValue();
     public static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
         .callTimeout(httpTimeout, TimeUnit.MICROSECONDS)
         .connectTimeout(httpTimeout, TimeUnit.MICROSECONDS)
         .readTimeout(httpTimeout, TimeUnit.MICROSECONDS)
         .writeTimeout(httpTimeout, TimeUnit.MICROSECONDS)
-        .dispatcher(new Dispatcher(Executors.newFixedThreadPool(CONFIG.getConfig().getPath(Long.class, "Downloads/maxThreads").intValue())))
+        .dispatcher(new Dispatcher(Executors.newFixedThreadPool(((Long)CONFIG.getConfig().getPath("Downloads/maxThreads")).intValue())))
         .build();
 
     public static void main(String[] args) {
         if(CONFIG.configExists())
-            MPJH = new ModpackJsonHandler(new File((CONFIG.getConfig().getPath(String.class, "Locations", "modpackjsonFile"))));
+            MPJH = new ModpackJsonHandler(new File((String)CONFIG.getConfig().getPath("Locations", "modpackjsonFile")));
 
         if(args.length <= 0) {
             printHelp();

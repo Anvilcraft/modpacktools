@@ -38,7 +38,7 @@ public class ModInfo {
         try {
             System.out.println("Getting Info From Curse API");
             File manifestFile = new File(Main.CONFIG.getJarLocation(), Main.CONFIG.getConfig()
-                .getPath(String.class,
+                .getPath(
                     "Locations",
                     "manifestFile"
                 ));
