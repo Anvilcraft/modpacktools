@@ -26,6 +26,7 @@ class CommandLoader(private val pkg: String) {
         loadCommands()
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun loadCommands() {
         //Get ICommands in package
         val refs = Reflections(pkg, SubTypesScanner(false))
@@ -33,7 +34,9 @@ class CommandLoader(private val pkg: String) {
         refs.getSubTypesOf(ICommand::class.java).stream()
             //Only annotated classes
             .filter {it.isAnnotationPresent(LoadCommand::class.java)}
-            .forEach {addClass(it)}
+            //can be object
+            .map {it.kotlin.objectInstance?: it}
+            .forEach {if(it is ICommand) addCommand(it) else addClass(it as Class<out ICommand>)}
     }
 
     /**

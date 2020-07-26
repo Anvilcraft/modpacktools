@@ -8,7 +8,7 @@ import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 
 @LoadCommand
-class Init : ICommand {
+object Init : ICommand {
     override val name: String = "init"
     override val helpMessage: String = "initializes the MPT dev environment (currently only creates config file)"
     override val needsConfig: Boolean = false

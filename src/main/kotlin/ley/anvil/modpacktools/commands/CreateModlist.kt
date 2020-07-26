@@ -14,7 +14,7 @@ import java.io.File
 import java.io.FileWriter
 
 @LoadCommand
-class CreateModlist : ICommand {
+object CreateModlist : ICommand {
     override val name: String = "createmodlist"
     override val helpMessage: String = "This creates a modlist either as html or csv file. Syntax: <html/csv> outFile"
 

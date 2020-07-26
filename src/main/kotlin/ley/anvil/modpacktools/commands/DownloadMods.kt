@@ -16,7 +16,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors.toMap
 
 @LoadCommand
-class DownloadMods : ICommand {
+object DownloadMods : ICommand {
     override val name: String = "downloadmods"
     override val helpMessage: String = "Downloads all mods. force always downloads files even if they are already present Syntax: <OutDir> [force]"
 

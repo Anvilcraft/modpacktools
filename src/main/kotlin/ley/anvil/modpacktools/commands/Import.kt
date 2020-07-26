@@ -14,7 +14,7 @@ import java.io.FileReader
 import java.io.FileWriter
 
 @LoadCommand
-class Import : ICommand {
+object Import : ICommand {
     override val name: String = "import"
     override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
 
