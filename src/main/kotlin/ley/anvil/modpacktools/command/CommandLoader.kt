@@ -1,7 +1,7 @@
 package ley.anvil.modpacktools.command
 
-import ley.anvil.modpacktools.Main.CONFIG
-import ley.anvil.modpacktools.Main.MPJH
+import ley.anvil.modpacktools.CONFIG
+import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
@@ -38,7 +38,7 @@ class CommandLoader(private val pkg: String) {
             //Only annotated classes
             .filter {it.isAnnotationPresent(LoadCommand::class.java)}
             //can be object
-            .map {it.kotlin.objectInstance?: it}
+            .map {it.kotlin.objectInstance ?: it}
             .forEach {if(it is ICommand) addCommand(it) else addClass(it as Class<out ICommand>)}
     }
 

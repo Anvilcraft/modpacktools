@@ -24,7 +24,7 @@ public class AddMod implements ICommand {
     public CommandReturn execute(String[] args) {
         //Check if the command has the correct number of args
         if(args.length >= 2) {
-            AddonscriptJSON json = Main.MPJH.getJson();
+            AddonscriptJSON json = Main.getMPJH().getJson();
             AddonscriptJSON.Version version = null;
             if(json != null && json.versions != null) {
                 if(json.versions.size() == 1) {
@@ -100,7 +100,7 @@ public class AddMod implements ICommand {
             //Overwrite Old Manifest File
             FileWriter manifestWriter = null;
             try {
-                manifestWriter = new FileWriter(Main.MPJH.getModpackJsonFile(), false);
+                manifestWriter = new FileWriter(Main.getMPJH().getModpackJsonFile(), false);
                 System.out.println("Printing Manifest");
                 json.write(manifestWriter);
                 manifestWriter.close();

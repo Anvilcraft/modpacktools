@@ -15,12 +15,12 @@ class CustomToml : Toml() {
         }
     }
 
-    fun <T> getPath(path: String): T = getPath(*path.split('/', '.', '\\').toTypedArray())
+    fun <T> getPath(path: String): T? = getPath(*path.split('/', '.', '\\').toTypedArray())
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getPath(vararg path: String): T {
+    fun <T> getPath(vararg path: String): T? {
         var toml: Toml = this
         path.slice(0..path.size - 2).forEach {toml = toml.getTable(it)}
-        return toml.get(path[path.size - 1]) as T
+        return toml.get(path[path.size - 1]) as? T
     }
 }
