@@ -57,7 +57,33 @@ object CreateModlist : ICommand {
         val html = html(
             head(
                 style(
-                    ".img {width:100px;}"
+                    //Fancy css!
+                    """
+                        a:link {
+                          color: #ff5555;
+                        }
+
+                        a:visited {
+                          color: #cc55cc;
+                        }
+
+                        body {
+                          background-color: #333333;
+                          color: #ffffff
+                        }
+
+                        .img {
+                         width:100px;
+                        }
+
+                        td {
+                          border: #999999 3px;
+                          border-style: solid;
+                        }
+
+                    """
+                        //trim unnecessary chars
+                        .trimIndent().replace("\n", "")
                 )
             ),
             body(
