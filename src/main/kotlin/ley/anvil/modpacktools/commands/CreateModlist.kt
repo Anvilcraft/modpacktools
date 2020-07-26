@@ -2,6 +2,7 @@ package ley.anvil.modpacktools.commands
 
 import j2html.TagCreator.*
 import ley.anvil.addonscript.v1.AddonscriptJSON
+import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.Main
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
@@ -43,7 +44,7 @@ object CreateModlist : ICommand {
         for(mod in getMods()) {
             printer.printRecord(
                 mod.name,
-                mod.contributors.joinToString {c -> c.name},
+                mod.contributors.keys.joinToString(),
                 mod.website
             )
         }
@@ -81,7 +82,7 @@ object CreateModlist : ICommand {
                                 .withTarget("_blank")),
                             td(ul(
                                 each(it.contributors) {contr ->
-                                    li(contr.name)
+                                    li(contr.key)
                                 }
                             ))
                         )
@@ -94,19 +95,23 @@ object CreateModlist : ICommand {
         return success("Wrote HTML file")
     }
 
-    private fun getMods(): List<AddonscriptJSON.Meta> {
+    private fun getMods(): List<MetaData> {
         println("Getting mods... this may take a while (TODO)")
         val asJson = Main.MPJH.json
-        val mods = ArrayList<AddonscriptJSON.Meta>()
+        val mods = ArrayList<MetaData>()
+        val toGet = ArrayList<String>()
 
-        asJson!!.load()
-
-        for(rel in asJson.defaultVersion.getRelations("client", false, null)) {
-            val meta = rel.getMeta(asJson.indexes)
-            println("got info for file ${meta.name}")
-            if(meta.name != null) mods.add(meta) else println("meta name == null")
+        for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), null)) {
+            if (rel.hasLocalMeta()) {
+                println("got info for file ${rel.localMeta.name}")
+                mods.add(rel.localMeta)
+            }
+            else if (rel.hasFile() && rel.file.isArtifact)
+                toGet.add(rel.file.artifact)
         }
-        return mods.sortedBy {m -> m.name.toLowerCase()}
+        val metaMap = asJson.repositories.getMeta(toGet.toArray(emptyArray()))
+        mods.addAll(metaMap.values)
+        return mods.sortedBy {m -> m.name?.toLowerCase() }
     }
 
     private fun Array<out String>.checkArgs(): Boolean = this.size >= 3 && this[1] in arrayOf("html", "csv")

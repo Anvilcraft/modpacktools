@@ -1,5 +1,6 @@
 package ley.anvil.modpacktools.commands
 
+import ley.anvil.addonscript.wrapper.ASWrapper
 import ley.anvil.addonscript.wrapper.LinkInstPair
 import ley.anvil.modpacktools.Main.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
@@ -26,12 +27,17 @@ object DownloadMods : ICommand {
 
 
         val json = MPJH.json
-        json!!.load()
+        var filelist = ArrayList<ASWrapper.FileWrapper>()
+        for (rel in json?.defaultVersion?.getRelations(arrayOf("client"), "mod")!!) {
+            if (rel.hasFile())
+                filelist.add(rel.file)
+        }
+
         FileDownloader(
-            json!!.defaultVersion.getRelLinks(json.indexes, "client", false, "internal.dir:mods", null).stream()
+            filelist.stream()
                 .filter {it.isURL}
-                .collect(toMap<LinkInstPair, URL, File>(
-                    {it.asURL()},
+                .collect(toMap<ASWrapper.FileWrapper, URL, File>(
+                    {URL(it.link)}, //TODO Get the link using Multithreadding
                     {File(args[1], Paths.get(URL(it.link).path).fileName.toString())},
                     {_: File, f: File -> f}
                 )),
