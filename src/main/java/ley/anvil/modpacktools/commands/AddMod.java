@@ -100,7 +100,7 @@ public class AddMod implements ICommand {
             //Overwrite Old Manifest File
             FileWriter manifestWriter = null;
             try {
-                manifestWriter = new FileWriter(Main.MPJH.getFile(), false);
+                manifestWriter = new FileWriter(Main.MPJH.getModpackJsonFile(), false);
                 System.out.println("Printing Manifest");
                 json.write(manifestWriter);
                 manifestWriter.close();

@@ -1,6 +1,7 @@
 package ley.anvil.modpacktools.command
 
 import ley.anvil.modpacktools.Main.CONFIG
+import ley.anvil.modpacktools.Main.MPJH
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
@@ -18,6 +19,8 @@ class CommandLoader(private val pkg: String) {
         fun ICommand.runStatic(args: Array<out String>): CommandReturn {
             if(this.needsConfig && !CONFIG.configExists())
                 return fail("Config is needed for this command yet it is not present. Run 'init' to generate")
+            if(this.needsModpackjson && MPJH.json == null)
+                return fail("Modpackjson is needed for this command yet it is not present.")
             return this.execute(args)
         }
     }

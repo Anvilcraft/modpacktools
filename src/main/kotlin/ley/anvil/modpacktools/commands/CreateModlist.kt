@@ -99,7 +99,7 @@ object CreateModlist : ICommand {
         val asJson = Main.MPJH.json
         val mods = ArrayList<AddonscriptJSON.Meta>()
 
-        asJson.load()
+        asJson!!.load()
 
         for(rel in asJson.defaultVersion.getRelations("client", false, null)) {
             val meta = rel.getMeta(asJson.indexes)

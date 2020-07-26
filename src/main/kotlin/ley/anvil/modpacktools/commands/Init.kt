@@ -12,6 +12,7 @@ object Init : ICommand {
     override val name: String = "init"
     override val helpMessage: String = "initializes the MPT dev environment (currently only creates config file)"
     override val needsConfig: Boolean = false
+    override val needsModpackjson: Boolean = false
 
     override fun execute(args: Array<out String>): CommandReturn {
         if(CONFIG.configExists())

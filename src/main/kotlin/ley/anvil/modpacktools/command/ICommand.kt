@@ -29,5 +29,12 @@ interface ICommand {
      */
     @JvmDefault
     val needsConfig: Boolean
-        get() = false
+        get() = true
+
+    /**
+     * If this returns true, the command will not run if the modpackjson file doesnt exist
+     */
+    @JvmDefault
+    val needsModpackjson: Boolean
+        get() = true
 }

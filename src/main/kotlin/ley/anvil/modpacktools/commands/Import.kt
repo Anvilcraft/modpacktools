@@ -17,19 +17,21 @@ import java.io.FileWriter
 object Import : ICommand {
     override val name: String = "import"
     override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
+    override val needsModpackjson: Boolean = false
+    override val needsConfig: Boolean = false
 
     override fun execute(args: Array<out String>): CommandReturn {
         if(!args.checkArgs())
             return fail("Invalid Args")
 
-        val outFile = MPJH.file
+        val outFile = MPJH.modpackJsonFile
         val manifest = File(args[1])
 
         if(!manifest.exists() || outFile.exists())
             return fail("$manifest not found or $outFile already exists.")
 
         println("Converting...")
-        val mpjWriter = FileWriter(MPJH.file)
+        val mpjWriter = FileWriter(MPJH.modpackJsonFile)
         GSON.fromJson<ManifestJSON>(JsonReader(FileReader(manifest)), ManifestJSON::class.java).toAS().write(mpjWriter)
         mpjWriter.close()
         return success("Converted sucessfully")

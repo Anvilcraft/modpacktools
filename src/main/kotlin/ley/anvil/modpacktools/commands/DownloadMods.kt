@@ -24,10 +24,11 @@ object DownloadMods : ICommand {
         if(!args.checkArgs())
             return fail("Invalid Args")
 
+
         val json = MPJH.json
-        json.load()
+        json!!.load()
         FileDownloader(
-            json.defaultVersion.getRelLinks(json.indexes, "client", false, "internal.dir:mods", null).stream()
+            json!!.defaultVersion.getRelLinks(json.indexes, "client", false, "internal.dir:mods", null).stream()
                 .filter {it.isURL}
                 .collect(toMap<LinkInstPair, URL, File>(
                     {it.asURL()},
