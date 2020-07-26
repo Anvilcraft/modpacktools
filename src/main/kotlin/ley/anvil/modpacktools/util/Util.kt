@@ -1,3 +1,5 @@
+@file:JvmName("Util")
+
 package ley.anvil.modpacktools.util
 
 import com.google.gson.JsonObject

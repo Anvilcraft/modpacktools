@@ -31,6 +31,7 @@ object Import : ICommand {
             return fail("$manifest not found or $outFile already exists.")
 
         println("Converting...")
+        MPJH.modpackJsonFile.parentFile.mkdirs()
         val mpjWriter = FileWriter(MPJH.modpackJsonFile)
         GSON.fromJson<ManifestJSON>(JsonReader(FileReader(manifest)), ManifestJSON::class.java).toAS().write(mpjWriter)
         mpjWriter.close()

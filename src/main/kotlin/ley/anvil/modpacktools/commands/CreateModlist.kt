@@ -83,7 +83,7 @@ object CreateModlist : ICommand {
 
                     """
                         //trim unnecessary chars
-                        .trimIndent().replace("\n", "")
+                        .trimIndent().filter {it != '\n'}
                 )
             ),
             body(

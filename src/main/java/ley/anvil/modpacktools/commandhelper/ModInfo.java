@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 import ley.anvil.modpacktools.Main;
-import ley.anvil.modpacktools.util.UtilKt;
+import ley.anvil.modpacktools.util.Util;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,12 +43,12 @@ public class ModInfo {
                     "manifestFile"
                 ));
             //Read manifest
-            JsonObject manifest = UtilKt.readAsJson(manifestFile);
+            JsonObject manifest = Util.readAsJson(manifestFile);
             JsonArray files = manifest.getAsJsonArray("files");
 
             ArrayList<Integer> fileIds = new ArrayList<>();
             files.forEach(file -> fileIds.add(((JsonObject)file).get("projectID").getAsInt()));
-            String responseStr = UtilKt.httpPostStr(new URL("https://addons-ecs.forgesvc.net/api/v2/addon"),
+            String responseStr = Util.httpPostStr(new URL("https://addons-ecs.forgesvc.net/api/v2/addon"),
                 fileIds.toString(),
                 "application/json; charset=utf-8",
                 Collections.singletonMap("Accept", "application/json")
