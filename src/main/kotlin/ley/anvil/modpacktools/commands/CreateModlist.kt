@@ -4,6 +4,7 @@ import j2html.TagCreator.*
 import j2html.utils.CSSMin.compressCss
 import ley.anvil.addonscript.maven.ArtifactDestination
 import ley.anvil.addonscript.wrapper.ASWrapper
+import ley.anvil.addonscript.wrapper.ArtifactDestination
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
