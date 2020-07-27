@@ -46,7 +46,8 @@ object CreateModlist : ICommand {
             printer.printRecord(
                 mod.name,
                 mod.contributors.keys.joinToString(),
-                mod.website
+                mod.website,
+                mod.description?.joinToString(" ")
             )
         }
         printer.close()
@@ -61,29 +62,27 @@ object CreateModlist : ICommand {
                 style(
                     //Fancy css!
                     """
-                        a:link {
-                          color: #ff5555;
-                        }
-
-                        a:visited {
-                          color: #cc55cc;
-                        }
-
-                        body {
-                          background-color: #333333;
-                          color: #ffffff
-                        }
-
-                        .img {
-                         width:100px;
-                        }
-
-                        td {
-                          border: #999999 3px;
-                          border-style: solid;
-                        }
-
-                    """
+a:link {
+ color: #ff5555;
+}
+a:visited {
+ color: #cc55cc;
+}
+body {
+ background-color: #333333;
+ color: #ffffff
+}
+.img {
+ width:100px;
+}
+td {
+ border: #999999 3px;
+ border-style: solid;
+}
+.description {
+  width: 100%
+}
+"""
                         //trim unnecessary chars
                         .trimIndent().filter {it != '\n'}
                 )
@@ -93,7 +92,8 @@ object CreateModlist : ICommand {
                     tr(
                         td(),
                         td(b("Name")),
-                        td(b("Contributors"))
+                        td(b("Contributors")),
+                        td(b("Description"))
                     ),
                     each(getMods()) {
                         tr(
@@ -111,7 +111,9 @@ object CreateModlist : ICommand {
                                 each(it.contributors) {contr ->
                                     li(contr.key)
                                 }
-                            ))
+                            )),
+                            td(it.description?.joinToString("<br />") ?: "")
+                                .withClass("description")
                         )
                     }
                 )
@@ -123,19 +125,19 @@ object CreateModlist : ICommand {
     }
 
     private fun getMods(): List<MetaData> {
-        println("Getting mods... this may take a while (TODO)")
+        println("Getting mods...")
         val asJson = MPJH.asWrapper
         val mods = mutableListOf<MetaData>()
         val toGet = mutableListOf<ArtifactDestination>()
 
         for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), null)) {
-            if (rel.hasLocalMeta())
+            if(rel.hasLocalMeta())
                 mods.add(rel.localMeta)
-            else if (rel.hasFile() && rel.file.isArtifact)
+            else if(rel.hasFile() && rel.file.isArtifact)
                 toGet.add(rel.file.artifact)
         }
         mods.addAll(ASWrapper.getMetaData(toGet.toTypedArray()).values)
-        return mods.sortedBy {m -> m.name?.toLowerCase() }
+        return mods.sortedBy {m -> m.name?.toLowerCase()}
     }
 
     private fun Array<out String>.checkArgs(): Boolean = this.size >= 3 && this[1] in arrayOf("html", "csv")
