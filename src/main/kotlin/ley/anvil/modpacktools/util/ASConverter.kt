@@ -48,7 +48,7 @@ fun convertAStoManifest(addonscript: ASWrapper): ManifestLinksPair {
                     manifest.files.add(f);
                 }
             } else if (rel.options.contains("required")) {
-                ml.links.put(file.link, file.file.installer)
+                ml.links.put(file.get(), file.file.installer)
             }
         }
     }
@@ -67,7 +67,7 @@ fun convertAStoManifest(addonscript: ASWrapper): ManifestLinksPair {
                 manifest.files.add(f);
             }
         } else {
-            ml.links.put(file.link, file.file.installer)
+            ml.links.put(file.get(), file.file.installer)
         }
     }
     ml.manifest = manifest
