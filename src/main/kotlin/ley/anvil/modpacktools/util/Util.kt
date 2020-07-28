@@ -9,11 +9,12 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
-import java.io.FileReader
-import java.io.IOException
+import java.io.*
 import java.net.URI
 import java.net.URL
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
 
 /**
  * Reads a Json File
@@ -86,5 +87,25 @@ fun URL.sanitize(): URL? {
             this.ref).toURL()
     } catch(e: Exception) {
         null
+    }
+}
+
+fun zipDir(dir: File, parent: String?, zip: ZipOutputStream) {
+    for (file in dir.listFiles()){
+        println(file.name)
+        if (file.isDirectory) {
+            zipDir(file, parent + file.name + "/", zip)
+            continue
+        }
+        zip.putNextEntry(ZipEntry(parent + file.name))
+        var inp = BufferedInputStream(FileInputStream(file))
+        var bytesRead: Long = 0
+        val bytesIn = ByteArray(4096)
+        var read = 0
+        while (inp.read(bytesIn).also { read = it } != -1) {
+            zip.write(bytesIn, 0, read)
+            bytesRead += read.toLong()
+        }
+        zip.closeEntry()
     }
 }
