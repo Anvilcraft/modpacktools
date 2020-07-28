@@ -104,7 +104,6 @@ fun KClass<*>.getFun(name: String): KFunction<*>? = this.functions.find {it.name
 
 fun zipDir(dir: File, parent: String?, zip: ZipOutputStream) {
     for (file in dir.listFiles()){
-        println(file.name)
         if (file.isDirectory) {
             zipDir(file, parent + file.name + "/", zip)
             continue
