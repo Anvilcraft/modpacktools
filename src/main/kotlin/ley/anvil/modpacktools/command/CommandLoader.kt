@@ -29,7 +29,7 @@ class CommandLoader(private val pkg: String) {
         @JvmStatic
         @Throws(ConfigMissingException::class, ModpackJsonMissingException::class)
         fun ICommand.runStatic(args: Array<out String>): CommandReturn {
-            if(this.needsConfig && !CONFIG.configExists())
+            if(this.needsConfig && !CONFIG.exists)
                 throw ConfigMissingException()
 
             if(this.needsModpackjson && MPJH.asWrapper == null)
