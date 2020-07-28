@@ -3,6 +3,8 @@
     manifestFile = "src/twitch/manifest.json"
     #The location of the modpackjson file
     modpackjsonFile = "src/modpack.json"
+    #The location used to store temporary files
+    tempDir = ".mpt"
 [Local]
     selectedVersion = -1
 [Downloads]

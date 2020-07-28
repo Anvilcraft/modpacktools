@@ -102,17 +102,26 @@ fun URL.sanitize(): URL? {
  */
 fun KClass<*>.getFun(name: String): KFunction<*>? = this.functions.find {it.name == name}?.apply {isAccessible = true}
 
-fun zipDir(dir: File, parent: String?, zip: ZipOutputStream) {
-    for (file in dir.listFiles()){
+/**
+ * merges 2 file's basically moving [other] into a directory represented by the receiver
+ *
+ * @receiver the parent directory
+ * @param other the file to put into [other]
+ * @return the combined file
+ */
+fun File.mergeTo(other: File): File = File(this.path, other.name)
+
+fun zipDir(dir: File, zip: ZipOutputStream, parent: File? = null) {
+    for (file in dir.listFiles()!!) {
         if (file.isDirectory) {
-            zipDir(file, parent + file.name + "/", zip)
+            zipDir(file, zip, parent?.mergeTo(file) ?: file)
             continue
         }
-        zip.putNextEntry(ZipEntry(parent + file.name))
-        var inp = BufferedInputStream(FileInputStream(file))
+        zip.putNextEntry(ZipEntry((parent?.mergeTo(file) ?: file).name))
+        val inp = BufferedInputStream(FileInputStream(file))
         var bytesRead: Long = 0
         val bytesIn = ByteArray(4096)
-        var read = 0
+        var read: Int
         while (inp.read(bytesIn).also { read = it } != -1) {
             zip.write(bytesIn, 0, read)
             bytesRead += read.toLong()
