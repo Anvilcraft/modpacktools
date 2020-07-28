@@ -15,6 +15,10 @@ import java.net.URL
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.functions
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * Reads a Json File
@@ -89,6 +93,14 @@ fun URL.sanitize(): URL? {
         null
     }
 }
+
+/**
+ * gets a function from the receiver and makes it accessible
+ *
+ * @param name the name of the function to get
+ * @receiver the class to get the function from
+ */
+fun KClass<*>.getFun(name: String): KFunction<*>? = this.functions.find {it.name == name}?.apply {isAccessible = true}
 
 fun zipDir(dir: File, parent: String?, zip: ZipOutputStream) {
     for (file in dir.listFiles()){

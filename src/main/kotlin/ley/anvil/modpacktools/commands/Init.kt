@@ -15,7 +15,7 @@ object Init : ICommand {
     override val needsModpackjson: Boolean = false
 
     override fun execute(args: Array<out String>): CommandReturn {
-        if(CONFIG.configExists())
+        if(CONFIG.exists)
             return fail("Config exists")
         CONFIG.copyConfig()
         return success("Config Created")

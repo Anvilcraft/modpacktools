@@ -1,6 +1,7 @@
 package ley.anvil.modpacktools.commands
 
 import j2html.TagCreator.*
+import j2html.utils.CSSMin.compressCss
 import ley.anvil.addonscript.wrapper.ASWrapper
 import ley.anvil.addonscript.wrapper.ArtifactDestination
 import ley.anvil.addonscript.wrapper.MetaData
@@ -12,8 +13,10 @@ import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
+import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileWriter
+import java.nio.charset.StandardCharsets
 
 @LoadCommand
 object CreateModlist : ICommand {
@@ -61,30 +64,7 @@ object CreateModlist : ICommand {
             head(
                 style(
                     //Fancy css!
-                    """
-a:link {
- color: #ff5555;
-}
-a:visited {
- color: #cc55cc;
-}
-body {
- background-color: #333333;
- color: #ffffff
-}
-.img {
- width:100px;
-}
-td {
- border: #999999 3px;
- border-style: solid;
-}
-.description {
-  width: 100%
-}
-"""
-                        //trim unnecessary chars
-                        .trimIndent().filter {it != '\n'}
+                    compressCss(IOUtils.toString(ClassLoader.getSystemResourceAsStream("commands/createmodlist/style.css"), StandardCharsets.UTF_8))
                 )
             ),
             body(
@@ -97,10 +77,10 @@ td {
                     ),
                     each(getMods()) {
                         tr(
-                            td(a(
+                            td(if(it.icon != null) a(
                                 img().withSrc(it.icon)
                                     .withClass("img")
-                            ).withHref(it.website)
+                            ).withHref(it.website) else null
                             ),
                             td(a(it.name)
                                 .withHref(it.website)
@@ -112,7 +92,9 @@ td {
                                     li(contr.key)
                                 }
                             )),
-                            td(it.description?.joinToString("<br />") ?: "")
+                            td(each(it.description?.asList() ?: listOf()) {d: String ->
+                                p(d)
+                            })
                                 .withClass("description")
                         )
                     }

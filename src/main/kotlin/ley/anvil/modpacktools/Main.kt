@@ -32,20 +32,31 @@ private val httpClient0 = lazy {
         .build()
 }
 val HTTP_CLIENT by httpClient0
+private val helpMessage by lazy {
+    val sb = StringBuilder().append("Commands:\n\n")
+    LOADER.commands.entries.stream()
+        //Sort by name
+        .sorted(Comparator.comparing {e: MutableMap.MutableEntry<String, ICommand> -> e.key})
+        .forEach {sb.append("${it.key}: ${it.value.helpMessage}\n")}
+    sb.toString()
+}
 
 
 fun main(args: Array<out String>) {
     if(args.isEmpty()) {
-        printHelp()
+        println(helpMessage)
     } else {
-
         try {
             val ret = LOADER.runCommand(args[0], args)
             if(ret.hasRet())
                 println(ret.ret)
         } catch(e: NoSuchElementException) {
-            println(e.message)
-            printHelp()
+            println("Command ${args[0]} not found")
+            println(helpMessage)
+        } catch(e: CommandLoader.ConfigMissingException) {
+            println("Config is needed for this command yet it is not present. Run 'init' to generate")
+        } catch(e: CommandLoader.ModpackJsonMissingException) {
+            println("Modpackjson is needed for this command yet it is not present.")
         }
     }
 
@@ -54,12 +65,4 @@ fun main(args: Array<out String>) {
         HTTP_CLIENT.dispatcher.executorService.shutdown()
         HTTP_CLIENT.connectionPool.evictAll()
     }
-}
-
-fun printHelp() {
-    println("Commands:")
-    LOADER.commands.entries.stream()
-        //Sort by name
-        .sorted(Comparator.comparing {e: MutableMap.MutableEntry<String, ICommand> -> e.key})
-        .forEach {println("${it.key}: ${it.value.helpMessage}")}
 }

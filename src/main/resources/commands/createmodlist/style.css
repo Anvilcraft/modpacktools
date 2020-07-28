@@ -1,0 +1,21 @@
+a:link {
+    color: #ff5555;
+}
+a:visited {
+    color: #cc55cc;
+}
+body {
+    background-color: #333333;
+    color: #ffffff;
+    font-family: sans-serif;
+}
+.img {
+    width: 100px;
+}
+td {
+    border: #999999 3px;
+    border-style: solid;
+}
+.description {
+    width: 100%;
+}
