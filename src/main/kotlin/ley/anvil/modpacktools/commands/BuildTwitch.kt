@@ -9,7 +9,7 @@ import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.mergeTo
-import ley.anvil.modpacktools.util.zipDir
+import ley.anvil.modpacktools.util.toZip
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileOutputStream
@@ -19,7 +19,7 @@ import java.util.zip.ZipOutputStream
 @LoadCommand
 object BuildTwitch : ICommand {
     override val name: String = "buildtwitch"
-    override val helpMessage: String = "TODO"
+    override val helpMessage: String = "builds a twitch export"
     private val tmp: File by lazy {File(CONFIG.config.getPath<String>("Locations/tempDir"), "twitch")}
 
     override fun execute(args: Array<out String>): CommandReturn {
@@ -38,7 +38,7 @@ object BuildTwitch : ICommand {
         //TODO download & install files
         for(uf in ml.links) {
             if(uf.key.isFile) {
-                val file = uf.key.getFile(CONFIG.config.getPath<String>("Locations/modpackjsonFile")!!)
+                val file = uf.key.getFile(CONFIG.config.getPath<String>("Locations/src")!!)
                 if(file.exists()) {
                     when {
                         uf.value == "internal.override" -> {
@@ -48,7 +48,8 @@ object BuildTwitch : ICommand {
                                 }
 
                                 file.isDirectory -> {
-                                    file.listFiles()!!.forEach {it.copyTo("overrides")}
+                                    FileUtils.copyDirectory(file, File(tmp, "overrides"))
+                                    //file.listFiles()!!.forEach {it.copyTo("overrides")}
                                 }
 
                                 else -> {
@@ -92,13 +93,13 @@ object BuildTwitch : ICommand {
         }
 
         val zip = ZipOutputStream(FileOutputStream(dir.path + "/$archiveName.zip"))
-        zipDir(tmp, zip)
+        tmp.toZip(zip)
         zip.flush()
         zip.close()
         return success("Successfully build twitch zip")
     }
 
-    private fun File.copyTo(dir: File) = FileUtils.copyFile(this, tmp.mergeTo(dir).apply {mkdirs()}.mergeTo(this))
-
-    private fun File.copyTo(dir: String) = this.copyTo(File(dir))
+    private fun File.copyTo(dir: File) {
+        FileUtils.copyFile(this, tmp.mergeTo(dir).apply {mkdirs()}.mergeTo(this))
+    }
 }

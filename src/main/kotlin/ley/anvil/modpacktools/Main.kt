@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit.MICROSECONDS
 //Lazy initialization will prevent objects from being initilized if not needed
 val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
-val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.getPath<String>("Locations/modpackjsonFile")!!))}
+val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.getPath<String>("Locations/src")!!, "modpack.json"))}
 val GSON by lazy {GsonBuilder().setPrettyPrinting().create()}
 
 //for checking if the client has been initialized when closing it

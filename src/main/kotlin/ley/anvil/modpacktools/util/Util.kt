@@ -9,12 +9,18 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.*
+import java.io.File
+import java.io.FileReader
+import java.io.IOException
 import java.net.URI
 import java.net.URL
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.functions
@@ -111,21 +117,27 @@ fun KClass<*>.getFun(name: String): KFunction<*>? = this.functions.find {it.name
  */
 fun File.mergeTo(other: File): File = File(this.path, other.name)
 
-fun zipDir(dir: File, zip: ZipOutputStream, parent: File? = null) {
-    for (file in dir.listFiles()!!) {
-        if (file.isDirectory) {
-            zipDir(file, zip, parent?.mergeTo(file) ?: file)
-            continue
+/**
+ * zips a directory.
+ *
+ * @receiver the directory to zip
+ * @param zStream the zip stream to write to
+ */
+fun Path.toZip(zStream: ZipOutputStream) {
+    Files.walkFileTree(this, object : SimpleFileVisitor<Path>() {
+        override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
+            zStream.putNextEntry(ZipEntry(this@toZip.relativize(file).toString()))
+            Files.copy(file, zStream)
+            zStream.closeEntry()
+            return FileVisitResult.CONTINUE
         }
-        zip.putNextEntry(ZipEntry((parent?.mergeTo(file) ?: file).name))
-        val inp = BufferedInputStream(FileInputStream(file))
-        var bytesRead: Long = 0
-        val bytesIn = ByteArray(4096)
-        var read: Int
-        while (inp.read(bytesIn).also { read = it } != -1) {
-            zip.write(bytesIn, 0, read)
-            bytesRead += read.toLong()
-        }
-        zip.closeEntry()
-    }
+    })
 }
+
+/**
+ * zips a directory.
+ *
+ * @receiver the directory to zip
+ * @param zStream the zip stream to write to
+ */
+fun File.toZip(zStream: ZipOutputStream) = this.toPath().toZip(zStream)

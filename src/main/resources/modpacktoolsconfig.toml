@@ -1,8 +1,8 @@
 [Locations]
     #The location of the twitch manifest file (will be replaced with addonscript in later versions)
     manifestFile = "src/twitch/manifest.json"
-    #The location of the modpackjson file
-    modpackjsonFile = "src/modpack.json"
+    #The location of the source
+    src = "src"
     #The location used to store temporary files
     tempDir = ".mpt"
 [Local]
