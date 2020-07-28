@@ -115,7 +115,7 @@ fun KClass<*>.getFun(name: String): KFunction<*>? = this.functions.find {it.name
  * @param other the file to put into [other]
  * @return the combined file
  */
-fun File.mergeTo(other: File): File = File(this.path, other.name)
+infix fun File.mergeTo(other: File): File = File(this.path, other.name)
 
 /**
  * zips a directory.
