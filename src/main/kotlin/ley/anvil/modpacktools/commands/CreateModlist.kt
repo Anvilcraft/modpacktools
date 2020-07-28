@@ -77,10 +77,10 @@ object CreateModlist : ICommand {
                     ),
                     each(getMods()) {
                         tr(
-                            td(a(
+                            td(if(it.icon != null) a(
                                 img().withSrc(it.icon)
                                     .withClass("img")
-                            ).withHref(it.website)
+                            ).withHref(it.website) else null
                             ),
                             td(a(it.name)
                                 .withHref(it.website)
@@ -92,7 +92,9 @@ object CreateModlist : ICommand {
                                     li(contr.key)
                                 }
                             )),
-                            td(it.description?.joinToString("<br />") ?: "")
+                            td(each(it.description?.asList() ?: listOf()) {d: String ->
+                                p(d)
+                            })
                                 .withClass("description")
                         )
                     }

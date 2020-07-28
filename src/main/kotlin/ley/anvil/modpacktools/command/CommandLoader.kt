@@ -2,9 +2,10 @@ package ley.anvil.modpacktools.command
 
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
-import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 /**
  * The command loader will scan the given package for {@link ICommand} classes and add them to the command list
@@ -12,15 +13,28 @@ import org.reflections.scanners.SubTypesScanner
  * @param pkg The package to scan for commands
  */
 class CommandLoader(private val pkg: String) {
+    class ConfigMissingException : IllegalStateException()
+    class ModpackJsonMissingException : IllegalStateException()
+
     val commands = HashMap<String, ICommand>()
 
     companion object {
+        /**
+         * Runs a command statically.
+         *
+         * @param args the args to pass to the command
+         * @throws ConfigMissingException if the command requires a config and it is not found
+         * @throws ModpackJsonMissingException if the command requires a modpackjson file and it is not found
+         */
         @JvmStatic
+        @Throws(ConfigMissingException::class, ModpackJsonMissingException::class)
         fun ICommand.runStatic(args: Array<out String>): CommandReturn {
             if(this.needsConfig && !CONFIG.configExists())
-                return fail("Config is needed for this command yet it is not present. Run 'init' to generate")
+                throw ConfigMissingException()
+
             if(this.needsModpackjson && MPJH.asWrapper == null)
-                return fail("Modpackjson is needed for this command yet it is not present.")
+                throw ModpackJsonMissingException()
+
             return this.execute(args)
         }
     }
@@ -35,11 +49,14 @@ class CommandLoader(private val pkg: String) {
         val refs = Reflections(pkg, SubTypesScanner(false))
 
         refs.getSubTypesOf(ICommand::class.java).stream()
+            .map {it.kotlin}
             //Only annotated classes
-            .filter {it.isAnnotationPresent(LoadCommand::class.java)}
+            //Cannot use it.hasAnnotation because it is experimental and requires everything to be annotated so this makes more sense
+            .filter {it.annotations.any {ann ->  ann.annotationClass == LoadCommand::class}}
             //can be object
-            .map {it.kotlin.objectInstance ?: it}
-            .forEach {if(it is ICommand) addCommand(it) else addClass(it as Class<out ICommand>)}
+            .map {it.objectInstance ?: it}
+            //create new instance if it is a class, otherwise just add the current instance
+            .forEach {if(it is ICommand) addCommand(it) else addClass(it as KClass<out ICommand>)}
     }
 
     /**
@@ -48,7 +65,7 @@ class CommandLoader(private val pkg: String) {
      * @param clazz the class to add
      * @return if it was successful
      */
-    fun addClass(clazz: Class<out ICommand>) = addCommand(clazz.newInstance())
+    fun addClass(clazz: KClass<out ICommand>) = addCommand(clazz.createInstance())
 
     /**
      * Adds a command to the command list with the name that getName() returns
