@@ -6,7 +6,6 @@ import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
-import ley.anvil.modpacktools.util.mergeTo
 import java.io.File
 import java.io.FileWriter
 
@@ -20,24 +19,36 @@ object Init : ICommand {
     override fun execute(args: Array<out String>): CommandReturn {
         if(!CONFIG.exists)
             CONFIG.copyConfig()
-        val srcDir = File(CONFIG.config.getPath<String>("Locations/src")!!)
-        val overrides = srcDir.mergeTo(File("overrides"))
+
+        val srcDir = File(CONFIG.config.pathOrException<String>("Locations/src"))
+        val overrides = File(srcDir, "overrides")
+
         if(!overrides.exists())
             overrides.mkdirs()
-        val asjson = srcDir.mergeTo(File("modpack.json"))
-        if (!asjson.exists()) {
-            val writer = FileWriter(asjson)
+
+        val asJson = File(srcDir, "modpack.json")
+
+        if (!asJson.exists()) {
+            //create new file
+            val writer = FileWriter(asJson)
             val addsc = AddonscriptJSON.create()
+
+            //set type and add version
             addsc.type = "modpack"
             val ver = AddonscriptJSON.Version()
             addsc.versions = mutableListOf(ver)
             ver.versionid = -1
+
+            //create overrides
             val file = AddonscriptJSON.File()
             ver.files = mutableListOf(file)
+
             file.id = "overrides"
             file.link = "file://overrides"
             file.installer = "internal.overrides"
             file.options = mutableListOf("client", "server", "required", "included")
+
+            //write file
             addsc.write(writer)
             writer.close()
         }

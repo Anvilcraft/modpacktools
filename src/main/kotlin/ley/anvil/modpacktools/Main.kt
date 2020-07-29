@@ -5,8 +5,9 @@ package ley.anvil.modpacktools
 import com.google.gson.GsonBuilder
 import ley.anvil.modpacktools.command.CommandLoader
 import ley.anvil.modpacktools.command.ICommand
-import ley.anvil.modpacktools.util.Config
 import ley.anvil.modpacktools.util.ModpackJsonHandler
+import ley.anvil.modpacktools.util.config.Config
+import ley.anvil.modpacktools.util.config.MissingConfigValueException
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
@@ -17,18 +18,18 @@ import java.util.concurrent.TimeUnit.MICROSECONDS
 //Lazy initialization will prevent objects from being initilized if not needed
 val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
-val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.getPath<String>("Locations/src")!!, "modpack.json"))}
+val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.pathOrException<String>("Locations/src"), "modpack.json"))}
 val GSON by lazy {GsonBuilder().setPrettyPrinting().create()}
 
 //for checking if the client has been initialized when closing it
 private val httpClient0 = lazy {
-    val timeout = CONFIG.config.getPath<Long>("Downloads/httpTimeout")!!
+    val timeout = CONFIG.config.pathOrException<Long>("Downloads/httpTimeout")
     OkHttpClient.Builder()
         .callTimeout(timeout, MICROSECONDS)
         .connectTimeout(timeout, MICROSECONDS)
         .readTimeout(timeout, MICROSECONDS)
         .writeTimeout(timeout, MICROSECONDS)
-        .dispatcher(Dispatcher(Executors.newFixedThreadPool(CONFIG.config.getPath<Long>("Downloads/maxThreads")!!.toInt())))
+        .dispatcher(Dispatcher(Executors.newFixedThreadPool(CONFIG.config.pathOrException<Long>("Downloads/maxThreads").toInt())))
         .build()
 }
 val HTTP_CLIENT by httpClient0
@@ -67,6 +68,11 @@ fun runCommand(args: Array<out String>) {
             println("Config is needed for this command yet it is not present. Run 'init' to generate")
         } catch(e: CommandLoader.ModpackJsonMissingException) {
             println("Modpackjson is needed for this command yet it is not present.")
+        } catch(e: MissingConfigValueException) {
+            println("The Config value ${e.missingValue} was expected but was not found")
+            e.message?.let {println(it)}
+            println('\n')
+            e.printStackTrace()
         }
     }
 }

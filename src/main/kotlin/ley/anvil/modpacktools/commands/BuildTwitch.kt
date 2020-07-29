@@ -23,8 +23,9 @@ import java.util.zip.ZipOutputStream
 object BuildTwitch : ICommand {
     override val name: String = "buildtwitch"
     override val helpMessage: String = "builds a twitch export"
-    private val tmp: File by lazy {File(CONFIG.config.getPath<String>("Locations/tempDir"), "twitch")}
-    private val downloadDir by lazy {File(CONFIG.config.getPath<String>("Locations/tempDir"), "download")}
+    private val tempDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/tempDir"))}
+    private val tmp: File by lazy {File(tempDir, "twitch")}
+    private val downloadDir by lazy {File(tempDir, "download")}
 
     override fun execute(args: Array<out String>): CommandReturn {
         val wr = MPJH.asWrapper!!
@@ -32,7 +33,7 @@ object BuildTwitch : ICommand {
         val archiveName = "${wr.json.id}-${wr.defaultVersion.versionName}-twitch"
         val dir = File("./build")
         val toDownload = mutableMapOf<URL, Pair<File, String>>()
-        val srcDir by lazy {File(CONFIG.config.getPath<String>("Locations/src")!!)}
+        val srcDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/src"))}
         dir.mkdirs()
         tmp.mkdirs()
         downloadDir.mkdirs()
@@ -46,7 +47,7 @@ object BuildTwitch : ICommand {
         //TODO download & install files
         for(uf in ml.links) {
             if(uf.key.isFile) {
-                if (!uf.key.isASDirSet)
+                if(!uf.key.isASDirSet)
                     uf.key.setASDir(srcDir)
                 val file = uf.key.getFile()
                 if(file.exists()) {

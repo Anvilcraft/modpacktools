@@ -1,4 +1,4 @@
-package ley.anvil.modpacktools.util
+package ley.anvil.modpacktools.util.config
 
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -12,12 +12,12 @@ class Config(val configName: String) {
      *
      * @return the Toml object of the config file
      */
-    private fun readConfig(): CustomToml {
+    private fun readConfig(): ConfigToml {
         return if(exists) {
             //parse file to toml
-            CustomToml().read(configLocation) as CustomToml
+            ConfigToml().read(configLocation) as ConfigToml
             //reads config from resources if no config file exists as a default value. commands that require the config still won't run without it
-        } else CustomToml().read(ClassLoader.getSystemResourceAsStream(configName)) as CustomToml
+        } else ConfigToml().read(ClassLoader.getSystemResourceAsStream(configName)) as ConfigToml
     }
 
     /**
