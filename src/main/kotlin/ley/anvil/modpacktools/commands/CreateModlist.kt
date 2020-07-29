@@ -112,7 +112,7 @@ object CreateModlist : ICommand {
         val mods = mutableListOf<MetaData>()
         val toGet = mutableListOf<ArtifactDestination>()
 
-        for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), null)) {
+        for(rel in asJson!!.defaultVersion.getRelations(arrayOf("client"), arrayOf("mod", "modloader"))) {
             if(rel.hasLocalMeta())
                 mods.add(rel.localMeta)
             else if(rel.hasFile() && rel.file.isArtifact)
