@@ -43,6 +43,16 @@ private val helpMessage by lazy {
 
 
 fun main(args: Array<out String>) {
+    runCommand(args)
+
+    //Only close if initialized to prevent creation directly before closing
+    if(httpClient0.isInitialized()) {
+        HTTP_CLIENT.dispatcher.executorService.shutdown()
+        HTTP_CLIENT.connectionPool.evictAll()
+    }
+}
+
+fun runCommand(args: Array<out String>) {
     if(args.isEmpty()) {
         println(helpMessage)
     } else {
@@ -58,11 +68,5 @@ fun main(args: Array<out String>) {
         } catch(e: CommandLoader.ModpackJsonMissingException) {
             println("Modpackjson is needed for this command yet it is not present.")
         }
-    }
-
-    //Only close if initialized to prevent creation directly before closing
-    if(httpClient0.isInitialized()) {
-        HTTP_CLIENT.dispatcher.executorService.shutdown()
-        HTTP_CLIENT.connectionPool.evictAll()
     }
 }

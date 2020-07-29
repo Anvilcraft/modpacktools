@@ -4,8 +4,8 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 
 class Config(val configName: String) {
-    val configLocation by lazy {File(configName)}
-    val config by lazy {readConfig()}
+    val configLocation = File(configName)
+    val config = readConfig()
 
     /**
      * reads the config it it exists and the default config otherwise
@@ -25,7 +25,7 @@ class Config(val configName: String) {
      *
      * @return true if the config file exists
      */
-    val exists: Boolean = configLocation.exists()
+    val exists: Boolean get() = configLocation.exists()
 
     /**
      * Copies the Config file from the resources into the tool's folder

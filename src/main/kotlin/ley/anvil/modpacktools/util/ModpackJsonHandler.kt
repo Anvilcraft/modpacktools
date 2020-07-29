@@ -7,8 +7,8 @@ import java.io.FileReader
 
 class ModpackJsonHandler(val modpackJsonFile: File) {
     //Null if no file exists
-    val asWrapper: ASWrapper? by lazy {
-        if(modpackJsonFile.exists()) {
+    val asWrapper: ASWrapper? get() {
+        return if(modpackJsonFile.exists()) {
             val reader = FileReader(modpackJsonFile)
             val ret = ASWrapper(AddonscriptJSON.read(reader, AddonscriptJSON::class.java))
             reader.close()
