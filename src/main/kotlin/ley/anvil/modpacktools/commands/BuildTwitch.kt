@@ -53,14 +53,15 @@ object BuildTwitch : ICommand {
             } else if(uf.key.isURL) {
                 val filePath = URL(uf.key.link)
                 toDownload[filePath] = Pair(File(downloadDir, FilenameUtils.getName(filePath.toString())), uf.value)
-                FileDownloader(toDownload.mapValues {it.value.first}, {
-                    println("downloaded file ${it.file}")
-                    println(installFile(toDownload[it.url]!!.second, it.file))
-                }, FileDownloader.ExistingFileBehaviour.OVERWRITE)
             } else {
                 return fail("{$uf.key.link} is neither a file nor an URL")
             }
         }
+
+        FileDownloader(toDownload.mapValues {it.value.first}, {
+            println("downloaded file ${it.file}")
+            println(installFile(toDownload[it.url]!!.second, it.file))
+        }, FileDownloader.ExistingFileBehaviour.OVERWRITE)
 
         val zip = ZipOutputStream(FileOutputStream(dir.path + "/$archiveName.zip"))
         tmp.toZip(zip)
