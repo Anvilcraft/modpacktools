@@ -87,7 +87,7 @@ open class FileDownloader(
             val responseCode: Int?,
             val responseMessage: String?,
             val exception: Exception?
-        ) {}
+        )
     }
 
     enum class ExistingFileBehaviour {
