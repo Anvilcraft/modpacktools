@@ -77,9 +77,8 @@ open class FileDownloader(
                     response.message,
                     e
                 )
-            } finally {
-                latch.countDown()
             })
+            latch.countDown()
         }
 
         data class Return(
