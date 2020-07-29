@@ -18,6 +18,7 @@ object Shell : ICommand {
         println("enter \'exit\' to exit the shell\n")
 
         while(true) {
+            print(">>>")
             val arg = readLine()!!.split(' ')
             if(arg.getOrNull(0) == "exit")
                 break
