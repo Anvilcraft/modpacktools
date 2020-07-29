@@ -57,7 +57,7 @@ fun runCommand(args: Array<out String>) {
         println(helpMessage)
     } else {
         try {
-            val ret = LOADER.runCommand(args[0], args)
+            val ret = LOADER.runCommand(args[0].toLowerCase(), args)
             if(ret.hasRet())
                 println(ret.ret)
         } catch(e: NoSuchElementException) {
