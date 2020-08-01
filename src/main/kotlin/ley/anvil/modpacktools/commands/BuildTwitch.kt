@@ -11,6 +11,9 @@ import ley.anvil.modpacktools.util.FileDownloader
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.mergeTo
 import ley.anvil.modpacktools.util.toZip
+import net.sourceforge.argparse4j.ArgumentParsers
+import net.sourceforge.argparse4j.inf.ArgumentParser
+import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import java.io.File
@@ -23,11 +26,15 @@ import java.util.zip.ZipOutputStream
 object BuildTwitch : ICommand {
     override val name: String = "buildtwitch"
     override val helpMessage: String = "builds a twitch export"
+    override val parser: ArgumentParser = ArgumentParsers.newFor("BuildTwitch")
+        .build()
+        .description(helpMessage)
+
     private val tempDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/tempDir"))}
     private val tmp: File by lazy {File(tempDir, "twitch")}
     private val downloadDir by lazy {File(tempDir, "download")}
 
-    override fun execute(args: Array<out String>): CommandReturn {
+    override fun execute(args: Namespace): CommandReturn {
         val wr = MPJH.asWrapper!!
         val ml = convertAStoManifest(wr)
         val archiveName = "${wr.json.id}-${wr.defaultVersion.versionName}-twitch"

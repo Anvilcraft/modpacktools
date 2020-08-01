@@ -1,5 +1,8 @@
 package ley.anvil.modpacktools.command
 
+import net.sourceforge.argparse4j.inf.ArgumentParser
+import net.sourceforge.argparse4j.inf.Namespace
+
 /**
  * This must be implemented by all commands
  */
@@ -10,7 +13,9 @@ interface ICommand {
      * @param args Arguments for the Command
      * @return If the Command was executed successful
      */
-    fun execute(args: Array<out String>): CommandReturn
+    fun execute(args: Namespace): CommandReturn
+
+    val parser: ArgumentParser
 
     /**
      * this is the name of the command

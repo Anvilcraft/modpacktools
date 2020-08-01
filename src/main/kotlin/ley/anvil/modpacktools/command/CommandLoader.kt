@@ -2,6 +2,7 @@ package ley.anvil.modpacktools.command
 
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
+import net.sourceforge.argparse4j.inf.ArgumentParserException
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import kotlin.reflect.KClass
@@ -25,9 +26,10 @@ class CommandLoader(private val pkg: String) {
          * @param args the args to pass to the command
          * @throws ConfigMissingException if the command requires a config and it is not found
          * @throws ModpackJsonMissingException if the command requires a modpackjson file and it is not found
+         * @throws ArgumentParserException if the arguments are not valid
          */
         @JvmStatic
-        @Throws(ConfigMissingException::class, ModpackJsonMissingException::class)
+        @Throws(ConfigMissingException::class, ModpackJsonMissingException::class, ArgumentParserException::class)
         fun ICommand.runStatic(args: Array<out String>): CommandReturn {
             if(this.needsConfig && !CONFIG.exists)
                 throw ConfigMissingException()
@@ -35,7 +37,7 @@ class CommandLoader(private val pkg: String) {
             if(this.needsModpackjson && MPJH.asWrapper == null)
                 throw ModpackJsonMissingException()
 
-            return this.execute(args)
+            return this.execute(this.parser.parseArgs(args.slice(1 until  args.size).toTypedArray()))
         }
     }
 
@@ -87,7 +89,8 @@ class CommandLoader(private val pkg: String) {
      * @param args the arguments passed into the command
      * @return the return of the command
      * @throws NoSuchElementException if there's no command with the given name
+     * @throws ArgumentParserException if the arguments are not valid
      */
-    @Throws(NoSuchElementException::class)
+    @Throws(NoSuchElementException::class, ConfigMissingException::class, ModpackJsonMissingException::class, ArgumentParserException::class)
     fun runCommand(name: String, args: Array<out String>) = commands.computeIfAbsent(name) {throw NoSuchElementException("Command $name Not Found")}.runStatic(args)
 }

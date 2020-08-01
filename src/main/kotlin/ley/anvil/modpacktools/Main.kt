@@ -8,6 +8,7 @@ import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.util.ModpackJsonHandler
 import ley.anvil.modpacktools.util.config.Config
 import ley.anvil.modpacktools.util.config.MissingConfigValueException
+import net.sourceforge.argparse4j.inf.ArgumentParserException
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
@@ -73,6 +74,8 @@ fun runCommand(args: Array<out String>) {
             e.message?.let {println(it)}
             println('\n')
             e.printStackTrace()
+        } catch(e: ArgumentParserException) {
+            println("Invalid args: ${e.message}")
         }
     }
 }

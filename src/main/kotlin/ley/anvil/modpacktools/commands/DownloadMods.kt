@@ -3,13 +3,17 @@ package ley.anvil.modpacktools.commands
 import ley.anvil.addonscript.wrapper.FileOrLink
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
-import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.FileDownloader
 import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.OVERWRITE
 import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.SKIP
+import net.sourceforge.argparse4j.ArgumentParsers
+import net.sourceforge.argparse4j.impl.Arguments.storeTrue
+import net.sourceforge.argparse4j.impl.type.FileArgumentType
+import net.sourceforge.argparse4j.inf.ArgumentParser
+import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
 import java.net.URL
 import java.nio.file.Paths
@@ -18,13 +22,23 @@ import java.util.stream.Collectors.toMap
 @LoadCommand
 object DownloadMods : ICommand {
     override val name: String = "downloadmods"
-    override val helpMessage: String = "Downloads all mods. force always downloads files even if they are already present Syntax: <OutDir> [force]"
+    override val helpMessage: String = "Downloads all mods."
+    override val parser: ArgumentParser = run {
+        val parser = ArgumentParsers.newFor("DownloadMods")
+            .build()
+            .description(helpMessage)
 
-    override fun execute(args: Array<out String>): CommandReturn {
-        if(!args.checkArgs())
-            return fail("Invalid Args")
+        parser.addArgument("dir")
+            .type(FileArgumentType().verifyCanCreate())
+            .help("the directory to download the mods to")
 
+        parser.addArgument("-f", "--force")
+            .action(storeTrue())
+            .help("if true, mods that are already in the download folder will be downloaded again")
+        parser
+    }
 
+    override fun execute(args: Namespace): CommandReturn {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
         for (rel in json!!.defaultVersion!!.getRelations(arrayOf("client"), arrayOf("mod"))!!)
@@ -37,7 +51,7 @@ object DownloadMods : ICommand {
                 .filter {it.installer == "internal.dir:mods"}
                 .collect(toMap<FileOrLink, URL, File>(
                     {URL(it.link)},
-                    {File(args[1], Paths.get(URL(it.link).path).fileName.toString())},
+                    {File(args.get<File>("dir"), Paths.get(URL(it.link).path).fileName.toString())},
                     {_: File, f: File -> f}
                 )),
             {r: FileDownloader.DownloadFileTask.Return ->
@@ -48,10 +62,8 @@ object DownloadMods : ICommand {
                         println(r.exception.message)
                 }
             },
-            if("force" in args) OVERWRITE else SKIP
+            if(args["force"]) OVERWRITE else SKIP
         )
         return success()
     }
-
-    private fun Array<out String>.checkArgs(): Boolean = this.size >= 2 && this.elementAtOrNull(2)?.equals("force") ?: true
 }

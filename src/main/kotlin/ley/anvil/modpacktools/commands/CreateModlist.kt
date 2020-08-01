@@ -11,6 +11,12 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
+import net.sourceforge.argparse4j.ArgumentParsers
+import net.sourceforge.argparse4j.impl.Arguments.storeTrue
+import net.sourceforge.argparse4j.impl.type.EnumStringArgumentType
+import net.sourceforge.argparse4j.impl.type.FileArgumentType
+import net.sourceforge.argparse4j.inf.ArgumentParser
+import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import org.apache.commons.io.IOUtils
@@ -21,19 +27,34 @@ import java.nio.charset.StandardCharsets
 @LoadCommand
 object CreateModlist : ICommand {
     override val name: String = "createmodlist"
-    override val helpMessage: String = "This creates a modlist either as html or csv file. if the \'all\' option is supplied, not only mods will be included Syntax: <html/csv> <outFile> [all]"
+    override val helpMessage: String = "This creates a modlist either as html or csv file."
+    override val parser: ArgumentParser = run {
+        val parser = ArgumentParsers.newFor("CreateModlist").build()
+            .description(helpMessage)
 
-    override fun execute(args: Array<out String>): CommandReturn {
-        if(!args.checkArgs())
-            return fail("invalid args")
+        parser.addArgument("-a", "--all")
+            .action(storeTrue())
+            .help("If this is set, all relations and not only be mods will be in the list")
 
-        val outFile = File(args[2])
+        parser.addArgument("type")
+            .type(EnumStringArgumentType(Formats::class.java))
+            .help("What format the mod list should be made in")
+
+        parser.addArgument("file")
+            .type(FileArgumentType())
+            .help("What file the mod list should be written to")
+
+        parser
+    }
+
+    override fun execute(args: Namespace): CommandReturn {
+        val outFile = args.get<File>("file")
 
         if(outFile.exists())
             return fail("File already exists!")
 
-        val all = args.getOrNull(3) == "all"
-        return if(args[1] == "html")
+        val all = args.get<Boolean>("all") ?: false
+        return if(args.get<Formats>("type") == Formats.HTML)
             doHtml(outFile, all)
         else
             doCsv(outFile, all)
@@ -127,11 +148,5 @@ object CreateModlist : ICommand {
         return mods.sortedBy {m -> m.name?.toLowerCase()}
     }
 
-    private fun Array<out String>.checkArgs(): Boolean =
-        //must be right length
-        this.size >= 3 &&
-            //second option must be html or csv
-            this[1] in arrayOf("html", "csv") &&
-            //3rd option must either be "all" or nothing
-            this.getOrElse(3) {"all"} == "all"
+    enum class Formats {HTML, CSV}
 }

@@ -9,6 +9,10 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
+import net.sourceforge.argparse4j.ArgumentParsers
+import net.sourceforge.argparse4j.impl.type.FileArgumentType
+import net.sourceforge.argparse4j.inf.ArgumentParser
+import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -17,15 +21,20 @@ import java.io.FileWriter
 object Import : ICommand {
     override val name: String = "import"
     override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
+    override val parser: ArgumentParser = ArgumentParsers.newFor("Import")
+        .build()
+        .apply {
+            addArgument("manifest")
+                .help("the manifest file to import")
+                .type(FileArgumentType().verifyIsFile())
+        }
+
     override val needsModpackjson: Boolean = false
     override val needsConfig: Boolean = false
 
-    override fun execute(args: Array<out String>): CommandReturn {
-        if(!args.checkArgs())
-            return fail("Invalid Args")
-
+    override fun execute(args: Namespace): CommandReturn {
         val outFile = MPJH.modpackJsonFile
-        val manifest = File(args[1])
+        val manifest = args.get<File>("manifest")
 
         if(!manifest.exists() || outFile.exists())
             return fail("$manifest not found or $outFile already exists.")
@@ -37,6 +46,4 @@ object Import : ICommand {
         mpjWriter.close()
         return success("Converted sucessfully")
     }
-
-    private fun Array<out String>.checkArgs(): Boolean = this.size == 2
 }
