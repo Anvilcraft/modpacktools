@@ -9,7 +9,9 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.commons.io.FileUtils
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileReader
 import java.io.IOException
 import java.net.URI
@@ -20,6 +22,7 @@ import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -141,3 +144,19 @@ fun Path.toZip(zStream: ZipOutputStream) {
  * @param zStream the zip stream to write to
  */
 fun File.toZip(zStream: ZipOutputStream) = this.toPath().toZip(zStream)
+
+/**
+ * Unzips a zip file to a given directory
+ *
+ * @receiver the zip file to unzip
+ * @param outputDir the dir to unzip to
+ */
+fun File.unzip(outputDir: File) {
+    val stream = ZipInputStream(FileInputStream(this))
+    while(true) {
+        val entry = stream.nextEntry ?: break
+        val outfile = File(outputDir, entry.name)
+        FileUtils.copyToFile(stream, outfile)
+    }
+    stream.close()
+}

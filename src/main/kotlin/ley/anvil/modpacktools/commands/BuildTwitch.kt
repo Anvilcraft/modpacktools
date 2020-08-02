@@ -74,7 +74,7 @@ object BuildTwitch : ICommand {
         }, false)
 
         println("Creating zip")
-        val zip = ZipOutputStream(FileOutputStream(dir.path + "/$archiveName.zip"))
+        val zip = ZipOutputStream(FileOutputStream("${dir.path}/$archiveName.zip"))
         tmp.toZip(zip)
         zip.flush()
         zip.close()
