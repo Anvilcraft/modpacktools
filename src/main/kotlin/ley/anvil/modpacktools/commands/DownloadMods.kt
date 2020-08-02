@@ -6,9 +6,8 @@ import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
-import ley.anvil.modpacktools.util.FileDownloader
-import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.OVERWRITE
-import ley.anvil.modpacktools.util.FileDownloader.ExistingFileBehaviour.SKIP
+import ley.anvil.modpacktools.util.DownloadFileTask
+import ley.anvil.modpacktools.util.downloadFiles
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
@@ -45,7 +44,7 @@ object DownloadMods : ICommand {
             if (rel.hasFile())
                 fileList.add(rel.file.get())
 
-        FileDownloader(
+        downloadFiles(
             fileList.stream()
                 .filter {it.isURL}
                 .filter {it.installer == "internal.dir:mods"}
@@ -54,7 +53,7 @@ object DownloadMods : ICommand {
                     {File(args.get<File>("dir"), Paths.get(URL(it.link).path).fileName.toString())},
                     {_: File, f: File -> f}
                 )),
-            {r: FileDownloader.DownloadFileTask.Return ->
+            {r: DownloadFileTask.Return ->
                 //synced so error message gets printed under response
                 synchronized(this) {
                     println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
@@ -62,7 +61,7 @@ object DownloadMods : ICommand {
                         println(r.exception.message)
                 }
             },
-            if(args["force"]) OVERWRITE else SKIP
+            args.get<Boolean>("force") == null
         )
         return success()
     }

@@ -7,7 +7,7 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
-import ley.anvil.modpacktools.util.FileDownloader
+import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.mergeTo
 import ley.anvil.modpacktools.util.toZip
@@ -68,11 +68,12 @@ object BuildTwitch : ICommand {
             }
         }
 
-        FileDownloader(toDownload.mapValues {it.value.first}, {
+        downloadFiles(toDownload.mapValues {it.value.first}, {
             println("downloaded file ${it.file}")
             println(installFile(toDownload[it.url]!!.second, it.file))
-        }, FileDownloader.ExistingFileBehaviour.OVERWRITE)
+        }, false)
 
+        println("Creating zip")
         val zip = ZipOutputStream(FileOutputStream(dir.path + "/$archiveName.zip"))
         tmp.toZip(zip)
         zip.flush()

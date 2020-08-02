@@ -12,86 +12,78 @@ import java.net.URL
 import java.util.concurrent.CountDownLatch
 import java.util.stream.Collectors
 
-open class FileDownloader(
-    private val files: Map<URL, File>,
-    private val callback: (DownloadFileTask.Return) -> Unit,
-    private val existingFileBehaviour: ExistingFileBehaviour
+
+private var latch: CountDownLatch? = null
+
+fun downloadFiles(
+    files: Map<URL, File>,
+    callback: (DownloadFileTask.Return) -> Unit,
+    skipExistingFiles: Boolean
 ) {
-    private var latch: CountDownLatch? = null
+    val tasks = files.entries.stream()
+        //remove if it should be skipped
+        .filter {!skipExistingFiles || !it.value.exists()}
+        .collect(Collectors.toList())
+    latch = CountDownLatch(tasks.size)
+    tasks.forEach {
+        val req = DownloadFileTask(it.key, it.value, callback, latch!!)
+        HTTP_CLIENT.newCall(req.request).enqueue(req)
+    }
+    latch!!.await()
+}
 
-    init {
-        dispatchTasks()
+open class DownloadFileTask(
+    protected open val url: URL,
+    protected open val file: File,
+    protected open val callback: (Return) -> Unit,
+    protected open val latch: CountDownLatch
+) : Callback {
+    open val request = Request.Builder()
+        .get()
+        .url(url)
+        .build()
+
+    override fun onFailure(call: Call, e: IOException) {
+        callback(Return(
+            url,
+            file,
+            null,
+            null,
+            e
+        ))
+        latch.countDown()
     }
 
-    private fun dispatchTasks() {
-        val tasks = files.entries.stream()
-            //remove if it should be skipped
-            .filter {existingFileBehaviour == ExistingFileBehaviour.OVERWRITE || !it.value.exists()}
-            .collect(Collectors.toList())
-        latch = CountDownLatch(tasks.size)
-        tasks.forEach {
-            val req = DownloadFileTask(it.key, it.value, callback, latch!!)
-            HTTP_CLIENT.newCall(req.request).enqueue(req)
-        }
-        latch!!.await()
-    }
+    override fun onResponse(call: Call, response: Response) {
+        callback(try {
+            val stream = response.body?.byteStream()
+            FileUtils.copyInputStreamToFile(stream, file)
+            stream!!.close()
 
-    class DownloadFileTask(private val url: URL,
-                           private val file: File,
-                           private val callback: (Return) -> Unit,
-                           private val latch: CountDownLatch) : Callback {
-        val request = Request.Builder()
-            .get()
-            .url(url)
-            .build()
-
-        override fun onFailure(call: Call, e: IOException) {
-            callback(Return(
+            Return(
                 url,
                 file,
-                null,
-                null,
+                response.code,
+                response.message,
+                null
+            )
+        } catch(e: NullPointerException) {
+            Return(
+                url,
+                file,
+                response.code,
+                response.message,
                 e
-            ))
-            latch.countDown()
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            callback(try {
-                val stream = response.body?.byteStream()
-                FileUtils.copyInputStreamToFile(stream, file)
-                stream!!.close()
-
-                Return(
-                    url,
-                    file,
-                    response.code,
-                    response.message,
-                    null
-                )
-            } catch(e: NullPointerException) {
-                Return(
-                    url,
-                    file,
-                    response.code,
-                    response.message,
-                    e
-                )
-            })
-            latch.countDown()
-        }
-
-        data class Return(
-            val url: URL,
-            val file: File,
-            val responseCode: Int?,
-            val responseMessage: String?,
-            val exception: Exception?
-        )
+            )
+        })
+        latch.countDown()
     }
 
-    enum class ExistingFileBehaviour {
-        OVERWRITE,
-        SKIP
-    }
+    data class Return(
+        val url: URL,
+        val file: File,
+        val responseCode: Int?,
+        val responseMessage: String?,
+        val exception: Exception?
+    )
 }
