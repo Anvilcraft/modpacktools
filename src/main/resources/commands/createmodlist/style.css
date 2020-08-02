@@ -1,21 +1,30 @@
 a:link {
-    color: #ff5555;
+    color: #f55;
 }
 a:visited {
-    color: #cc55cc;
+    color: #c5c;
 }
 body {
-    background-color: #333333;
-    color: #ffffff;
+    background-color: #333;
+    color: #fff;
     font-family: sans-serif;
 }
 .img {
     width: 100px;
 }
 td {
-    border: #999999 3px;
+    border: #999 3px;
     border-style: solid;
 }
 .description {
     width: 100%;
+}
+.contributor_owner {
+    color: #f55;
+}
+.contributor_author {
+    color: orange;
+}
+.contributor_contributor {
+    color: green;
 }

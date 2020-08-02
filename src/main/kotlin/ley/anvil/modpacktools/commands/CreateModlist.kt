@@ -7,7 +7,6 @@ import ley.anvil.addonscript.wrapper.ArtifactDestination
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.command.CommandReturn
-import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
@@ -47,7 +46,7 @@ object CreateModlist : ICommand {
             .help("What format the mod list should be made in")
 
         parser.addArgument("file")
-            .type(FileArgumentType())
+            .type(FileArgumentType().verifyNotExists())
             .help("What file the mod list should be written to")
 
         parser
@@ -55,9 +54,6 @@ object CreateModlist : ICommand {
 
     override fun execute(args: Namespace): CommandReturn {
         val outFile = args.get<File>("file")
-
-        if(outFile.exists())
-            return fail("File already exists!")
 
         val all = args.get<Boolean>("all") ?: false
         val sorting: Comparator<MetaData> = when(args.get<Sorting>("sorting")!!) {
@@ -128,6 +124,8 @@ object CreateModlist : ICommand {
                             td(ul(
                                 each(it.contributors) {contr ->
                                     li(contr.key)
+                                        //for contributor colors
+                                        .withClass("contributor_${contr.value.getOrElse(0) {""}}")
                                 }
                             )),
                             td(each(it.description?.asList() ?: listOf()) {d: String ->
