@@ -13,7 +13,7 @@ import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
-import net.sourceforge.argparse4j.impl.type.EnumStringArgumentType
+import net.sourceforge.argparse4j.impl.type.CaseInsensitiveEnumNameArgumentType
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
@@ -34,7 +34,7 @@ object CreateModlist : ICommand {
             .description(helpMessage)
 
         parser.addArgument("-s", "--sorting")
-            .type(EnumStringArgumentType(Sorting::class.java))
+            .type(CaseInsensitiveEnumNameArgumentType(Sorting::class.java))
             .setDefault(Sorting.NAME)
             .help("Determines How mods should be sorted")
 
@@ -43,7 +43,7 @@ object CreateModlist : ICommand {
             .help("If this is set, all relations and not only be mods will be in the list")
 
         parser.addArgument("type")
-            .type(EnumStringArgumentType(Format::class.java))
+            .type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
             .help("What format the mod list should be made in")
 
         parser.addArgument("file")
