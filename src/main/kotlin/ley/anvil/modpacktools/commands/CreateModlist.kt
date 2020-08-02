@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileWriter
 import java.nio.charset.StandardCharsets
+import java.util.Comparator.comparing
 
 @LoadCommand
 object CreateModlist : ICommand {
@@ -32,12 +33,17 @@ object CreateModlist : ICommand {
         val parser = ArgumentParsers.newFor("CreateModlist").build()
             .description(helpMessage)
 
+        parser.addArgument("-s", "--sorting")
+            .type(EnumStringArgumentType(Sorting::class.java))
+            .setDefault(Sorting.NAME)
+            .help("Determines How mods should be sorted")
+
         parser.addArgument("-a", "--all")
             .action(storeTrue())
             .help("If this is set, all relations and not only be mods will be in the list")
 
         parser.addArgument("type")
-            .type(EnumStringArgumentType(Formats::class.java))
+            .type(EnumStringArgumentType(Format::class.java))
             .help("What format the mod list should be made in")
 
         parser.addArgument("file")
@@ -54,20 +60,26 @@ object CreateModlist : ICommand {
             return fail("File already exists!")
 
         val all = args.get<Boolean>("all") ?: false
-        return if(args.get<Formats>("type") == Formats.HTML)
-            doHtml(outFile, all)
-        else
-            doCsv(outFile, all)
+        val sorting: Comparator<MetaData> = when(args.get<Sorting>("sorting")!!) {
+            Sorting.NAME -> comparing<MetaData, String> {it.name}
+            Sorting.DESCRIPTION -> comparing<MetaData, String> {it.description?.getOrNull(0) ?: ""}
+            Sorting.AUTHOR -> comparing<MetaData, String> {it.contributors.keys.first()}
+        }
+
+        return when(args.get<Format>("type")!!) {
+            Format.HTML -> doHtml(outFile, all, sorting)
+            Format.CSV -> doCsv(outFile, all, sorting)
+        }
     }
 
-    private fun doCsv(outFile: File, all: Boolean): CommandReturn {
+    private fun doCsv(outFile: File, all: Boolean, sorting: Comparator<MetaData>): CommandReturn {
         println("Making CSV file $outFile")
         val printer = CSVPrinter(FileWriter(outFile), CSVFormat.EXCEL.withDelimiter(';'))
 
         printer.printRecord("Name", "Contributors", "Link")
         printer.println()
 
-        for(mod in getMods(all)) {
+        for(mod in getMods(all, sorting)) {
             printer.printRecord(
                 mod.name,
                 mod.contributors.keys.joinToString(),
@@ -79,7 +91,7 @@ object CreateModlist : ICommand {
         return success("Wrote CSV file")
     }
 
-    private fun doHtml(outFile: File, all: Boolean): CommandReturn {
+    private fun doHtml(outFile: File, all: Boolean, sorting: Comparator<MetaData>): CommandReturn {
         println("Making HTML file $outFile")
         val writer = FileWriter(outFile)
         val html = html(
@@ -97,7 +109,7 @@ object CreateModlist : ICommand {
                         td(b("Contributors")),
                         td(b("Description"))
                     ),
-                    each(getMods(all)) {
+                    each(getMods(all, sorting)) {
                         tr(
                             td(if(it.icon != null) a(
                                 img().withSrc(it.icon)
@@ -132,7 +144,7 @@ object CreateModlist : ICommand {
         return success("Wrote HTML file")
     }
 
-    private fun getMods(all: Boolean): List<MetaData> {
+    private fun getMods(all: Boolean, sorting: Comparator<MetaData>): List<MetaData> {
         println("Getting mods...")
         val asJson = MPJH.asWrapper
         val mods = mutableListOf<MetaData>()
@@ -145,8 +157,14 @@ object CreateModlist : ICommand {
                 toGet.add(rel.file.artifact)
         }
         mods.addAll(ASWrapper.getMetaData(toGet.toTypedArray()).values)
-        return mods.sortedBy {m -> m.name?.toLowerCase()}
+        return mods.sortedWith(sorting)
     }
 
-    enum class Formats {HTML, CSV}
+    enum class Format {
+        HTML, CSV
+    }
+
+    enum class Sorting {
+        NAME, DESCRIPTION, AUTHOR
+    }
 }

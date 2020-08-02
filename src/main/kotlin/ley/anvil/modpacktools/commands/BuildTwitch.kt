@@ -51,7 +51,6 @@ object BuildTwitch : ICommand {
         ml.manifest?.write(writer)
         writer.close()
 
-        //TODO download & install files
         for(uf in ml.links) {
             if(uf.key.isFile) {
                 if(!uf.key.isASDirSet)
