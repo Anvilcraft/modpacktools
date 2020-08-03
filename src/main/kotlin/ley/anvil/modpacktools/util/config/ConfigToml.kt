@@ -32,7 +32,7 @@ class ConfigToml : Toml() {
     @Suppress("UNCHECKED_CAST")
     fun <T> getPath(vararg path: String): T? {
         var toml: Toml = this
-        path.slice(0..path.size - 2).forEach {toml = toml.getTable(it)}
+        path.slice(0..path.size - 2).forEach {toml = toml.getTable(it) ?: return null}
         return toml.get(path[path.size - 1]) as? T
     }
 
