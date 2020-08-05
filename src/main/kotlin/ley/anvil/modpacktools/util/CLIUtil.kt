@@ -32,7 +32,7 @@ fun PrintStream.fPrint(x: Any?, vararg formatters: (String) -> String) {
  * @param x the object to print
  * @param formatters the formatters to apply to x, they will be ran in the order they are supplied in
  */
-fun PrintStream.fPrintln(x: Any?, vararg formatters: (String) -> String) = this.fPrint("${x.toString()}\n", *formatters)
+fun PrintStream.fPrintln(x: Any?, vararg formatters: (String) -> String) = this.fPrint(x, *formatters, {"$it\n"})
 
 /**
  * applies all given formatters to the string representation of the object and then prints it to stdout
@@ -41,4 +41,4 @@ fun PrintStream.fPrintln(x: Any?, vararg formatters: (String) -> String) = this.
  * @param x the object to print
  * @param formatters the formatters to apply to x, they will be ran in the order they are supplied in
  */
-fun fPrintln(x: Any?, vararg formatters: (String) -> String) = fPrint("${x.toString()}\n", *formatters)
+fun fPrintln(x: Any?, vararg formatters: (String) -> String) = System.out.fPrintln(x, *formatters)
