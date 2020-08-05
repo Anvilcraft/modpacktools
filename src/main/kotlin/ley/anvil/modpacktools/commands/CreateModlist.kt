@@ -6,10 +6,12 @@ import ley.anvil.addonscript.wrapper.ASWrapper
 import ley.anvil.addonscript.wrapper.ArtifactDestination
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
+import ley.anvil.modpacktools.TERMC
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.fPrintln
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.CaseInsensitiveEnumNameArgumentType
@@ -88,7 +90,7 @@ object CreateModlist : ICommand {
     }
 
     private fun doHtml(outFile: File, all: Boolean, sorting: Comparator<MetaData>): CommandReturn {
-        println("Making HTML file $outFile")
+        fPrintln("Making HTML file $outFile", TERMC.green)
         val writer = FileWriter(outFile)
         val html = html(
             head(
@@ -106,6 +108,7 @@ object CreateModlist : ICommand {
                         td(b("Description"))
                     ),
                     each(getMods(all, sorting)) {
+                        fPrintln("Writing relation ${it.name}", TERMC.blue)
                         tr(
                             td(if(it.icon != null) a(
                                 img().withSrc(it.icon)

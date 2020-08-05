@@ -2,12 +2,14 @@ package ley.anvil.modpacktools.commands
 
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
+import ley.anvil.modpacktools.TERMC
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.downloadFiles
+import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.mergeTo
 import ley.anvil.modpacktools.util.toZip
@@ -68,16 +70,16 @@ object BuildTwitch : ICommand {
         }
 
         downloadFiles(toDownload.mapValues {it.value.first}, {
-            println("downloaded file ${it.file}")
-            println(installFile(toDownload[it.url]!!.second, it.file))
+            fPrintln("downloaded file ${it.file}", TERMC.brightBlue)
+            fPrintln(installFile(toDownload[it.url]!!.second, it.file), TERMC.green)
         }, false)
 
-        println("Creating zip")
+        fPrintln("Creating zip", TERMC.brightGreen)
         val zip = ZipOutputStream(FileOutputStream("${dir.path}/$archiveName.zip"))
         tmp.toZip(zip)
         zip.flush()
         zip.close()
-        return success("Successfully build twitch zip")
+        return success("Successfully built twitch zip")
     }
 
     private fun installFile(installer: String, file: File): String {

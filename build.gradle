@@ -35,6 +35,8 @@ dependencies {
     compile 'org.reflections:reflections:0.9.12'
     compile 'commons-io:commons-io:2.7'
     compile 'net.sourceforge.argparse4j:argparse4j:0.8.1'
+    compile 'com.diogonunes:JColor:5.0.0'
+    compile 'com.github.ajalt:mordant:1.2.1'
 }
 
 compileKotlin {

@@ -1,10 +1,12 @@
 package ley.anvil.modpacktools.commands
 
+import ley.anvil.modpacktools.TERMC
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.runCommand
+import ley.anvil.modpacktools.util.fPrint
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
@@ -24,7 +26,7 @@ object Shell : ICommand {
         println("enter \'exit\' to exit the shell\n")
 
         while(true) {
-            print(">>>")
+            fPrint(">>>", TERMC.bold, TERMC.cyan)
             val arg = readLine()!!.split(' ')
             if(arg.getOrNull(0) == "exit")
                 break
