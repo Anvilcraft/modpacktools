@@ -43,9 +43,9 @@ dependencies {
         "net.sourceforge.argparse4j:argparse4j:0.8.1",
         "com.github.ajalt:mordant:1.2.1",
         "com.google.code.gson:gson:2.8.6"
-    ).forEach {"compile"(it)}
+    ).forEach {implementation(it)}
 
-    "testCompile"("junit:junit:4.12")
+    testImplementation("junit:junit:4.12")
 }
 
 //This exists so options can be set for test compile and compile at once
@@ -71,6 +71,6 @@ task("fatJar", Jar::class) {
         attributes["Implementation-Title"] = jarName
     }
     archiveBaseName.set(jarName)
-    from(configurations.compile.get().map {if(it.isDirectory) it else zipTree(it)})
+    from(configurations.runtimeClasspath.get().map {if(it.isDirectory) it else zipTree(it)})
     with(tasks.jar.get())
 }
