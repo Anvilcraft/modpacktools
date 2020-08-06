@@ -19,7 +19,9 @@ fun fPrint(x: Any?, vararg formatters: (String) -> String) = System.out.fPrint(x
  * @param x the object to print
  * @param formatters the formatters to apply to x, they will be ran in the order they are supplied in
  */
-fun PrintStream.fPrint(x: Any?, vararg formatters: (String) -> String) = this.print(x.toString().accumulate(*formatters))
+fun PrintStream.fPrint(x: Any?, vararg formatters: (String) -> String) = this.print(
+    formatters.fold(x.toString()) {acc, f -> f(acc)}
+)
 
 /**
  * applies all given formatters to the string representation of the object and then prints it with a newline at the end

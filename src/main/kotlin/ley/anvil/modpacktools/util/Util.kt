@@ -160,16 +160,3 @@ fun File.unzip(outputDir: File) {
     }
     stream.close()
 }
-
-/**
- * applies the supplied functions to the object.
- *
- * @receiver the object to run the functions on
- * @param functions the functions to run on the object (in sequential order)
- * @return the result when all functions have been applied
- */
-fun <T> T.accumulate(vararg functions: (T) -> T): T {
-    var tmp = this
-    functions.forEach {tmp = it(tmp)}
-    return tmp
-}
