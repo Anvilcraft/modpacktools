@@ -1,5 +1,13 @@
 import groovy.lang.GroovyObject
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinTest
+
+val jarName = "ModPackTools"
+group = "ley.anvil"
+application.mainClassName = "ley.anvil.modpacktools.Main"
+
+version = "1.1-SNAPSHOT"
 
 plugins {
     id("java")
@@ -8,12 +16,6 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
 }
 
-val jarName = "ModPackTools"
-group = "ley.anvil"
-application.mainClassName = "ley.anvil.modpacktools.Main"
-
-version = "1.1-SNAPSHOT"
-
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -21,28 +23,36 @@ configure<JavaPluginConvention> {
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+    maven("https://jitpack.io") //only needed because tilera is unable to make a maven server
 }
 
 dependencies {
-    //Compile
+    //Implementation
     arrayOf(
+        //Anvilcraft
         "com.github.Anvilcraft:addonscript-java:c412911790",
 
+        //Kotlin
         "org.jetbrains.kotlin:kotlin-reflect:1.3.72",
         "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
         "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8",
-        "com.squareup.okhttp3:okhttp:4.8.0",
-        "com.moandjiezana.toml:toml4j:0.7.2",
-        "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT",
+
+        //IO
+        "com.squareup.okhttp3:okhttp:4.8.0", //HTTP client
+        "com.moandjiezana.toml:toml4j:0.7.2", //Config file parser
         "org.apache.commons:commons-csv:1.8",
-        "org.slf4j:slf4j-simple:2.0.0-alpha1",
-        "com.j2html:j2html:1.4.0",
-        "org.reflections:reflections:0.9.12",
+        "com.j2html:j2html:1.4.0", //HTML builder
         "commons-io:commons-io:2.7",
-        "net.sourceforge.argparse4j:argparse4j:0.8.1",
-        "com.github.ajalt:mordant:1.2.1",
-        "com.google.code.gson:gson:2.8.6"
+        "com.google.code.gson:gson:2.8.6",
+        "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT",
+
+        //CLI
+        "net.sourceforge.argparse4j:argparse4j:0.8.1", //CLI argument parser
+        "com.github.ajalt:mordant:1.2.1", //CLI text formatting
+
+        //Other
+        "org.slf4j:slf4j-simple:2.0.0-alpha1",
+        "org.reflections:reflections:0.9.12"
     ).forEach {implementation(it)}
 
     testImplementation("junit:junit:4.12")
@@ -60,17 +70,19 @@ val kOptions = {obj: GroovyObject ->
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {kOptions(this as GroovyObject)}
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinTest> {kOptions(this as GroovyObject)}
+tasks.withType<KotlinCompile> {kOptions(this as GroovyObject)}
+tasks.withType<KotlinTest> {kOptions(this as GroovyObject)}
 
-@Suppress("DEPRECATION")
+@Suppress("DEPRECATION") //"version" is deprecated and archiveVersion cannot be set outside task scope. Too Bad!
 task("fatJar", Jar::class) {
-    manifest {
-        attributes["Main-Class"] = application.mainClassName
-        attributes["Implementation-Version"] = version
-        attributes["Implementation-Title"] = jarName
+    group = "build" //sets group in intelliJ's side bar
+    manifest.attributes.apply {
+        set("Main-Class", application.mainClassName)
+        set("Implementation-Version", version)
+        set("Implementation-Title", jarName)
     }
     archiveBaseName.set(jarName)
-    from(configurations.runtimeClasspath.get().map {if(it.isDirectory) it else zipTree(it)})
+    from(configurations.runtimeClasspath.get()
+            .map {if(it.isDirectory) it else zipTree(it)})
     with(tasks.jar.get())
 }
