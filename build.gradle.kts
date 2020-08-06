@@ -1,9 +1,13 @@
 import groovy.lang.GroovyObject
+import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
-val jarName = "ModPackTools"
+//settings for manifest and stuff
+val specTitle = "ModPackTools"
+val jarName = specTitle
+val implTitle = "ley.anvil.modpacktools"
 group = "ley.anvil"
 application.mainClassName = "ley.anvil.modpacktools.Main"
 
@@ -17,20 +21,20 @@ plugins {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = VERSION_1_8
+    targetCompatibility = VERSION_1_8
 }
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io") //only needed because tilera is unable to make a maven server
+    maven("https://data.tilera.xyz/maven/") //Used for Addonscript
 }
 
 dependencies {
     //Implementation
     arrayOf(
         //Anvilcraft
-        "com.github.Anvilcraft:addonscript-java:c412911790",
+        "ley.anvil:addonscript:1.0-SNAPSHOT",
 
         //Kotlin
         "org.jetbrains.kotlin:kotlin-reflect:1.3.72",
@@ -44,7 +48,6 @@ dependencies {
         "com.j2html:j2html:1.4.0", //HTML builder
         "commons-io:commons-io:2.7",
         "com.google.code.gson:gson:2.8.6",
-        "com.github.TheRandomLabs:CurseAPI:master-SNAPSHOT",
 
         //CLI
         "net.sourceforge.argparse4j:argparse4j:0.8.1", //CLI argument parser
@@ -79,7 +82,8 @@ task("fatJar", Jar::class) {
     manifest.attributes.apply {
         set("Main-Class", application.mainClassName)
         set("Implementation-Version", version)
-        set("Implementation-Title", jarName)
+        set("Specification-Title", specTitle)
+        set("Implementation-Title", implTitle)
     }
     archiveBaseName.set(jarName)
     from(configurations.runtimeClasspath.get()
