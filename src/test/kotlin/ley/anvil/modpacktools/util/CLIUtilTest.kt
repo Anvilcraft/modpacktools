@@ -6,13 +6,24 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class CLIUtilTest {
+    fun prntStr(f: PrintStream.() -> Unit): String =
+        ByteArrayOutputStream().apply {
+            PrintStream(this, true, "UTF-8").use(f)
+        }.use {it.toString("UTF-8")}
+
     @Test
     fun testFPrintln() {
-        val baos = ByteArrayOutputStream()
-        PrintStream(baos, true, "UTF-8").use {
-            it.fPrintln("Test String", {s -> "$s Formatted"})
-        }
+        assertEquals(
+            "Test String Formatted\n",
+            prntStr {this.fPrintln("Test String", {"$it Formatted"})}
+        )
+    }
 
-        assertEquals("Test String Formatted\n", baos.toString("UTF-8"))
+    @Test
+    fun testFPrintlnNull() {
+        assertEquals(
+            "null\n",
+            prntStr {this.fPrintln(null)}
+        )
     }
 }
