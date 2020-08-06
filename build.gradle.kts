@@ -52,6 +52,7 @@ dependencies {
         //CLI
         "net.sourceforge.argparse4j:argparse4j:0.8.1", //CLI argument parser
         "com.github.ajalt:mordant:1.2.1", //CLI text formatting
+        "com.jakewharton.fliptables:fliptables:1.1.0", //Text Table
 
         //Other
         "org.slf4j:slf4j-simple:2.0.0-alpha1",

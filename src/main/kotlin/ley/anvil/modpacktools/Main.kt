@@ -3,6 +3,7 @@
 package ley.anvil.modpacktools
 
 import com.github.ajalt.mordant.TermColors
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import ley.anvil.modpacktools.command.CommandLoader
 import ley.anvil.modpacktools.command.ICommand
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit.MICROSECONDS
 val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
 val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.pathOrException<String>("Locations/src"), "modpack.json"))}
-val GSON by lazy {GsonBuilder().setPrettyPrinting().create()}
+val GSON: Gson by lazy {GsonBuilder().setPrettyPrinting().create()}
 //TODO thinks term has no color support on win with edited registry. probably no big deal
 val TERMC by lazy {TermColors()}
 

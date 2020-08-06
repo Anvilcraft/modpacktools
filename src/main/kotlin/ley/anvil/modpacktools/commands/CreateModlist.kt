@@ -2,8 +2,6 @@ package ley.anvil.modpacktools.commands
 
 import j2html.TagCreator.*
 import j2html.utils.CSSMin.compressCss
-import ley.anvil.addonscript.wrapper.ASWrapper
-import ley.anvil.addonscript.wrapper.ArtifactDestination
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.TERMC
@@ -57,7 +55,7 @@ object CreateModlist : ICommand {
     override fun execute(args: Namespace): CommandReturn {
         val outFile = args.get<File>("file")
 
-        val all = args.get<Boolean>("all") ?: false
+        val all = args.getBoolean("all")
         val sorting: Comparator<MetaData> = when(args.get<Sorting>("sorting")!!) {
             Sorting.NAME -> comparing<MetaData, String> {it.name}
             Sorting.DESCRIPTION -> comparing<MetaData, String> {it.description?.getOrNull(0) ?: ""}
@@ -145,21 +143,7 @@ object CreateModlist : ICommand {
         return success("Wrote HTML file")
     }
 
-    private fun getMods(all: Boolean, sorting: Comparator<MetaData>): List<MetaData> {
-        println("Getting mods...")
-        val asJson = MPJH.asWrapper
-        val mods = mutableListOf<MetaData>()
-        val toGet = mutableListOf<ArtifactDestination>()
-
-        for(rel in asJson!!.defaultVersion.getRelations(arrayOf("included"), /*null means all*/ if(all) null else arrayOf("mod"))) {
-            if(rel.hasLocalMeta())
-                mods.add(rel.localMeta)
-            else if(rel.hasFile() && rel.file.isArtifact)
-                toGet.add(rel.file.artifact)
-        }
-        mods.addAll(ASWrapper.getMetaData(toGet.toTypedArray()).values)
-        return mods.sortedWith(sorting)
-    }
+    private fun getMods(all: Boolean, sorting: Comparator<MetaData>): List<MetaData> = MPJH.getModMetas(if(all) null else arrayOf("mod")).sortedWith(sorting)
 
     enum class Format {
         HTML, CSV
