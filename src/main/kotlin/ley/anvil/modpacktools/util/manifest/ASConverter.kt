@@ -3,7 +3,14 @@ package ley.anvil.modpacktools.util.manifest
 import ley.anvil.addonscript.curse.ManifestJSON
 import ley.anvil.addonscript.wrapper.ASWrapper
 
-fun convertAStoManifest(addonscript: ASWrapper): ManifestLinksPair {
+/**
+ * Converts a AS file to a twitch manifest
+ *
+ * @param addonscript the file to convert
+ * @param shouldAddLink if a link for a given relation should be added, does not get called if the relations is a curseforge artifact
+ */
+@JvmOverloads
+fun convertAStoManifest(addonscript: ASWrapper, shouldAddLink: (ASWrapper.RelationWrapper) -> Boolean = {true}): ManifestLinksPair {
     val ml = ManifestLinksPair()
     val ver = addonscript.defaultVersion
     val manifest = ManifestJSON()
@@ -43,10 +50,10 @@ fun convertAStoManifest(addonscript: ASWrapper): ManifestLinksPair {
                     val f = ManifestJSON.File()
                     f.fileID = art.fileID
                     f.projectID = art.projectID
-                    f.required = rel.options.contains("required")
+                    f.required = "required" in rel.options
                     manifest.files.add(f)
                 }
-            } else if(rel.options.contains("required")) {
+            } else if(shouldAddLink(rel)) {
                 ml.links[file.get()] = file.file.installer
             }
         }

@@ -11,7 +11,7 @@ val implTitle = "ley.anvil.modpacktools"
 group = "ley.anvil"
 application.mainClassName = "ley.anvil.modpacktools.Main"
 
-version = "1.1-SNAPSHOT"
+version = "1.2-SNAPSHOT"
 
 plugins {
     id("java")

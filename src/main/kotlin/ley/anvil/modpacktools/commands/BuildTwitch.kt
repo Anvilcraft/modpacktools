@@ -14,6 +14,7 @@ import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.mergeTo
 import ley.anvil.modpacktools.util.toZip
 import net.sourceforge.argparse4j.ArgumentParsers
+import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.io.FileUtils
@@ -31,6 +32,11 @@ object BuildTwitch : ICommand {
     override val parser: ArgumentParser = ArgumentParsers.newFor("BuildTwitch")
         .build()
         .description(helpMessage)
+        .apply {
+            addArgument("-a", "--all")
+                .help("Downloads all relations instead of just required ones")
+                .action(storeTrue())
+        }
 
     private val tempDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/tempDir"))}
     private val tmp: File by lazy {File(tempDir, "twitch")}
@@ -38,7 +44,7 @@ object BuildTwitch : ICommand {
 
     override fun execute(args: Namespace): CommandReturn {
         val wr = MPJH.asWrapper!!
-        val ml = convertAStoManifest(wr)
+        val ml = convertAStoManifest(wr) {args.getBoolean("all") || "required" in it.options}
         val archiveName = "${wr.json.id}-${wr.defaultVersion.versionName}-twitch"
         val dir = File("./build")
         val toDownload = mutableMapOf<URL, Pair<File, String>>()
@@ -57,7 +63,7 @@ object BuildTwitch : ICommand {
             if(uf.key.isFile) {
                 if(!uf.key.isASDirSet)
                     uf.key.setASDir(srcDir)
-                val file = uf.key.getFile()
+                val file = uf.key.file
                 if(file.exists()) {
                     installFile(uf.value, file).apply {println(this)}
                 }
