@@ -5,8 +5,8 @@ package ley.anvil.modpacktools
 import com.github.ajalt.mordant.TermColors
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.jakewharton.fliptables.FlipTable
 import ley.anvil.modpacktools.command.CommandLoader
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.util.ModpackJsonHandler
 import ley.anvil.modpacktools.util.config.Config
 import ley.anvil.modpacktools.util.config.MissingConfigValueException
@@ -24,6 +24,7 @@ val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
 val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.pathOrException<String>("Locations/src"), "modpack.json"))}
 val GSON: Gson by lazy {GsonBuilder().setPrettyPrinting().create()}
+
 //TODO thinks term has no color support on win with edited registry. probably no big deal
 val TERMC by lazy {TermColors()}
 
@@ -40,11 +41,17 @@ private val httpClient0 = lazy {
 }
 val HTTP_CLIENT by httpClient0
 private val helpMessage by lazy {
-    val sb = StringBuilder().append("Commands:\n\n")
-    LOADER.commands.entries.stream()
-        //Sort by name
-        .sorted(Comparator.comparing {e: MutableMap.MutableEntry<String, ICommand> -> e.key})
-        .forEach {sb.append("${it.key}: ${it.value.helpMessage}\n")}
+    val sb = StringBuilder()
+        .append(TERMC.yellow("Start a Command with the \'-h\' argument to get more information\nCommands:\n\n"))
+        .append(
+            FlipTable.of(
+                arrayOf("Command", "Help"),
+                LOADER.commands
+                    //Sort by name
+                    .mapValues {it.value.helpMessage}
+                    .map {arrayOf(it.key, it.value)}.toTypedArray()
+            )
+        )
     sb.toString()
 }
 
