@@ -33,23 +33,39 @@ object DownloadMods : ICommand {
         parser.addArgument("-f", "--force")
             .action(storeTrue())
             .help("if true, mods that are already in the download folder will be downloaded again")
+
+        parser.addArgument("-a", "--all")
+            .action(storeTrue())
+            .help("Downloads not only mods but everything with a dir installer")
+
         parser
     }
 
     override fun execute(args: Namespace): CommandReturn {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
-        for (rel in json!!.defaultVersion!!.getRelations(arrayOf("client"), arrayOf("mod"))!!)
-            if (rel.hasFile())
+        for(rel in json!!.defaultVersion!!.getRelations(arrayOf("client"), if(args.getBoolean("all")) null else arrayOf("mod"))!!) //TODO only client? what if someone wants a server?
+            if(rel.hasFile())
                 fileList.add(rel.file.get())
 
         downloadFiles(
             fileList.stream()
                 .filter {it.isURL}
-                .filter {it.installer == "internal.dir:mods"}
+                .filter {
+                    val (installer, dir) = it.installer.split(':')
+
+                    installer == "internal.dir" && (args.getBoolean("all") || dir == "mods")
+                }
                 .collect(toMap<FileOrLink, URL, File>(
                     {URL(it.link)},
-                    {args.get<File>("dir")},
+                    {
+                        val dir = it.installer.split(':').last()
+
+                        if(args.getBoolean("all"))
+                            File(args.get<File>("dir"), dir)
+                        else
+                            args.get<File>("dir")
+                    },
                     {_: File, f: File -> f}
                 )),
             {r: DownloadFileTask.Return ->
