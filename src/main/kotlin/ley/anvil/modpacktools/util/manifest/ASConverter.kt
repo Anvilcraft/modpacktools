@@ -44,15 +44,13 @@ fun convertAStoManifest(addonscript: ASWrapper, shouldAddLink: (ASWrapper.Relati
             if(file.file.installer == "internal.jar") {
                 println("internal.jar is not supported on Curse")
                 continue
-            } else if(file.isArtifact) {
+            } else if(file.isArtifact && file.artifact.isCurseforge) {
                 val art = file.artifact
-                if(art.isCurseforge) {
-                    val f = ManifestJSON.File()
-                    f.fileID = art.fileID
-                    f.projectID = art.projectID
-                    f.required = "required" in rel.options
-                    manifest.files.add(f)
-                }
+                val f = ManifestJSON.File()
+                f.fileID = art.fileID
+                f.projectID = art.projectID
+                f.required = "required" in rel.options
+                manifest.files.add(f)
             } else if(shouldAddLink(rel)) {
                 ml.links[file.get()] = file.file.installer
             }
