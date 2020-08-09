@@ -99,7 +99,7 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             artifactId = "modpacktools"
-            artifact(tasks.getByName("fatJar"))
+            artifact(tasks["fatJar"])
         }
     }
 
