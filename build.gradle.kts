@@ -18,6 +18,7 @@ plugins {
     id("application")
     id("idea")
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
+    id("org.jetbrains.dokka") version "1.4.0-rc"
 }
 
 configure<JavaPluginConvention> {
@@ -27,6 +28,7 @@ configure<JavaPluginConvention> {
 
 repositories {
     mavenCentral()
+    jcenter() //Used for dokka jdoc
     maven("https://data.tilera.xyz/maven/") //Used for Addonscript
 }
 
