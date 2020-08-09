@@ -83,12 +83,12 @@ fun runCommand(args: Array<out String>) {
                     else
                         errorColor
                 )
-        } catch(e: NoSuchElementException) {
+        } catch(_: NoSuchElementException) {
             fPrintln("Command ${args[0]} not found", *errorColor)
             println(helpMessage)
-        } catch(e: CommandLoader.ConfigMissingException) {
+        } catch(_: CommandLoader.ConfigMissingException) {
             fPrintln("Config is needed for this command yet it is not present. Run 'init' to generate", *errorColor)
-        } catch(e: CommandLoader.ModpackJsonMissingException) {
+        } catch(_: CommandLoader.ModpackJsonMissingException) {
             fPrintln("Modpackjson is needed for this command yet it is not present.", *errorColor)
         } catch(e: MissingConfigValueException) {
             fPrintln("The Config value ${e.missingValue} was expected but was not found", *errorColor)

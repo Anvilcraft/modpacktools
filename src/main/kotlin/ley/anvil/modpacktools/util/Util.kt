@@ -36,6 +36,8 @@ import kotlin.reflect.jvm.isAccessible
  * @return the file content as JsonObject
  */
 fun File.readAsJson(): JsonObject {
+    require(this.exists()) {"File to read doesn't exist"}
+
     val reader = FileReader(this)
     val out = JsonParser.parseReader(reader) as JsonObject
     reader.close()
@@ -89,8 +91,8 @@ fun URL.httpPostStr(payload: String, contentType: String, additionalHeaders: Map
  * @return the sanitized URL
  */
 
-fun URL.sanitize(): URL? {
-    return try {
+fun URL.sanitize(): URL? =
+    try {
         URI(this.protocol,
             this.userInfo,
             this.host,
@@ -101,7 +103,6 @@ fun URL.sanitize(): URL? {
     } catch(e: Exception) {
         null
     }
-}
 
 /**
  * gets a function from the receiver and makes it accessible
@@ -127,6 +128,8 @@ infix fun File.mergeTo(other: File): File = File(this.path, other.name)
  * @param zStream the zip stream to write to
  */
 fun Path.toZip(zStream: ZipOutputStream) {
+    require(this.toFile().exists()) {"File must exist"}
+
     Files.walkFileTree(this, object : SimpleFileVisitor<Path>() {
         override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
             zStream.putNextEntry(ZipEntry(this@toZip.relativize(file).toString()))
@@ -152,6 +155,8 @@ fun File.toZip(zStream: ZipOutputStream) = this.toPath().toZip(zStream)
  * @param outputDir the dir to unzip to
  */
 fun File.unzip(outputDir: File) {
+    require(this.exists()) {"File must exist"}
+
     val stream = ZipInputStream(FileInputStream(this))
     while(true) {
         val entry = stream.nextEntry ?: break

@@ -17,6 +17,7 @@ plugins {
     id("java")
     id("application")
     id("idea")
+    id("maven-publish")
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
     id("org.jetbrains.dokka") version "1.4.0-rc"
 }
@@ -90,6 +91,25 @@ task("fatJar", Jar::class) {
     }
     archiveBaseName.set(jarName)
     from(configurations.runtimeClasspath.get()
-            .map {if(it.isDirectory) it else zipTree(it)})
+        .map {if(it.isDirectory) it else zipTree(it)})
     with(tasks.jar.get())
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifactId = "modpacktools"
+            artifact(tasks.getByName("fatJar"))
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://data.tilera.xyz/maven/")
+            credentials {
+                username = findProperty("mvnUsername") as String?
+                password = findProperty("mvnPassword") as String?
+            }
+        }
+    }
 }
