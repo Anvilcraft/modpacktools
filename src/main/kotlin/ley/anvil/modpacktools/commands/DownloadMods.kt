@@ -15,7 +15,6 @@ import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
 import java.net.URL
-import java.nio.file.Paths
 import java.util.stream.Collectors.toMap
 
 @LoadCommand
@@ -50,7 +49,7 @@ object DownloadMods : ICommand {
                 .filter {it.installer == "internal.dir:mods"}
                 .collect(toMap<FileOrLink, URL, File>(
                     {URL(it.link)},
-                    {File(args.get<File>("dir"), Paths.get(URL(it.link).path).fileName.toString())},
+                    {args.get<File>("dir")},
                     {_: File, f: File -> f}
                 )),
             {r: DownloadFileTask.Return ->
@@ -61,7 +60,8 @@ object DownloadMods : ICommand {
                         println(r.exception.message)
                 }
             },
-            args.get<Boolean>("force") == null
+            !args.getBoolean("force"),
+            true
         )
         return success()
     }
