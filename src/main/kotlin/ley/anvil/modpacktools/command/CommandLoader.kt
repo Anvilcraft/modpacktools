@@ -37,7 +37,7 @@ class CommandLoader(private val pkg: String) {
             if(this.needsModpackjson && MPJH.asWrapper == null)
                 throw ModpackJsonMissingException()
 
-            return this.execute(this.parser.parseArgs(args.slice(1 until  args.size).toTypedArray()))
+            return this.execute(this.parser.parseArgs(args.slice(1 until args.size).toTypedArray()))
         }
     }
 
@@ -54,7 +54,7 @@ class CommandLoader(private val pkg: String) {
             .map {it.kotlin}
             //Only annotated classes
             //Cannot use it.hasAnnotation because it is experimental and requires everything to be annotated so this makes more sense
-            .filter {it.annotations.any {ann ->  ann.annotationClass == LoadCommand::class}}
+            .filter {it.annotations.any {ann -> ann.annotationClass == LoadCommand::class}}
             //can be object
             .map {it.objectInstance ?: it}
             //create new instance if it is a class, otherwise just add the current instance

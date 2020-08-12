@@ -12,7 +12,7 @@ class ModpackJsonHandler(val modpackJsonFile: File) {
     //Null if no file exists
     val asWrapper: ASWrapper?
         get() {
-            return if(modpackJsonFile.exists()) {
+            return if (modpackJsonFile.exists()) {
                 val reader = FileReader(modpackJsonFile)
                 val ret = ASWrapper(AddonscriptJSON.read(reader, AddonscriptJSON::class.java))
                 reader.close()
@@ -25,10 +25,15 @@ class ModpackJsonHandler(val modpackJsonFile: File) {
         val mods = mutableListOf<MetaData>()
         val toGet = mutableListOf<ArtifactDestination>()
 
-        for(rel in asJson!!.defaultVersion.getRelations(arrayOf("included"), /*TODO TILERA MAKE THIS NONSESE TAKE A PREDICATE AND NOT A LIST*/types)) {
-            if(rel.hasLocalMeta())
+        for (
+            rel in asJson!!.defaultVersion.getRelations(
+                arrayOf("included"), /*TODO TILERA MAKE THIS NONSESE TAKE A PREDICATE AND NOT A LIST*/
+                types
+            )
+        ) {
+            if (rel.hasLocalMeta())
                 mods.add(rel.localMeta)
-            else if(rel.hasFile() && rel.file.isArtifact)
+            else if (rel.hasFile() && rel.file.isArtifact)
                 toGet.add(rel.file.artifact)
         }
         mods.addAll(ASWrapper.getMetaData(toGet.toTypedArray()).values)

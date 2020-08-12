@@ -93,13 +93,15 @@ fun URL.httpPostStr(payload: String, contentType: String, additionalHeaders: Map
 
 fun URL.sanitize(): URL? =
     try {
-        URI(this.protocol,
+        URI(
+            this.protocol,
             this.userInfo,
             this.host,
             this.port,
             this.path,
             this.query,
-            this.ref).toURL()
+            this.ref
+        ).toURL()
     } catch(e: Exception) {
         null
     }
@@ -130,14 +132,17 @@ infix fun File.mergeTo(other: File): File = File(this.path, other.name)
 fun Path.toZip(zStream: ZipOutputStream) {
     require(this.toFile().exists()) {"File must exist"}
 
-    Files.walkFileTree(this, object : SimpleFileVisitor<Path>() {
-        override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
-            zStream.putNextEntry(ZipEntry(this@toZip.relativize(file).toString()))
-            Files.copy(file, zStream)
-            zStream.closeEntry()
-            return FileVisitResult.CONTINUE
+    Files.walkFileTree(
+        this,
+        object : SimpleFileVisitor<Path>() {
+            override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
+                zStream.putNextEntry(ZipEntry(this@toZip.relativize(file).toString()))
+                Files.copy(file, zStream)
+                zStream.closeEntry()
+                return FileVisitResult.CONTINUE
+            }
         }
-    })
+    )
 }
 
 /**

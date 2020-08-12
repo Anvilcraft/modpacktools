@@ -5,10 +5,12 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ConfigTomlTest {
-    val toml = ConfigToml().read("""
+    val toml = ConfigToml().read(
+        """
             [SomeCategory]
                 someValue = 123
-        """.trimIndent()) as ConfigToml
+        """.trimIndent()
+    ) as ConfigToml
 
     @Test
     fun testGetPath() {

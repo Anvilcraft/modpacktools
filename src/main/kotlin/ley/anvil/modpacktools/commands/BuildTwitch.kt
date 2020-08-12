@@ -75,10 +75,14 @@ object BuildTwitch : ICommand {
             }
         }
 
-        downloadFiles(toDownload.mapValues {it.value.first}, {
-            fPrintln("downloaded file ${it.file}", TERMC.brightBlue)
-            fPrintln(installFile(toDownload[it.url]!!.second, it.file), TERMC.green)
-        }, false)
+        downloadFiles(
+            toDownload.mapValues {it.value.first},
+            {
+                fPrintln("downloaded file ${it.file}", TERMC.brightBlue)
+                fPrintln(installFile(toDownload[it.url]!!.second, it.file), TERMC.green)
+            },
+            false
+        )
 
         fPrintln("Creating zip", TERMC.brightGreen)
         val zip = ZipOutputStream(FileOutputStream("${dir.path}/$archiveName.zip"))
@@ -120,7 +124,7 @@ object BuildTwitch : ICommand {
             }
 
             else -> {
-                return "The installer '${installer}' is not supported for Twitch export"
+                return "The installer '$installer' is not supported for Twitch export"
             }
         }
         return "installed $file"

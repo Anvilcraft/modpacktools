@@ -13,7 +13,6 @@ import java.nio.file.Paths
 import java.util.concurrent.CountDownLatch
 import java.util.stream.Collectors
 
-
 private var latch: CountDownLatch? = null
 
 /**
@@ -56,44 +55,48 @@ open class DownloadFileTask(
         .build()
 
     override fun onFailure(call: Call, e: IOException) {
-        callback(Return(
-            url,
-            file,
-            null,
-            null,
-            e
-        ))
+        callback(
+            Return(
+                url,
+                file,
+                null,
+                null,
+                e
+            )
+        )
         latch.countDown()
     }
 
     override fun onResponse(call: Call, response: Response) {
-        callback(try {
-            val outFile =
-                if(resolveFileName)
-                    file mergeTo Paths.get(response.request.url.toUri().path).fileName.toFile()
-                else
-                    file
+        callback(
+            try {
+                val outFile =
+                    if(resolveFileName)
+                        file mergeTo Paths.get(response.request.url.toUri().path).fileName.toFile()
+                    else
+                        file
 
-            val stream = response.body?.byteStream()
-            FileUtils.copyInputStreamToFile(stream, outFile)
-            stream!!.close()
+                val stream = response.body?.byteStream()
+                FileUtils.copyInputStreamToFile(stream, outFile)
+                stream!!.close()
 
-            Return(
-                url,
-                outFile,
-                response.code,
-                response.message,
-                null
-            )
-        } catch(e: NullPointerException) {
-            Return(
-                url,
-                file,
-                response.code,
-                response.message,
-                e
-            )
-        })
+                Return(
+                    url,
+                    outFile,
+                    response.code,
+                    response.message,
+                    null
+                )
+            } catch(e: NullPointerException) {
+                Return(
+                    url,
+                    file,
+                    response.code,
+                    response.message,
+                    e
+                )
+            }
+        )
         latch.countDown()
     }
 

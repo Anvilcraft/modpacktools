@@ -15,7 +15,7 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.io.File
-import java.util.*
+import java.util.NoSuchElementException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MICROSECONDS
 
@@ -54,7 +54,6 @@ private val helpMessage by lazy {
         )
     sb.toString()
 }
-
 
 fun main(args: Array<out String>) {
     runCommand(args)

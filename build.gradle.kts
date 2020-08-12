@@ -120,9 +120,11 @@ publishing {
 ktlint {
     disabledRules.set(
         setOf(
+            //Disable really stupid rules
             "comment-spacing",
             "curly-spacing",
-            "keyword-spacing"
+            "keyword-spacing",
+            "no-wildcard-imports"
         )
     )
 }

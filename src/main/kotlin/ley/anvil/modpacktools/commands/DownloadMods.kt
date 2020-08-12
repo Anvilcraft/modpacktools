@@ -56,18 +56,20 @@ object DownloadMods : ICommand {
 
                     installer == "internal.dir" && (args.getBoolean("all") || dir == "mods")
                 }
-                .collect(toMap<FileOrLink, URL, File>(
-                    {URL(it.link)},
-                    {
-                        val dir = it.installer.split(':').last()
+                .collect(
+                    toMap<FileOrLink, URL, File>(
+                        {URL(it.link)},
+                        {
+                            val dir = it.installer.split(':').last()
 
-                        if(args.getBoolean("all"))
-                            File(args.get<File>("dir"), dir)
-                        else
-                            args.get<File>("dir")
-                    },
-                    {_: File, f: File -> f}
-                )),
+                            if(args.getBoolean("all"))
+                                File(args.get<File>("dir"), dir)
+                            else
+                                args.get<File>("dir")
+                        },
+                        {_: File, f: File -> f}
+                    )
+                ),
             {r: DownloadFileTask.Return ->
                 //synced so error message gets printed under response
                 synchronized(this) {

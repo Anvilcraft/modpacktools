@@ -27,7 +27,6 @@ fun convertAStoManifest(addonscript: ASWrapper, shouldAddLink: (ASWrapper.Relati
     manifest.version = ver.versionName
     manifest.author = addonscript.json!!.meta!!.contributors[0].name
 
-
     for(rel in ver.getRelations(arrayOf("client"), null)) {
         if(rel.isModloader) {
             if(rel.relation.id == "forge") {

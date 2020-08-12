@@ -6,4 +6,4 @@ package ley.anvil.modpacktools.command
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
-annotation class LoadCommand {}
+annotation class LoadCommand

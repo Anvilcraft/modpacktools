@@ -18,11 +18,13 @@ class UtilTest {
         val tmpDir = TemporaryFolder().apply {create()}
         val testFile = tmpDir.newFile()
 
-        testFile.writeText("""
+        testFile.writeText(
+            """
             {
                 "someKey": "someValue"
             }
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         assertEquals("someValue", testFile.readAsJson()["someKey"].asString)
     }

@@ -37,49 +37,57 @@ object ListRelations : ICommand {
 
         if(args.getBoolean("csv")) {
             metas.forEach {
-                println("${it.name};${it.contributors.keys.joinToString()};${it.website}".let {s ->
-                    if(args.getBoolean("description"))
-                        s + ";${it.description?.joinToString() ?: ""}"
-                    else s
-                })
+                println(
+                    "${it.name};${it.contributors.keys.joinToString()};${it.website}".let {s ->
+                        if(args.getBoolean("description"))
+                            s + ";${it.description?.joinToString() ?: ""}"
+                        else s
+                    }
+                )
             }
         } else {
             val data = mutableListOf<Array<out String>>()
 
             metas.forEach {
-                data.add(run {
-                    val row = mutableListOf(
-                        it.name ?: "",
-                        it.contributors.keys.joinToString().let {s ->
-                            //Limit size
-                            if(args.getBoolean("nolimit") || s.length < 50)
-                                s
-                            else
-                                s.substring(0..47) + "..."
-                        },
-                        it.website ?: ""
-                    )
+                data.add(
+                    run {
+                        val row = mutableListOf(
+                            it.name ?: "",
+                            it.contributors.keys.joinToString().let {s ->
+                                //Limit size
+                                if(args.getBoolean("nolimit") || s.length < 50)
+                                    s
+                                else
+                                    s.substring(0..47) + "..."
+                            },
+                            it.website ?: ""
+                        )
 
-                    if(args.getBoolean("description"))
-                        row.add(it.description?.joinToString(" ") ?: "")
+                        if(args.getBoolean("description"))
+                            row.add(it.description?.joinToString(" ") ?: "")
 
-                    row.toTypedArray()
-                })
+                        row.toTypedArray()
+                    }
+                )
             }
 
-            println(FlipTable.of(run {
-                val header = mutableListOf(
-                    "Name",
-                    "Contributors",
-                    "Website"
+            println(
+                FlipTable.of(
+                    run {
+                        val header = mutableListOf(
+                            "Name",
+                            "Contributors",
+                            "Website"
+                        )
+
+                        if(args.getBoolean("description"))
+                            header.add("Description")
+
+                        header.toTypedArray()
+                    },
+                    data.toTypedArray()
                 )
-
-                if(args.getBoolean("description"))
-                    header.add("Description")
-
-                header.toTypedArray()
-            },
-                data.toTypedArray()))
+            )
         }
         return success()
     }

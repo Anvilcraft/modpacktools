@@ -1,6 +1,19 @@
 package ley.anvil.modpacktools.commands
 
-import j2html.TagCreator.*
+import j2html.TagCreator.a
+import j2html.TagCreator.b
+import j2html.TagCreator.body
+import j2html.TagCreator.each
+import j2html.TagCreator.head
+import j2html.TagCreator.html
+import j2html.TagCreator.img
+import j2html.TagCreator.li
+import j2html.TagCreator.p
+import j2html.TagCreator.style
+import j2html.TagCreator.table
+import j2html.TagCreator.td
+import j2html.TagCreator.tr
+import j2html.TagCreator.ul
 import j2html.utils.CSSMin.compressCss
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
@@ -108,35 +121,43 @@ object CreateModlist : ICommand {
                     each(getMods(all, sorting)) {
                         fPrintln("Writing relation ${it.name}", TERMC.blue)
                         tr(
-                            td(if(it.icon != null) a(
-                                img().withSrc(it.icon)
-                                    .withClass("img")
-                            ).withHref(it.website) else null
+                            td(
+                                if(it.icon != null) a(
+                                    img().withSrc(it.icon)
+                                        .withClass("img")
+                                ).withHref(it.website) else null
                             ),
-                            td(run {
-                                val a = a(it.name)
-                                    //Open in new tab
-                                    .withRel("noopener noreferrer")
-                                    .withTarget("_blank")
-                                if(it.website != null)
-                                    a.withHref(it.website)
-                                a
-                            }),
-                            td(ul(
-                                each(it.contributors) {contr ->
-                                    li(contr.key)
-                                        //for contributor colors
-                                        .withClass("contributor_${contr.value.getOrElse(0) {""}}")
+                            td(
+                                run {
+                                    val a = a(it.name)
+                                        //Open in new tab
+                                        .withRel("noopener noreferrer")
+                                        .withTarget("_blank")
+                                    if(it.website != null)
+                                        a.withHref(it.website)
+                                    a
                                 }
-                            )),
-                            td(each(it.description?.asList() ?: listOf()) {d: String ->
-                                p(d)
-                            })
+                            ),
+                            td(
+                                ul(
+                                    each(it.contributors) {contr ->
+                                        li(contr.key)
+                                            //for contributor colors
+                                            .withClass("contributor_${contr.value.getOrElse(0) {""}}")
+                                    }
+                                )
+                            ),
+                            td(
+                                each(it.description?.asList() ?: listOf()) {d: String ->
+                                    p(d)
+                                }
+                            )
                                 .withClass("description")
                         )
                     }
                 )
-            )).render()
+            )
+        ).render()
 
         writer.write(html)
         writer.close()
