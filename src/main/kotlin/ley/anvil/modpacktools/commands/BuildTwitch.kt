@@ -8,10 +8,10 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.addonscript.installFile
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
-import ley.anvil.modpacktools.util.mergeTo
 import ley.anvil.modpacktools.util.toZip
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
@@ -49,6 +49,7 @@ object BuildTwitch : ICommand {
         val dir = File("./build")
         val toDownload = mutableMapOf<URL, Pair<File, String>>()
         val srcDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/src"))}
+        val overrides by lazy {File(tmp, "overrides")}
         dir.mkdirs()
         tmp.mkdirs()
         downloadDir.mkdirs()
@@ -65,7 +66,7 @@ object BuildTwitch : ICommand {
                     uf.key.setASDir(srcDir)
                 val file = uf.key.file
                 if(file.exists()) {
-                    installFile(uf.value, file).apply {println(this)}
+                    installFile(uf.value, file, overrides).printf()
                 }
             } else if(uf.key.isURL) {
                 val filePath = URL(uf.key.link)
@@ -79,7 +80,7 @@ object BuildTwitch : ICommand {
             toDownload.mapValues {it.value.first},
             {
                 fPrintln("downloaded file ${it.file}", TERMC.brightBlue)
-                fPrintln(installFile(toDownload[it.url]!!.second, it.file), TERMC.green)
+                installFile(toDownload[it.url]!!.second, it.file, overrides).printf()
             },
             false
         )
@@ -90,43 +91,5 @@ object BuildTwitch : ICommand {
         zip.flush()
         zip.close()
         return success("Successfully built twitch zip")
-    }
-
-    private fun installFile(installer: String, file: File): String {
-        when {
-            installer == "internal.override" -> {
-                when {
-                    file.extension == "zip" -> {
-                        TODO("unzip to ./.mpt/twitch/overrides")
-                    }
-
-                    file.isDirectory -> {
-                        FileUtils.copyDirectory(file, File(tmp, "overrides"))
-                    }
-
-                    else -> {
-                        return "Only zip files can be used with 'internal.override'"
-                    }
-                }
-            }
-
-            installer.startsWith("internal.dir") -> {
-                val parts = installer.split(":")
-                if(parts.size >= 2) {
-                    FileUtils.copyFile(file, File(File(tmp, "overrides"), parts[1]) mergeTo file)
-                } else {
-                    return "No directory was given for installer 'internal.dir'"
-                }
-            }
-
-            installer.startsWith("internal.zip") -> {
-                TODO()
-            }
-
-            else -> {
-                return "The installer '$installer' is not supported for Twitch export"
-            }
-        }
-        return "installed $file"
     }
 }

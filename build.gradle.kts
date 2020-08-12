@@ -46,7 +46,7 @@ dependencies {
         "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8",
 
         //IO
-        "com.squareup.okhttp3:okhttp:4.8.0", //HTTP client
+        "com.squareup.okhttp3:okhttp:4.8.1", //HTTP client
         "com.moandjiezana.toml:toml4j:0.7.2", //Config file parser
         "org.apache.commons:commons-csv:1.8",
         "com.j2html:j2html:1.4.0", //HTML builder
@@ -68,6 +68,7 @@ dependencies {
 
 //This exists so options can be set for test compile and compile at once
 val kOptions = {obj: GroovyObject ->
+
 //This is sorta garbage, but if i would do this the proper way Intelli'ntJ would think its an error even tho it is not
     obj.withGroovyBuilder {
         "kotlinOptions" {

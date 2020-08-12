@@ -8,6 +8,7 @@ import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.DownloadFileTask
 import ley.anvil.modpacktools.util.downloadFiles
+import ley.anvil.modpacktools.util.fPrintln
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
@@ -44,7 +45,12 @@ object DownloadMods : ICommand {
     override fun execute(args: Namespace): CommandReturn {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
-        for(rel in json!!.defaultVersion!!.getRelations(arrayOf("client"), if(args.getBoolean("all")) null else arrayOf("mod"))!!) //TODO only client? what if someone wants a server?
+        for(
+            rel in json!!.defaultVersion!!.getRelations(
+                arrayOf("client"),
+                if(args.getBoolean("all")) null else arrayOf("mod")
+            )!!
+        ) //TODO only client? what if someone wants a server?
             if(rel.hasFile())
                 fileList.add(rel.file.get())
 
@@ -71,11 +77,10 @@ object DownloadMods : ICommand {
                     )
                 ),
             {r: DownloadFileTask.Return ->
-                //synced so error message gets printed under response
-                synchronized(this) {
-                    println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
-                    if(r.exception != null)
-                        println(r.exception.message)
+                println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
+                if(r.exception != null) {
+                    fPrintln("ERROR DOWNLOADING ${r.url}")
+                    r.exception.printStackTrace()
                 }
             },
             !args.getBoolean("force"),
