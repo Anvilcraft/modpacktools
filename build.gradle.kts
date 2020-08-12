@@ -20,6 +20,7 @@ plugins {
     id("maven-publish")
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
     id("org.jetbrains.dokka") version "1.4.0-rc"
+    id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
 }
 
 configure<JavaPluginConvention> {
@@ -90,8 +91,10 @@ task("fatJar", Jar::class) {
         set("Implementation-Title", implTitle)
     }
     archiveBaseName.set(jarName)
-    from(configurations.runtimeClasspath.get()
-        .map {if(it.isDirectory) it else zipTree(it)})
+    from(
+        configurations.runtimeClasspath.get()
+            .map {if(it.isDirectory) it else zipTree(it)}
+    )
     with(tasks.jar.get())
 }
 
@@ -112,4 +115,14 @@ publishing {
             }
         }
     }
+}
+
+ktlint {
+    disabledRules.set(
+        setOf(
+            "comment-spacing",
+            "curly-spacing",
+            "keyword-spacing"
+        )
+    )
 }
