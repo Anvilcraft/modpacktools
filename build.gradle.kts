@@ -128,3 +128,14 @@ ktlint {
         )
     )
 }
+
+//RUN THIS BEFORE COMMITTING! (i recommend adding a git pre-commit hook for this)
+tasks.register("preCommit") {
+    group = "verification"
+    description = "runs the linter and tests"
+
+    dependsOn(
+        "ktlintCheck",
+        "test"
+    )
+}
