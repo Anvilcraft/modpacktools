@@ -28,4 +28,9 @@ class UtilTest {
 
         assertEquals("someValue", testFile.readAsJson()["someKey"].asString)
     }
+
+    @Test
+    fun httpPostString() {
+        assertEquals(200, URL("https://postman-echo.com/post").httpPostStr("Testing").code)
+    }
 }

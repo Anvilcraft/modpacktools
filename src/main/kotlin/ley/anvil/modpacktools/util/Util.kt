@@ -9,10 +9,10 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileReader
 import java.io.IOException
 import java.net.URI
 import java.net.URL
@@ -38,10 +38,7 @@ import kotlin.reflect.jvm.isAccessible
 fun File.readAsJson(): JsonObject {
     require(this.exists()) {"File to read doesn't exist"}
 
-    val reader = FileReader(this)
-    val out = JsonParser.parseReader(reader) as JsonObject
-    reader.close()
-    return out
+    return JsonParser.parseReader(reader()) as JsonObject
 }
 
 /**
@@ -54,17 +51,14 @@ fun File.readAsJson(): JsonObject {
  * @return the response as string
  */
 @Throws(IOException::class)
-fun URL.httpPostStr(payload: String, contentType: MediaType? = null, additionalHeaders: Map<String, String>): String? {
-    val builder = Request.Builder()
-        .url(this)
-        .post(payload.toRequestBody(contentType))
-
-    additionalHeaders.forEach {builder.addHeader(it.key, it.value)}
-    val resp = HTTP_CLIENT.newCall(builder.build()).execute()
-    val ret = resp.body?.string()
-    resp.close()
-    return ret
-}
+fun URL.httpPostStr(payload: String, contentType: MediaType? = null, additionalHeaders: Map<String, String>? = null): Response =
+    HTTP_CLIENT.newCall(
+        Request.Builder()
+            .url(this)
+            .post(payload.toRequestBody(contentType))
+            .apply {additionalHeaders?.forEach {addHeader(it.key, it.value)}}
+            .build()
+    ).execute()
 
 /**
  * sends a http post request
@@ -76,7 +70,7 @@ fun URL.httpPostStr(payload: String, contentType: MediaType? = null, additionalH
  * @return the response as string
  */
 @Throws(IOException::class)
-fun URL.httpPostStr(payload: String, contentType: String, additionalHeaders: Map<String, String>): String? {
+fun URL.httpPostStr(payload: String, contentType: String, additionalHeaders: Map<String, String>? = null): Response {
     return this.httpPostStr(
         payload,
         contentType.toMediaType(),
