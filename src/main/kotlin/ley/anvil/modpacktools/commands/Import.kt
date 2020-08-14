@@ -1,5 +1,6 @@
 package ley.anvil.modpacktools.commands
 
+import com.google.gson.stream.JsonReader
 import ley.anvil.addonscript.curse.ManifestJSON
 import ley.anvil.modpacktools.GSON
 import ley.anvil.modpacktools.MPJH
@@ -8,12 +9,12 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
-import ley.anvil.modpacktools.util.readAsJson
 import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
+import java.io.FileReader
 import java.io.FileWriter
 
 @LoadCommand
@@ -41,7 +42,7 @@ object Import : ICommand {
         println("Converting...")
         MPJH.modpackJsonFile.parentFile.mkdirs()
         val mpjWriter = FileWriter(MPJH.modpackJsonFile)
-        GSON.fromJson<ManifestJSON>(manifest.readAsJson(), ManifestJSON::class.java).toAS().write(mpjWriter)
+        GSON.fromJson<ManifestJSON>(JsonReader(FileReader(manifest)), ManifestJSON::class.java).toAS().write(mpjWriter)
         mpjWriter.close()
         return success("Converted sucessfully")
     }

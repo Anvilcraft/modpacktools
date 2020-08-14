@@ -7,6 +7,14 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.JSON
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN
 
+//settings for manifest and stuff
+val specTitle = "ModPackTools"
+val artifact = specTitle.toLowerCase()
+val jarName = specTitle
+val implTitle = "ley.anvil.modpacktools"
+val jarVersion = "1.2-SNAPSHOT"
+group = "ley.anvil"
+
 application.mainClassName = "ley.anvil.modpacktools.Main"
 
 plugins {
@@ -37,8 +45,9 @@ dependencies {
         "ley.anvil:addonscript:1.0-SNAPSHOT",
 
         //Kotlin
-        "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
         "org.jetbrains.kotlin:kotlin-reflect:1.3.72",
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8",
 
         //IO
         "com.squareup.okhttp3:okhttp:4.8.1", //HTTP client
@@ -82,11 +91,11 @@ task("fatJar", Jar::class) {
     group = "build" //sets group in intelliJ's side bar
     manifest.attributes.apply {
         set("Main-Class", application.mainClassName)
-        set("Implementation-Version", findProperty("jarVersion"))
-        set("Specification-Title", findProperty("specTitle"))
-        set("Implementation-Title", findProperty("implTitle"))
+        set("Implementation-Version", jarVersion)
+        set("Specification-Title", specTitle)
+        set("Implementation-Title", implTitle)
     }
-    archiveBaseName.set("${findProperty("jarName")}-${findProperty("jarVersion")}")
+    archiveBaseName.set(jarName)
     from(
         configurations.runtimeClasspath.get()
             .map {if(it.isDirectory) it else zipTree(it)}
@@ -97,7 +106,7 @@ task("fatJar", Jar::class) {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = findProperty("artifact") as String
+            artifactId = artifact
             artifact(tasks["fatJar"])
         }
     }
