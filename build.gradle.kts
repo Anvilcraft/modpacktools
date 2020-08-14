@@ -3,6 +3,9 @@ import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.JSON
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN
 
 //settings for manifest and stuff
 val specTitle = "ModPackTools"
@@ -119,9 +122,20 @@ publishing {
 }
 
 ktlint {
+    version.set("0.37.2")
+    enableExperimentalRules.set(true)
+    coloredOutput.set(true)
+
+    reporters {
+        reporter(HTML)
+        reporter(JSON)
+        reporter(PLAIN)
+    }
+
     disabledRules.set(
         setOf(
             //Disable really stupid rules
+            "experimental:multiline-if-else",
             "comment-spacing",
             "curly-spacing",
             "keyword-spacing",
