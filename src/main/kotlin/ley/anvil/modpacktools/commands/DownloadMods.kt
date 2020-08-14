@@ -39,10 +39,10 @@ object DownloadMods : AbstractCommand("DownloadMods") {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
         for(
-        rel in json!!.defaultVersion!!.getRelations(
-            arrayOf("client"),
-            if(args.getBoolean("all")) null else arrayOf("mod")
-        )!!
+            rel in json!!.defaultVersion!!.getRelations(
+                arrayOf("client"),
+                if(args.getBoolean("all")) null else arrayOf("mod")
+            )!!
         ) //TODO only client? what if someone wants a server?
             if(rel.hasFile())
                 fileList.add(rel.file.get())

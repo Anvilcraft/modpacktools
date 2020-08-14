@@ -29,7 +29,9 @@ object ListRelations : AbstractCommand("ListRelations") {
     }
 
     override fun execute(args: Namespace): CommandReturn {
-        val metas = MPJH.getModMetas().sortedBy {it.name}
+        val metas = MPJH.getModMetas().sortedWith(
+            Comparator {a, b -> b.name?.let {a.name?.compareTo(it, true)} ?: 0}
+        )
 
         if(args.getBoolean("csv")) {
             metas.forEach {
