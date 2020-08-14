@@ -8,13 +8,13 @@ import java.net.URL
 
 class UtilTest {
     @Test
-    fun testSanitize() = assertEquals(URL("https://example.com/test%20test"), URL("https://example.com/test test").sanitize())
+    fun sanitize() = assertEquals(URL("https://example.com/test%20test"), URL("https://example.com/test test").sanitize())
 
     @Test
-    fun testMergeTo() = assertEquals(File("testing/dir"), File("testing") mergeTo File("dir"))
+    fun mergeTo() = assertEquals(File("testing/dir"), File("testing") mergeTo File("dir"))
 
     @Test
-    fun testReadAsJson() {
+    fun readAsJson() {
         val tmpDir = TemporaryFolder().apply {create()}
         val testFile = tmpDir.newFile()
 

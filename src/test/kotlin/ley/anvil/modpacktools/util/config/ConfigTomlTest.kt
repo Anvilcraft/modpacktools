@@ -5,7 +5,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class ConfigTomlTest {
-    val toml = ConfigToml().read(
+    private val toml = ConfigToml().read(
         """
             [SomeCategory]
                 someValue = 123
@@ -13,7 +13,7 @@ class ConfigTomlTest {
     ) as ConfigToml
 
     @Test
-    fun testGetPath() {
+    fun getPath() {
         //String getPath
         assertEquals(
             123L,
@@ -22,19 +22,22 @@ class ConfigTomlTest {
 
         //should be null if invalid category
         assertNull(toml.getPath("NonExistentCategory/val"))
+    }
 
+    @Test
+    fun `getPath with invalid path`() {
         //should be null if invalid value
         assertNull(toml.getPath("SomeCategory/val"))
     }
 
     //should throw exception
     @Test(expected = MissingConfigValueException::class)
-    fun testPathOrExceptionMissing() {
+    fun `pathOrException with invalid path`() {
         toml.pathOrException<Long>("Asd/asd")
     }
 
     @Test
-    fun testPathOrException() {
+    fun pathOrException() {
         assertEquals(
             123L,
             toml.pathOrException("SomeCategory/someValue")
