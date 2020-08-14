@@ -9,6 +9,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN
 
 //settings for manifest and stuff
 val specTitle = "ModPackTools"
+val artifact = specTitle.toLowerCase()
 val jarName = specTitle
 val implTitle = "ley.anvil.modpacktools"
 val jarVersion = "1.2-SNAPSHOT"
@@ -105,7 +106,7 @@ task("fatJar", Jar::class) {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = "modpacktools"
+            artifactId = artifact
             artifact(tasks["fatJar"])
         }
     }
@@ -153,4 +154,36 @@ tasks.register("preCommit") {
         "ktlintCheck",
         "test"
     )
+}
+
+//tilera, please run this
+tasks.register("installPreCommitHook") {
+    group = "verification"
+    description = "Installs a git pre-commit hook that runs the preCommit task"
+
+    doLast {
+        val git = File(project.projectDir, ".git")
+
+        if(!git.exists()) {
+            logger.warn("git dir not found")
+            return@doLast
+        }
+
+        val hookFile = git.resolve("hooks/pre-commit")
+        logger.info("hook file: $hookFile")
+
+        if(hookFile.exists()) {
+            logger.warn("Hook file already exists!")
+            return@doLast
+        }
+
+        hookFile.writeText(
+            """
+                #!/bin/sh
+
+                ###PRE COMMIT HOOK
+                ./gradlew preCommit
+            """.trimIndent()
+        )
+    }
 }
