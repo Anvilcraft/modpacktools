@@ -7,6 +7,7 @@ import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.DownloadFileTask
+import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
@@ -22,28 +23,30 @@ object DownloadMods : AbstractCommand("DownloadMods") {
     override val helpMessage: String = "Downloads all mods."
 
     override fun ArgumentParser.addArgs() {
-        addArgument("dir")
-            .type(FileArgumentType().verifyCanCreate())
-            .help("the directory to download the mods to")
+        arg("dir") {
+            type(FileArgumentType().verifyCanCreate())
+            help("the directory to download the mods to")
+        }
 
-        addArgument("-f", "--force")
-            .action(storeTrue())
-            .help("if true, mods that are already in the download folder will be downloaded again")
+        arg("-f", "--force") {
+            action(storeTrue())
+            help("if true, mods that are already in the download folder will be downloaded again")
+        }
 
-        addArgument("-a", "--all")
-            .action(storeTrue())
-            .help("Downloads not only mods but everything with a dir installer")
+        arg("-a", "--all") {
+            action(storeTrue())
+            help("Downloads not only mods but everything with a dir installer")
+        }
     }
 
     override fun execute(args: Namespace): CommandReturn {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
         for(
-            rel in json!!.defaultVersion!!.getRelations(
-                arrayOf("client"),
-                if(args.getBoolean("all")) null else arrayOf("mod")
-            )!!
-        ) //TODO only client? what if someone wants a server?
+            rel in json!!.defaultVersion!!.getRelations {
+                "client" in it.options && (args.getBoolean("all") || it.type == "mod")
+            }
+        )
             if(rel.hasFile())
                 fileList.add(rel.file.get())
 

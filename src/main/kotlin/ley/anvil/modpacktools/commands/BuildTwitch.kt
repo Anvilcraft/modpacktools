@@ -9,6 +9,7 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.addonscript.installFile
+import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
@@ -33,9 +34,10 @@ object BuildTwitch : AbstractCommand("BuildTwitch") {
     private val downloadDir by lazy {File(tempDir, "download")}
 
     override fun ArgumentParser.addArgs() {
-        addArgument("-a", "--all")
-            .help("Downloads all relations instead of just required ones")
-            .action(storeTrue())
+        arg("-a", "--all") {
+            help("Downloads all relations instead of just required ones")
+            action(storeTrue())
+        }
     }
 
     override fun execute(args: Namespace): CommandReturn {

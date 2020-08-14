@@ -6,6 +6,7 @@ import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.arg
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
@@ -15,17 +16,20 @@ object ListRelations : AbstractCommand("ListRelations") {
     override val helpMessage: String = "Lists the relations of this mod pack"
 
     override fun ArgumentParser.addArgs() {
-        addArgument("-c", "--csv")
-            .help("Doesn't format as a table but instead as csv (separated by ;)")
-            .action(storeTrue())
+        arg("-c", "--csv") {
+            help("Doesn't format as a table but instead as csv (separated by ;)")
+            action(storeTrue())
+        }
 
-        addArgument("-n", "--nolimit")
-            .help("does not limit the size of the authors list")
-            .action(storeTrue())
+        arg("-n", "--nolimit") {
+            help("does not limit the size of the authors list")
+            action(storeTrue())
+        }
 
-        addArgument("-d", "--description")
-            .help("adds the description of relations to the list")
-            .action(storeTrue())
+        arg("-d", "--description") {
+            help("adds the description of relations to the list")
+            action(storeTrue())
+        }
     }
 
     override fun execute(args: Namespace): CommandReturn {

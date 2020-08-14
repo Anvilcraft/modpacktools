@@ -22,6 +22,7 @@ import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.fPrintln
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.CaseInsensitiveEnumNameArgumentType
@@ -41,22 +42,26 @@ object CreateModlist : AbstractCommand("CreateModlist") {
     override val helpMessage: String = "This creates a modlist either as html or csv file."
 
     override fun ArgumentParser.addArgs() {
-        addArgument("-s", "--sorting")
-            .type(CaseInsensitiveEnumNameArgumentType(Sorting::class.java))
-            .setDefault(Sorting.NAME)
-            .help("Determines How mods should be sorted")
+        arg("-s", "--sorting") {
+            default = Sorting.NAME
+            type(CaseInsensitiveEnumNameArgumentType(Sorting::class.java))
+            help("Determines How mods should be sorted")
+        }
 
-        addArgument("-a", "--all")
-            .action(storeTrue())
-            .help("If this is set, all relations and not only be mods will be in the list")
+        arg("-a", "--all") {
+            action(storeTrue())
+            help("If this is set, all relations and not only be mods will be in the list")
+        }
 
-        addArgument("type")
-            .type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
-            .help("What format the mod list should be made in")
+        arg("type") {
+            type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
+            help("What format the mod list should be made in")
+        }
 
-        addArgument("file")
-            .type(FileArgumentType().verifyNotExists())
-            .help("What file the mod list should be written to")
+        arg("file") {
+            type(FileArgumentType().verifyNotExists())
+            help("What file the mod list should be written to")
+        }
     }
 
     override fun execute(args: Namespace): CommandReturn {

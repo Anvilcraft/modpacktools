@@ -5,6 +5,8 @@ package ley.anvil.modpacktools.util
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import ley.anvil.modpacktools.HTTP_CLIENT
+import net.sourceforge.argparse4j.inf.Argument
+import net.sourceforge.argparse4j.inf.ArgumentParser
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -163,4 +165,15 @@ fun File.unzip(outputDir: File) {
         FileUtils.copyToFile(stream, outfile)
     }
     stream.close()
+}
+
+/**
+ * this makes arguments for ArgumentParsers look cleaner
+ *
+ * @receiver the parser to add the argument to
+ * @param names the names the argument will have
+ * @param block this will be called on the argument. it is for settings like help message
+ */
+fun ArgumentParser.arg(vararg names: String, block: Argument.() -> Unit) {
+    addArgument(*names).block()
 }

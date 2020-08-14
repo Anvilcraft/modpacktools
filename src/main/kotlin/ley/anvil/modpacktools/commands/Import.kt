@@ -8,6 +8,7 @@ import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.readAsJson
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
 import net.sourceforge.argparse4j.inf.ArgumentParser
@@ -20,9 +21,10 @@ object Import : AbstractCommand("Import") {
     override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
 
     override fun ArgumentParser.addArgs() {
-        addArgument("manifest")
-            .help("the manifest file to import")
-            .type(FileArgumentType().verifyIsFile())
+        arg("manifest") {
+            help("the manifest file to import")
+            type(FileArgumentType().verifyIsFile())
+        }
     }
 
     override val needsModpackjson: Boolean = false
