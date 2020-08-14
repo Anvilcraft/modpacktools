@@ -2,23 +2,17 @@ package ley.anvil.modpacktools.commands
 
 import ley.anvil.addonscript.v1.AddonscriptJSON
 import ley.anvil.modpacktools.CONFIG
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
-import net.sourceforge.argparse4j.ArgumentParsers
-import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
 import java.io.FileWriter
 
 @LoadCommand
-object Init : ICommand {
-    override val name: String = "init"
-    override val helpMessage: String = "initializes the MPT dev environment (currently only creates config file)"
-    override val parser: ArgumentParser = ArgumentParsers.newFor("Init")
-        .build()
-        .description(helpMessage)
+object Init : AbstractCommand("Init") {
+    override val helpMessage: String = "initializes the MPT dev environment"
 
     override val needsConfig: Boolean = false
     override val needsModpackjson: Boolean = false
@@ -35,7 +29,7 @@ object Init : ICommand {
 
         val asJson = File(srcDir, "modpack.json")
 
-        if (!asJson.exists()) {
+        if(!asJson.exists()) {
             //create new file
             val writer = FileWriter(asJson)
             val addsc = AddonscriptJSON.create()

@@ -4,16 +4,14 @@ import ley.anvil.addonscript.wrapper.FileOrLink
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.TERMC
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.addonscript.installFile
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.toZip
-import net.sourceforge.argparse4j.ArgumentParsers
-import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -22,13 +20,8 @@ import java.net.URL
 import java.util.zip.ZipOutputStream
 
 @LoadCommand
-object BuildTechnic : ICommand {
-    override val name = "buildtechnic"
+object BuildTechnic : AbstractCommand("BuildTechnic") {
     override val helpMessage = "Builds a technic export"
-
-    override val parser: ArgumentParser = ArgumentParsers.newFor("BuildTechnic")
-        .build()
-        .description(helpMessage)
 
     private val tempDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/tempDir"))}
     private val tmp: File by lazy {File(tempDir, "technic")}

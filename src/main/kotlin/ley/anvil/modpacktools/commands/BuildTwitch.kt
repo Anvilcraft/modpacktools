@@ -3,17 +3,16 @@ package ley.anvil.modpacktools.commands
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.TERMC
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.addonscript.installFile
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.toZip
-import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
@@ -26,21 +25,18 @@ import java.net.URL
 import java.util.zip.ZipOutputStream
 
 @LoadCommand
-object BuildTwitch : ICommand {
-    override val name: String = "buildtwitch"
+object BuildTwitch : AbstractCommand("BuildTwitch") {
     override val helpMessage: String = "builds a twitch export"
-    override val parser: ArgumentParser = ArgumentParsers.newFor("BuildTwitch")
-        .build()
-        .description(helpMessage)
-        .apply {
-            addArgument("-a", "--all")
-                .help("Downloads all relations instead of just required ones")
-                .action(storeTrue())
-        }
 
     private val tempDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/tempDir"))}
     private val tmp: File by lazy {File(tempDir, "twitch")}
     private val downloadDir by lazy {File(tempDir, "download")}
+
+    override fun ArgumentParser.addArgs() {
+        addArgument("-a", "--all")
+            .help("Downloads all relations instead of just required ones")
+            .action(storeTrue())
+    }
 
     override fun execute(args: Namespace): CommandReturn {
         val wr = MPJH.asWrapper!!

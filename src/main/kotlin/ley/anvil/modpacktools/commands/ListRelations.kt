@@ -2,35 +2,31 @@ package ley.anvil.modpacktools.commands
 
 import com.jakewharton.fliptables.FlipTable
 import ley.anvil.modpacktools.MPJH
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
-import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 
 @LoadCommand
-object ListRelations : ICommand {
-    override val name: String = "listrelations"
+object ListRelations : AbstractCommand("ListRelations") {
     override val helpMessage: String = "Lists the relations of this mod pack"
-    override val parser: ArgumentParser = ArgumentParsers.newFor("ListRelations")
-        .build()
-        .description(helpMessage)
-        .apply {
-            addArgument("-c", "--csv")
-                .help("Doesn't format as a table but instead as csv (separated by ;)")
-                .action(storeTrue())
-        }.apply {
-            addArgument("-n", "--nolimit")
-                .help("does not limit the size of the authors list")
-                .action(storeTrue())
-        }.apply {
-            addArgument("-d", "--description")
-                .help("adds the description of relations to the list")
-                .action(storeTrue())
-        }
+
+    override fun ArgumentParser.addArgs() {
+        addArgument("-c", "--csv")
+            .help("Doesn't format as a table but instead as csv (separated by ;)")
+            .action(storeTrue())
+
+        addArgument("-n", "--nolimit")
+            .help("does not limit the size of the authors list")
+            .action(storeTrue())
+
+        addArgument("-d", "--description")
+            .help("adds the description of relations to the list")
+            .action(storeTrue())
+    }
 
     override fun execute(args: Namespace): CommandReturn {
         val metas = MPJH.getModMetas().sortedBy {it.name}

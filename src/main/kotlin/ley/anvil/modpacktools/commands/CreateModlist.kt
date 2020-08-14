@@ -18,12 +18,11 @@ import j2html.utils.CSSMin.compressCss
 import ley.anvil.addonscript.wrapper.MetaData
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.TERMC
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.fPrintln
-import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.CaseInsensitiveEnumNameArgumentType
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
@@ -38,31 +37,26 @@ import java.nio.charset.StandardCharsets
 import java.util.Comparator.comparing
 
 @LoadCommand
-object CreateModlist : ICommand {
-    override val name: String = "createmodlist"
+object CreateModlist : AbstractCommand("CreateModlist") {
     override val helpMessage: String = "This creates a modlist either as html or csv file."
-    override val parser: ArgumentParser = run {
-        val parser = ArgumentParsers.newFor("CreateModlist").build()
-            .description(helpMessage)
 
-        parser.addArgument("-s", "--sorting")
+    override fun ArgumentParser.addArgs() {
+        addArgument("-s", "--sorting")
             .type(CaseInsensitiveEnumNameArgumentType(Sorting::class.java))
             .setDefault(Sorting.NAME)
             .help("Determines How mods should be sorted")
 
-        parser.addArgument("-a", "--all")
+        addArgument("-a", "--all")
             .action(storeTrue())
             .help("If this is set, all relations and not only be mods will be in the list")
 
-        parser.addArgument("type")
+        addArgument("type")
             .type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
             .help("What format the mod list should be made in")
 
-        parser.addArgument("file")
+        addArgument("file")
             .type(FileArgumentType().verifyNotExists())
             .help("What file the mod list should be written to")
-
-        parser
     }
 
     override fun execute(args: Namespace): CommandReturn {
@@ -107,7 +101,12 @@ object CreateModlist : ICommand {
             head(
                 style(
                     //Fancy css!
-                    compressCss(IOUtils.toString(ClassLoader.getSystemResourceAsStream("commands/createmodlist/style.css"), StandardCharsets.UTF_8))
+                    compressCss(
+                        IOUtils.toString(
+                            ClassLoader.getSystemResourceAsStream("commands/createmodlist/style.css"),
+                            StandardCharsets.UTF_8
+                        )
+                    )
                 )
             ),
             body(
@@ -164,7 +163,8 @@ object CreateModlist : ICommand {
         return success("Wrote HTML file")
     }
 
-    private fun getMods(all: Boolean, sorting: Comparator<MetaData>): List<MetaData> = MPJH.getModMetas(if(all) null else arrayOf("mod")).sortedWith(sorting)
+    private fun getMods(all: Boolean, sorting: Comparator<MetaData>): List<MetaData> =
+        MPJH.getModMetas(if(all) null else arrayOf("mod")).sortedWith(sorting)
 
     enum class Format {
         HTML, CSV

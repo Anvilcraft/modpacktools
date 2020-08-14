@@ -3,13 +3,12 @@ package ley.anvil.modpacktools.commands
 import ley.anvil.addonscript.curse.ManifestJSON
 import ley.anvil.modpacktools.GSON
 import ley.anvil.modpacktools.MPJH
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.readAsJson
-import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
@@ -17,16 +16,14 @@ import java.io.File
 import java.io.FileWriter
 
 @LoadCommand
-object Import : ICommand {
-    override val name: String = "import"
+object Import : AbstractCommand("Import") {
     override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
-    override val parser: ArgumentParser = ArgumentParsers.newFor("Import")
-        .build()
-        .apply {
-            addArgument("manifest")
-                .help("the manifest file to import")
-                .type(FileArgumentType().verifyIsFile())
-        }
+
+    override fun ArgumentParser.addArgs() {
+        addArgument("manifest")
+            .help("the manifest file to import")
+            .type(FileArgumentType().verifyIsFile())
+    }
 
     override val needsModpackjson: Boolean = false
     override val needsConfig: Boolean = false

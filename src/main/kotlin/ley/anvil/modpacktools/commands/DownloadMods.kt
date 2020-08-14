@@ -2,14 +2,13 @@ package ley.anvil.modpacktools.commands
 
 import ley.anvil.addonscript.wrapper.FileOrLink
 import ley.anvil.modpacktools.MPJH
+import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
-import ley.anvil.modpacktools.command.ICommand
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.DownloadFileTask
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
-import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
 import net.sourceforge.argparse4j.inf.ArgumentParser
@@ -19,37 +18,31 @@ import java.net.URL
 import java.util.stream.Collectors.toMap
 
 @LoadCommand
-object DownloadMods : ICommand {
-    override val name: String = "downloadmods"
+object DownloadMods : AbstractCommand("DownloadMods") {
     override val helpMessage: String = "Downloads all mods."
-    override val parser: ArgumentParser = run {
-        val parser = ArgumentParsers.newFor("DownloadMods")
-            .build()
-            .description(helpMessage)
 
-        parser.addArgument("dir")
+    override fun ArgumentParser.addArgs() {
+        addArgument("dir")
             .type(FileArgumentType().verifyCanCreate())
             .help("the directory to download the mods to")
 
-        parser.addArgument("-f", "--force")
+        addArgument("-f", "--force")
             .action(storeTrue())
             .help("if true, mods that are already in the download folder will be downloaded again")
 
-        parser.addArgument("-a", "--all")
+        addArgument("-a", "--all")
             .action(storeTrue())
             .help("Downloads not only mods but everything with a dir installer")
-
-        parser
     }
 
     override fun execute(args: Namespace): CommandReturn {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
         for(
-            rel in json!!.defaultVersion!!.getRelations(
-                arrayOf("client"),
-                if(args.getBoolean("all")) null else arrayOf("mod")
-            )!!
+        rel in json!!.defaultVersion!!.getRelations(
+            arrayOf("client"),
+            if(args.getBoolean("all")) null else arrayOf("mod")
+        )!!
         ) //TODO only client? what if someone wants a server?
             if(rel.hasFile())
                 fileList.add(rel.file.get())
