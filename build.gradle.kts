@@ -11,10 +11,10 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN
 val specTitle = "ModPackTools"
 val jarName = specTitle
 val implTitle = "ley.anvil.modpacktools"
+val jarVersion = "1.2-SNAPSHOT"
 group = "ley.anvil"
-application.mainClassName = "ley.anvil.modpacktools.Main"
 
-version = "1.2-SNAPSHOT"
+application.mainClassName = "ley.anvil.modpacktools.Main"
 
 plugins {
     id("java")
@@ -90,7 +90,7 @@ task("fatJar", Jar::class) {
     group = "build" //sets group in intelliJ's side bar
     manifest.attributes.apply {
         set("Main-Class", application.mainClassName)
-        set("Implementation-Version", version)
+        set("Implementation-Version", jarVersion)
         set("Specification-Title", specTitle)
         set("Implementation-Title", implTitle)
     }
