@@ -3,9 +3,7 @@ import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.JSON
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.*
 
 //settings for manifest and stuff
 val specTitle = "ModPackTools"
@@ -68,6 +66,10 @@ dependencies {
     ).forEach {implementation(it)}
 
     testImplementation("junit:junit:4.12")
+}
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor(5, "minutes")
 }
 
 //This exists so options can be set for test compile and compile at once
