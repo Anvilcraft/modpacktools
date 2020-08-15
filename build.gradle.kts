@@ -22,7 +22,7 @@ plugins {
     id("application")
     id("idea")
     id("maven-publish")
-    id("org.jetbrains.kotlin.jvm") version "1.3.72"
+    id("org.jetbrains.kotlin.jvm") version "1.4.0"
     id("org.jetbrains.dokka") version "1.4.0-rc"
     id("org.jlleitschuh.gradle.ktlint") version "9.3.0"
 }
@@ -45,9 +45,8 @@ dependencies {
         "ley.anvil:addonscript:1.0-SNAPSHOT",
 
         //Kotlin
-        "org.jetbrains.kotlin:kotlin-reflect:1.3.72",
-        "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.3.8",
+        "org.jetbrains.kotlin:kotlin-reflect:1.4.0",
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0",
 
         //IO
         "com.squareup.okhttp3:okhttp:4.8.1", //HTTP client
@@ -81,8 +80,6 @@ val kOptions = {obj: GroovyObject ->
     obj.withGroovyBuilder {
         "kotlinOptions" {
             setProperty("jvmTarget", "1.8")
-            //without this option, kotlin interfaces dont support default methods in java (will be changed in kt 1.4)
-            setProperty("freeCompilerArgs", arrayOf("-Xjvm-default=compatibility"))
         }
     }
 }

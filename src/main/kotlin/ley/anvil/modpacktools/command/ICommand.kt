@@ -25,21 +25,18 @@ interface ICommand {
     /**
      * This message will be displayed in the help dialog
      */
-    @JvmDefault
     val helpMessage: String
         get() = ""
 
     /**
      * If this command needs the config file to be present. the command will not run if this returns true and there is no config file
      */
-    @JvmDefault
     val needsConfig: Boolean
         get() = true
 
     /**
      * If this returns true, the command will not run if the modpackjson file doesnt exist
      */
-    @JvmDefault
     val needsModpackjson: Boolean
         get() = true
 }
