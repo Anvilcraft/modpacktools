@@ -3,7 +3,9 @@ import org.gradle.api.JavaVersion.VERSION_1_8
 import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.*
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.JSON
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN
 
 //settings for manifest and stuff
 val specTitle = "ModPackTools"
@@ -97,7 +99,7 @@ task("fatJar", Jar::class) {
         set("Specification-Title", specTitle)
         set("Implementation-Title", implTitle)
     }
-    archiveBaseName.set(jarName)
+    archiveBaseName.set("$jarName-$jarVersion")
     from(
         configurations.runtimeClasspath.get()
             .map {if(it.isDirectory) it else zipTree(it)}
