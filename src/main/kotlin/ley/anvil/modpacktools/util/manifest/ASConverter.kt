@@ -32,7 +32,7 @@ fun convertAStoManifest(addonscript: ASWrapper, shouldAddLink: (ASWrapper.Relati
             if(rel.relation.id == "forge") {
                 val forge = ManifestJSON.Modloader()
                 forge.primary = true
-                forge.id = "forge-" + rel.versions.latestKnown
+                forge.id = "forge-" + (rel.versions.latestKnown?.split("-")?.get(1))
                 manifest.minecraft.modLoaders.add(forge)
             } else {
                 println("Curse only allows Forge as a modloader. ${rel.relation.id} is not allowed!")
