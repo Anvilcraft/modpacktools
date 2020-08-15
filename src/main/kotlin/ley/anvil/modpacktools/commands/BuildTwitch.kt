@@ -8,6 +8,7 @@ import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.FileToDownload
 import ley.anvil.modpacktools.util.addonscript.installFile
 import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.downloadFiles
@@ -18,11 +19,9 @@ import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
-import java.net.URL
 import java.util.zip.ZipOutputStream
 
 @LoadCommand
@@ -45,7 +44,7 @@ object BuildTwitch : AbstractCommand("BuildTwitch") {
         val ml = convertAStoManifest(wr) {args.getBoolean("all") || "required" in it.options}
         val archiveName = "${wr.json.id}-${wr.defaultVersion.versionName}-twitch"
         val dir = File("./build")
-        val toDownload = mutableMapOf<URL, Pair<File, String>>()
+        val toDownload = mutableMapOf<FileToDownload, String>()
         val srcDir by lazy {File(CONFIG.config.pathOrException<String>("Locations/src"))}
         val overrides by lazy {File(tmp, "overrides")}
         dir.mkdirs()
@@ -67,21 +66,23 @@ object BuildTwitch : AbstractCommand("BuildTwitch") {
                     installFile(uf.value, file, overrides).printf()
                 }
             } else if(uf.key.isURL) {
-                val filePath = URL(uf.key.link)
-                toDownload[filePath] = Pair(File(downloadDir, FilenameUtils.getName(filePath.toString())), uf.value)
+                toDownload[FileToDownload(downloadDir, uf.key.url, true)] = uf.value
             } else {
                 return fail("{$uf.key.link} is neither a file nor an URL")
             }
         }
 
         downloadFiles(
-            toDownload.mapValues {it.value.first},
-            {
-                fPrintln("downloaded file ${it.file}", TERMC.brightBlue)
-                installFile(toDownload[it.url]!!.second, it.file, overrides).printf()
-            },
-            false
-        )
+            toDownload.keys.toList()
+        ) {
+            if(it.downloadedFile != null) {
+                fPrintln("downloaded file ${it.file.url}", TERMC.brightBlue)
+                installFile(toDownload[it.file]!!, it.downloadedFile, overrides).printf()
+            } else if(it.exception != null) {
+                fPrintln("ERROR DOWNLOADING ${it.file}")
+                it.exception.printStackTrace()
+            }
+        }
 
         fPrintln("Creating zip", TERMC.brightGreen)
         val zip = ZipOutputStream(FileOutputStream("${dir.path}/$archiveName.zip"))

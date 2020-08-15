@@ -8,6 +8,7 @@ import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.LoadCommand
+import ley.anvil.modpacktools.util.FileToDownload
 import ley.anvil.modpacktools.util.addonscript.installFile
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
@@ -16,7 +17,6 @@ import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import java.util.zip.ZipOutputStream
 
 @LoadCommand
@@ -37,39 +37,51 @@ object BuildTechnic : AbstractCommand("BuildTechnic") {
             }
 
         val fileList = mutableListOf<FileOrLink>()
-        val toDownload = mutableMapOf<URL, Pair<String, File>>()
-        MPJH.asWrapper!!.defaultVersion.getRelations {"client" in it.options}.forEach {
-            if(it.hasFile())
-                fileList.add(it.file.get())
-        }
+        //Map of File to Installer
+        val toDownload = mutableMapOf<FileToDownload, String>()
+
+        //RELATIONS
+        fileList.addAll(
+            MPJH.asWrapper!!.defaultVersion.getRelations {"client" in it.options}.filter {it.hasFile()}
+                .map {it.file.get()}
+        )
+        //FILES
+        fileList.addAll(MPJH.asWrapper!!.defaultVersion.getFiles {true}.map {it.get()})
+
+        //FORGE
+        @Suppress("DEPRECATION") //no idea why this is deprecated. Too Bad!
+        val forge = MPJH.asWrapper!!.defaultVersion.getRelations {it.id.toLowerCase() == "forge"}.first().forgeUniversal
+        toDownload[
+            FileToDownload(
+                //Technic wants it to be called modpack.jar
+                File(download, "modpack.jar"),
+                forge.url
+            )
+        ] = "internal.dir:bin"
 
         fileList.forEach {
             when {
-                it.isFile -> {
+                !it.isURL -> {
                     if(!it.isASDirSet)
                         it.setASDir(srcDir)
-
                     if(it.file.exists())
                         installFile(it.installer, it.file, tmp).printf()
                 }
-                it.isURL -> toDownload[it.url] = it.installer to download
+                it.isURL -> toDownload[FileToDownload(download, it.url, true)] = it.installer
                 else -> return fail("${it.link} is neither a file nor an URL")
             }
         }
 
-        downloadFiles(
-            toDownload.mapValues {it.value.second},
-            {
-                if(it.exception == null) {
-                    fPrintln("downloaded file ${it.file}", TERMC.brightBlue)
-                    installFile(toDownload[it.url]!!.first, it.file, tmp).printf()
-                } else {
-                    fPrintln("ERROR DOWNLOADING ${it.url}")
-                    it.exception.printStackTrace()
-                }
-            },
-            resolveFileName = true
-        )
+        downloadFiles(toDownload.keys.toList()) {
+            if(it.downloadedFile != null) {
+                fPrintln("${it.responseCode} ${it.responseMessage} ${it.file.url} ${it.downloadedFile}", TERMC.brightBlue)
+                //Use map of file to installer to get installer for given file
+                installFile(toDownload[it.file]!!, it.downloadedFile, tmp).printf()
+            } else if(it.exception != null) {
+                fPrintln("ERROR DOWNLOADING ${it.file.url}")
+                it.exception.printStackTrace()
+            }
+        }
 
         fPrintln("Making Zip", TERMC.brightGreen)
         ZipOutputStream(FileOutputStream("build/${MPJH.asWrapper!!.json.id}-${MPJH.asWrapper!!.defaultVersion.versionName}-technic.zip"))
