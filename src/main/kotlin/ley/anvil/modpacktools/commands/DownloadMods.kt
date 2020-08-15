@@ -6,7 +6,7 @@ import ley.anvil.modpacktools.command.AbstractCommand
 import ley.anvil.modpacktools.command.CommandReturn
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
-import ley.anvil.modpacktools.util.DownloadFileTask
+import ley.anvil.modpacktools.util.FileToDownload
 import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
@@ -15,8 +15,6 @@ import net.sourceforge.argparse4j.impl.type.FileArgumentType
 import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
-import java.net.URL
-import java.util.stream.Collectors.toMap
 
 @LoadCommand
 object DownloadMods : AbstractCommand("DownloadMods") {
@@ -42,46 +40,36 @@ object DownloadMods : AbstractCommand("DownloadMods") {
     override fun execute(args: Namespace): CommandReturn {
         val json = MPJH.asWrapper
         val fileList = mutableListOf<FileOrLink>()
-        for(
-            rel in json!!.defaultVersion!!.getRelations {
-                "client" in it.options && (args.getBoolean("all") || it.type == "mod")
-            }
-        )
+        for(rel in json!!.defaultVersion!!.getRelations {"client" in it.options && (args.getBoolean("all") || it.type == "mod")})
             if(rel.hasFile())
                 fileList.add(rel.file.get())
 
         downloadFiles(
-            fileList.stream()
+            fileList
                 .filter {it.isURL}
                 .filter {
                     val (installer, dir) = it.installer.split(':')
 
                     installer == "internal.dir" && (args.getBoolean("all") || dir == "mods")
                 }
-                .collect(
-                    toMap<FileOrLink, URL, File>(
-                        {URL(it.link)},
-                        {
-                            val dir = it.installer.split(':').last()
-
-                            if(args.getBoolean("all"))
-                                File(args.get<File>("dir"), dir)
-                            else
-                                args.get<File>("dir")
-                        },
-                        {_: File, f: File -> f}
+                .map {
+                    FileToDownload(
+                        if(args.getBoolean("all"))
+                            File(args.get<File>("dir"), it.installer.split(':')[1])
+                        else
+                            args.get<File>("dir"),
+                        it.url,
+                        true,
+                        !args.getBoolean("force")
                     )
-                ),
-            {r: DownloadFileTask.Return ->
-                println("${r.responseCode} ${r.responseMessage} ${r.url} ${r.file}")
-                if(r.exception != null) {
-                    fPrintln("ERROR DOWNLOADING ${r.url}")
-                    r.exception.printStackTrace()
                 }
-            },
-            !args.getBoolean("force"),
-            true
-        )
+        ) {
+            println("${it.responseCode} ${it.responseMessage} ${it.file.url} ${it.downloadedFile}")
+            if(it.exception != null) {
+                fPrintln("ERROR DOWNLOADING ${it.file.url}")
+                it.exception.printStackTrace()
+            }
+        }
         return success()
     }
 }

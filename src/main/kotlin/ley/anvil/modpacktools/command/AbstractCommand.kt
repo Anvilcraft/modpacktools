@@ -20,9 +20,7 @@ constructor(
         ArgumentParsers.newFor(displayName)
             .build()
             .description(helpMessage)
-            .apply {
-                addArgs()
-            }
+            .apply {addArgs()}
     }
 
     /**
@@ -31,5 +29,5 @@ constructor(
      *
      * @receiver the parser to add the args to
      */
-    open fun ArgumentParser.addArgs() {}
+    protected open fun ArgumentParser.addArgs() {}
 }
