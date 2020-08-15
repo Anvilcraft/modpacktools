@@ -8,7 +8,7 @@ class Config(val configName: String) {
     val config = readConfig()
 
     /**
-     * reads the config it it exists and the default config otherwise
+     * reads the [configLocation] file if it exists and the default config otherwise
      *
      * @return the Toml object of the config file
      */
@@ -21,14 +21,14 @@ class Config(val configName: String) {
     }
 
     /**
-     * Checks if the config file exists
+     * Checks if the [configLocation] file exists
      *
      * @return true if the config file exists
      */
     val exists: Boolean get() = configLocation.exists()
 
     /**
-     * Copies the Config file from the resources into the tool's folder
+     * Copies the Config file from the resources into the project's folder
      */
     fun copyConfig() {
         //copy from resources

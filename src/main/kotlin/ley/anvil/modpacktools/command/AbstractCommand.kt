@@ -4,10 +4,15 @@ import net.sourceforge.argparse4j.ArgumentParsers
 import net.sourceforge.argparse4j.inf.ArgumentParser
 
 /**
- * Implement this for commands. it is meant to reduce boilerplate.
+ * an implementation of [ICommand] meant to reduce boilerplate.
+ * this automatically creates a base [ArgumentParser]
+ * with the [helpMessage] as description and then applies [addArgs] to it
+ * and uses [displayName] as the name for the command in the help message.
+ *
+ * the [name] of the command will be a converted version of the [displayName] by default
  *
  * @param displayName the name of this command to be displayed in the help message
- * @param name the internal name of the command. will be the display name in lower case and with _ instead of spaces by default
+ * @param name the internal name of the command. will be the [displayName] lower case and with _ instead of spaces by default
  */
 abstract class AbstractCommand
 
@@ -24,10 +29,10 @@ constructor(
     }
 
     /**
-     * This will be called to add arguments to the arg parser of this command.
+     * This will be called to add arguments to the [ArgumentParser] of this command.
      * override this to add arguments.
      *
-     * @receiver the parser to add the args to
+     * @receiver the [ArgumentParser] to add the args to
      */
     protected open fun ArgumentParser.addArgs() {}
 }

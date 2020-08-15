@@ -1,7 +1,7 @@
 package ley.anvil.modpacktools.command
 
 /**
- * Tells The {@link CommandLoader} to load this command
+ * Tells The [CommandLoader] to load this [ICommand]
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

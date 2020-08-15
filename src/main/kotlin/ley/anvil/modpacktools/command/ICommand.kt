@@ -15,10 +15,14 @@ interface ICommand {
      */
     fun execute(args: Namespace): CommandReturn
 
+    /**
+     * The [ArgumentParser] which will be used to parse the arguments for this command by the [CommandLoader]
+     */
     val parser: ArgumentParser
 
     /**
      * this is the name of the command
+     * should be lower case and separated by _
      */
     val name: String
 
@@ -29,13 +33,14 @@ interface ICommand {
         get() = ""
 
     /**
-     * If this command needs the config file to be present. the command will not run if this returns true and there is no config file
+     * If this command needs the config file to be present.
+     * the command should not run if this returns true and there is no config file
      */
     val needsConfig: Boolean
         get() = true
 
     /**
-     * If this returns true, the command will not run if the modpackjson file doesnt exist
+     * If this returns true, the command should not run if the modpackjson file doesn't exist
      */
     val needsModpackjson: Boolean
         get() = true

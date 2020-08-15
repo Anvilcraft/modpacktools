@@ -40,7 +40,7 @@ object Import : AbstractCommand("Import") {
         println("Converting...")
         MPJH.modpackJsonFile.parentFile.mkdirs()
         val mpjWriter = FileWriter(MPJH.modpackJsonFile)
-        GSON.fromJson<ManifestJSON>(manifest.readAsJson(), ManifestJSON::class.java).toAS().write(mpjWriter)
+        GSON.fromJson(manifest.readAsJson(), ManifestJSON::class.java).toAS().write(mpjWriter)
         mpjWriter.close()
         return success("Converted sucessfully")
     }

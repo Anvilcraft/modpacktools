@@ -15,7 +15,7 @@ class ConfigToml : Toml() {
 
     /**
      * gets a path from a config.
-     * when getting an Int do NOT supply int to T. instead supply Long and then convert to Int!
+     * when getting an [Int] do NOT supply int to [T]. instead supply [Long] and then convert to [Int]!
      *
      * @param T what to get from the config
      * @param path the path to get from the config separated by /, . or \
@@ -24,7 +24,7 @@ class ConfigToml : Toml() {
 
     /**
      * gets a path from a config.
-     * when getting an Int do NOT supply int to T. instead supply Long and then convert to Int!
+     * when getting an [Int] do NOT supply int to [T]. instead supply [Long] and then convert to [Int]!
      *
      * @param T what to get from the config
      * @param path the path to get from the config
@@ -37,8 +37,8 @@ class ConfigToml : Toml() {
     }
 
     /**
-     * gets a path from a config and throws a MissingConfigValueException if not found.
-     * when getting an Int do NOT supply int to T. instead supply Long and then convert to Int!
+     * gets a path from a config and throws a [MissingConfigValueException] if not found.
+     * when getting an [Int] do NOT supply int to [T]. instead supply [Long] and then convert to [Int]!
      *
      * @param T what to get from the config
      * @param path the path to get from the config separated by /, . or \
@@ -47,8 +47,8 @@ class ConfigToml : Toml() {
     fun <T> pathOrException(path: String, message: String? = null): T = getPath(path) ?: throw MissingConfigValueException(path, message)
 
     /**
-     * gets a path from a config and throws a MissingConfigValueException if not found.
-     * when getting an Int do NOT supply int to T. instead supply Long and then convert to Int!
+     * gets a path from a config and throws a [MissingConfigValueException] if not found.
+     * when getting an [Int] do NOT supply int to [T]. instead supply [Long] and then convert to [Int]!
      *
      * @param T what to get from the config
      * @param path the path to get from the config

@@ -7,9 +7,10 @@ import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.hasAnnotation
 
 /**
- * The command loader will scan the given package for {@link ICommand} classes and add them to the command list
+ * The command loader will scan the given package for [ICommand] classes and add them to the command list
  *
  * @param pkg The package to scan for commands
  */
@@ -21,7 +22,9 @@ class CommandLoader(private val pkg: String) {
 
     companion object {
         /**
-         * Runs a command statically.
+         * Parses arguments for a given [ICommand] and executes it.
+         * Also checks if the [ICommand] has [ICommand.needsConfig] or [ICommand.needsModpackjson] set
+         * and throws an exception throws an exception if invalid
          *
          * @param args the args to pass to the command
          * @throws ConfigMissingException if the command requires a config and it is not found
@@ -53,24 +56,23 @@ class CommandLoader(private val pkg: String) {
         refs.getSubTypesOf(ICommand::class.java).stream()
             .map {it.kotlin}
             //Only annotated classes
-            //Cannot use it.hasAnnotation because it is experimental and requires everything to be annotated so this makes more sense
-            .filter {it.annotations.any {ann -> ann.annotationClass == LoadCommand::class}}
-            //can be object
+            .filter {it.hasAnnotation<LoadCommand>()}
+            //can be object, if so use that instead of new instance
             .map {it.objectInstance ?: it}
             //create new instance if it is a class, otherwise just add the current instance
             .forEach {if(it is ICommand) addCommand(it) else addClass(it as KClass<out ICommand>)}
     }
 
     /**
-     * Creates a new instance of the given class and adds it to the command list
+     * Creates a new instance of the given [KClass] and adds it to the command list
      *
-     * @param clazz the class to add
+     * @param clazz the [KClass] to add
      * @return if it was successful
      */
     fun addClass(clazz: KClass<out ICommand>) = addCommand(clazz.createInstance())
 
     /**
-     * Adds a command to the command list with the name that getName() returns
+     * Adds a command to the command list with the name that [ICommand.name] returns
      *
      * @param command the command to add
      * @return if it was successful
@@ -83,7 +85,8 @@ class CommandLoader(private val pkg: String) {
     }
 
     /**
-     * Runs the given command
+     * Runs an [ICommand] that has been loaded by this [CommandLoader]
+     * given a name.
      *
      * @param name the name of the command to be run
      * @param args the arguments passed into the command

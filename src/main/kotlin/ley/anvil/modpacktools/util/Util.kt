@@ -32,10 +32,10 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.isAccessible
 
 /**
- * Reads a Json File
+ * Reads a Json [File]
  *
  * @receiver the file to read from
- * @return the file content as JsonObject
+ * @return the file content as [JsonObject]
  */
 fun File.readAsJson(): JsonObject {
     require(this.exists()) {"File to read doesn't exist"}
@@ -44,13 +44,13 @@ fun File.readAsJson(): JsonObject {
 }
 
 /**
- * sends a http post request
+ * sends a HTTP POST request
  *
- * @receiver the url to send the request to
- * @param contentType what content type should be used. Example: {@code MediaType.parse("application/json; utf-8")}
+ * @receiver the [URL] to send the request to
+ * @param contentType what content type should be used.
  * @param payload the payload to send
  * @param additionalHeaders additional headers that should be added to the request
- * @return the response as string
+ * @return the response
  */
 @Throws(IOException::class)
 fun URL.httpPostStr(payload: String, contentType: MediaType? = null, additionalHeaders: Map<String, String>? = null): Response =
@@ -63,13 +63,13 @@ fun URL.httpPostStr(payload: String, contentType: MediaType? = null, additionalH
     ).execute()
 
 /**
- * sends a http post request
+ * sends a HTTP POST request
  *
- * @receiver the url to send the request to
+ * @receiver the [URL] to send the request to
  * @param contentType what content type should be used. Example: `"application/json; utf-8"`
  * @param payload the payload to send
  * @param additionalHeaders additional headers that should be added to the request
- * @return the response as string
+ * @return the response
  */
 @Throws(IOException::class)
 fun URL.httpPostStr(payload: String, contentType: String, additionalHeaders: Map<String, String>? = null): Response {
@@ -81,10 +81,10 @@ fun URL.httpPostStr(payload: String, contentType: String, additionalHeaders: Map
 }
 
 /**
- * Sanitizes a URL to be valid by encoding illegal chars like spaces
+ * Sanitizes a [URL] to be valid by url-encoding illegal chars like spaces
  *
- * @receiver the URL to sanitize
- * @return the sanitized URL
+ * @receiver the [URL] to sanitize
+ * @return the sanitized [URL]
  */
 
 fun URL.sanitize(): URL? =
@@ -103,21 +103,12 @@ fun URL.sanitize(): URL? =
     }
 
 /**
- * gets a function from the receiver and makes it accessible
+ * gets a [KFunction] from the receiver and makes it accessible
  *
- * @param name the name of the function to get
- * @receiver the class to get the function from
+ * @param name the name of the [KFunction] to get
+ * @receiver the [KClass] to get the [KFunction] from
  */
 fun KClass<*>.getFun(name: String): KFunction<*>? = this.functions.find {it.name == name}?.apply {isAccessible = true}
-
-/**
- * merges 2 file's basically moving [other] into a directory represented by the receiver
- *
- * @receiver the parent directory
- * @param other the file to put into [other]
- * @return the combined file
- */
-infix fun File.mergeTo(other: File): File = File(this.path, other.name)
 
 /**
  * zips a directory.
@@ -150,9 +141,9 @@ fun Path.toZip(zStream: ZipOutputStream) {
 fun File.toZip(zStream: ZipOutputStream) = this.toPath().toZip(zStream)
 
 /**
- * Unzips a zip file to a given directory
+ * Unzips a zip [File] to a given directory
  *
- * @receiver the zip file to unzip
+ * @receiver the zip [File] to unzip
  * @param outputDir the dir to unzip to
  */
 fun File.unzip(outputDir: File) {
@@ -168,11 +159,12 @@ fun File.unzip(outputDir: File) {
 }
 
 /**
- * this makes arguments for ArgumentParsers look cleaner
+ * this makes arguments for [ArgumentParser]s look cleaner
  *
- * @receiver the parser to add the argument to
- * @param names the names the argument will have
- * @param block this will be called on the argument. it is for settings like help message
+ * @receiver the [ArgumentParser] to add the argument to
+ * @param names the names the [Argument] will have
+ * @param block this will be called on the [Argument].
+ * it is for settings like help message
  */
 fun ArgumentParser.arg(vararg names: String, block: Argument.() -> Unit) {
     addArgument(*names).block()

@@ -13,10 +13,10 @@ import java.nio.file.Paths
 import java.util.concurrent.CountDownLatch
 
 /**
- * Downloads all supplied urls to the given files
+ * Downloads all supplied [files]
  *
  * @param files the files to download
- * @param callback the callback which will be called once a download finishes
+ * @param callback the callback which will be called once a file in [files] finishes downloading
  */
 fun downloadFiles(
     files: List<FileToDownload>,
@@ -33,9 +33,9 @@ fun downloadFiles(
 /**
  * A file that should be downloaded
  *
- * @param fileOrDir the file to save to
- * @param url the url to download from
- * @param shouldResolveFileName if true, the fileOrDir will be treated as directory and the file name will be resolved from the URL
+ * @param fileOrDir the [File] to save to
+ * @param url the [URL] to download from
+ * @param shouldResolveFileName if true, the [fileOrDir] will be treated as directory and the file name will be resolved from [url]
  */
 data class FileToDownload(
     val fileOrDir: File,
@@ -74,7 +74,7 @@ open class DownloadFileTask(
                 var wasSkipped = true
                 val outFile =
                     if(file.shouldResolveFileName)
-                        file.fileOrDir mergeTo Paths.get(response.request.url.toUri().path).fileName.toFile()
+                        file.fileOrDir.resolve(Paths.get(response.request.url.toUri().path).fileName.toFile())
                     else
                         file.fileOrDir
 

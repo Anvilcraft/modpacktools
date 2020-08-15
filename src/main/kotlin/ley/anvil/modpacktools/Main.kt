@@ -19,13 +19,11 @@ import java.util.NoSuchElementException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MICROSECONDS
 
-//Lazy initialization will prevent objects from being initilized if not needed
+//Lazy initialization will prevent objects from being initialized if not needed
 val CONFIG by lazy {Config("modpacktoolsconfig.toml")}
 val LOADER by lazy {CommandLoader("ley.anvil.modpacktools.commands")}
 val MPJH by lazy {ModpackJsonHandler(File(CONFIG.config.pathOrException<String>("Locations/src"), "modpack.json"))}
 val GSON: Gson by lazy {GsonBuilder().setPrettyPrinting().create()}
-
-//TODO thinks term has no color support on win with edited registry. probably no big deal
 val TERMC by lazy {TermColors()}
 
 //for checking if the client has been initialized when closing it

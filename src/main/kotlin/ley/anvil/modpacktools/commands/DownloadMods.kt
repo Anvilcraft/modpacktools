@@ -57,7 +57,7 @@ object DownloadMods : AbstractCommand("DownloadMods") {
                         if(args.getBoolean("all"))
                             File(args.get<File>("dir"), it.installer.split(':')[1])
                         else
-                            args.get<File>("dir"),
+                            args.get("dir"),
                         it.url,
                         true,
                         !args.getBoolean("force")

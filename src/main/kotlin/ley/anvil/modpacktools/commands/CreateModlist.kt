@@ -69,9 +69,9 @@ object CreateModlist : AbstractCommand("CreateModlist") {
 
         val all = args.getBoolean("all")
         val sorting: Comparator<MetaData> = when(args.get<Sorting>("sorting")!!) {
-            Sorting.NAME -> comparing<MetaData, String> {it.name}
-            Sorting.DESCRIPTION -> comparing<MetaData, String> {it.description?.getOrNull(0) ?: ""}
-            Sorting.AUTHOR -> comparing<MetaData, String> {it.contributors.keys.first()}
+            Sorting.NAME -> comparing {it.name ?: ""}
+            Sorting.DESCRIPTION -> comparing {it.description?.getOrNull(0) ?: ""}
+            Sorting.AUTHOR -> comparing {it.contributors.keys.first()}
         }
 
         return when(args.get<Format>("type")!!) {
@@ -169,7 +169,7 @@ object CreateModlist : AbstractCommand("CreateModlist") {
     }
 
     private fun getMods(all: Boolean, sorting: Comparator<MetaData>): List<MetaData> =
-        MPJH.getModMetas(if(all) null else arrayOf("mod")).sortedWith(sorting)
+        MPJH.getModMetas {all || "mod" == it.type}.sortedWith(sorting)
 
     enum class Format {
         HTML, CSV
