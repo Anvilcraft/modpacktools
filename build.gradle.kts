@@ -69,10 +69,6 @@ dependencies {
     testImplementation("junit:junit:4.12")
 }
 
-configurations.all {
-    resolutionStrategy.cacheDynamicVersionsFor(5, "minutes")
-}
-
 //This exists so options can be set for test compile and compile at once
 val kOptions = {obj: GroovyObject ->
 
