@@ -61,9 +61,9 @@ object CreateModlist : AbstractCommand("CreateModlist") {
 
         val all = args.getBoolean("all")
         val sorting: Comparator<MetaData> = when(args.get<Sorting>("sorting")!!) {
-            Sorting.NAME -> comparing {it.name ?: ""}
-            Sorting.DESCRIPTION -> comparing {it.description?.getOrNull(0) ?: ""}
-            Sorting.AUTHOR -> comparing {it.contributors.keys.first()}
+            Sorting.NAME -> comparing {it.name?.toLowerCase() ?: ""}
+            Sorting.DESCRIPTION -> comparing {it.description?.getOrNull(0)?.toLowerCase() ?: ""}
+            Sorting.AUTHOR -> comparing {it.contributors.keys.first().toLowerCase()}
         }
 
         return when(args.get<Format>("type")!!) {
