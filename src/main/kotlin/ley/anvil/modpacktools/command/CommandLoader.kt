@@ -49,18 +49,21 @@ class CommandLoader(private val pkg: String) {
 
     @Suppress("UNCHECKED_CAST")
     private fun loadCommands() {
-        val reporter = object : AnnotationDetector.TypeReporter {
-            override fun annotations() = arrayOf(LoadCommand::class.java)
+        //AnnotationDetector detects annotations. (duh)
+        AnnotationDetector(
+            object : AnnotationDetector.TypeReporter {
+                //Detect Types with LoadCommand annotations
+                override fun annotations() = arrayOf(LoadCommand::class.java)
 
-            override fun reportTypeAnnotation(annotation: Class<out Annotation>?, className: String?) {
-                val clazz = Class.forName(className).kotlin
-                if(clazz.isSubclassOf(ICommand::class)) {
-                    clazz.objectInstance?.let {addCommand(it as ICommand)} ?: addClass(clazz as KClass<out ICommand>)
+                //Called when Annotated class is found
+                override fun reportTypeAnnotation(annotation: Class<out Annotation>?, className: String?) {
+                    val clazz = Class.forName(className).kotlin //Load class
+                    if(clazz.isSubclassOf(ICommand::class)) //filter for classes that are commands
+                        clazz.objectInstance?.let {addCommand(it as ICommand)} //add objectInstance
+                            ?: addClass(clazz as KClass<out ICommand>) //if there is no object instance, add the class
                 }
             }
-        }
-
-        AnnotationDetector(reporter).detect(pkg)
+        ).detect(pkg)
     }
 
     /**
