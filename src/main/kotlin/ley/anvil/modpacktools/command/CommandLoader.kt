@@ -1,13 +1,12 @@
 package ley.anvil.modpacktools.command
 
+import eu.infomas.annotation.AnnotationDetector
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
 import net.sourceforge.argparse4j.inf.ArgumentParserException
-import org.reflections.Reflections
-import org.reflections.scanners.SubTypesScanner
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.isSubclassOf
 
 /**
  * The command loader will scan the given package for [ICommand] classes and add them to the command list
@@ -50,17 +49,18 @@ class CommandLoader(private val pkg: String) {
 
     @Suppress("UNCHECKED_CAST")
     private fun loadCommands() {
-        //Get ICommands in package
-        val refs = Reflections(pkg, SubTypesScanner(false))
+        val reporter = object : AnnotationDetector.TypeReporter {
+            override fun annotations() = arrayOf(LoadCommand::class.java)
 
-        refs.getSubTypesOf(ICommand::class.java).stream()
-            .map {it.kotlin}
-            //Only annotated classes
-            .filter {it.hasAnnotation<LoadCommand>()}
-            //can be object, if so use that instead of new instance
-            .map {it.objectInstance ?: it}
-            //create new instance if it is a class, otherwise just add the current instance
-            .forEach {if(it is ICommand) addCommand(it) else addClass(it as KClass<out ICommand>)}
+            override fun reportTypeAnnotation(annotation: Class<out Annotation>?, className: String?) {
+                val clazz = Class.forName(className).kotlin
+                if(clazz.isSubclassOf(ICommand::class)) {
+                    clazz.objectInstance?.let {addCommand(it as ICommand)} ?: addClass(clazz as KClass<out ICommand>)
+                }
+            }
+        }
+
+        AnnotationDetector(reporter).detect(pkg)
     }
 
     /**
@@ -94,6 +94,12 @@ class CommandLoader(private val pkg: String) {
      * @throws NoSuchElementException if there's no command with the given name
      * @throws ArgumentParserException if the arguments are not valid
      */
-    @Throws(NoSuchElementException::class, ConfigMissingException::class, ModpackJsonMissingException::class, ArgumentParserException::class)
-    fun runCommand(name: String, args: Array<out String>) = commands.computeIfAbsent(name) {throw NoSuchElementException("Command $name Not Found")}.runStatic(args)
+    @Throws(
+        NoSuchElementException::class,
+        ConfigMissingException::class,
+        ModpackJsonMissingException::class,
+        ArgumentParserException::class
+    )
+    fun runCommand(name: String, args: Array<out String>) =
+        commands.computeIfAbsent(name) {throw NoSuchElementException("Command $name Not Found")}.runStatic(args)
 }

@@ -63,7 +63,7 @@ dependencies {
 
         //Other
         "org.slf4j:slf4j-simple:2.0.0-alpha1",
-        "org.reflections:reflections:0.9.12"
+        "eu.infomas:annotation-detector:3.0.5"
     ).forEach {implementation(it)}
 
     testImplementation("junit:junit:4.12")
