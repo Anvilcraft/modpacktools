@@ -29,6 +29,16 @@ object CreateModlist : AbstractCommand("CreateModlist") {
     override val helpMessage: String = "This creates a modlist either as html or csv file."
 
     override fun ArgumentParser.addArgs() {
+        arg("type") {
+            type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
+            help("What format the mod list should be made in")
+        }
+
+        arg("file") {
+            type(FileArgumentType().verifyNotExists())
+            help("What file the mod list should be written to")
+        }
+
         arg("-s", "--sorting") {
             default = Sorting.NAME
             type(CaseInsensitiveEnumNameArgumentType(Sorting::class.java))
@@ -40,14 +50,9 @@ object CreateModlist : AbstractCommand("CreateModlist") {
             help("If this is set, all relations and not only be mods will be in the list")
         }
 
-        arg("type") {
-            type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
-            help("What format the mod list should be made in")
-        }
-
-        arg("file") {
-            type(FileArgumentType().verifyNotExists())
-            help("What file the mod list should be written to")
+        arg("-n", "--noheader") {
+            action(storeTrue())
+            help("If this is set, the mod list will not have a header")
         }
     }
 
@@ -62,7 +67,7 @@ object CreateModlist : AbstractCommand("CreateModlist") {
         }
 
         return when(args.get<Format>("type")!!) {
-            Format.HTML -> doHtml(outFile, all, sorting)
+            Format.HTML -> doHtml(outFile, all, sorting, args.getBoolean("noheader"))
             Format.CSV -> doCsv(outFile, all, sorting)
         }
     }
@@ -86,7 +91,7 @@ object CreateModlist : AbstractCommand("CreateModlist") {
         return success("Wrote CSV file")
     }
 
-    private fun doHtml(outFile: File, all: Boolean, sorting: Comparator<MetaData>): CommandReturn {
+    private fun doHtml(outFile: File, all: Boolean, sorting: Comparator<MetaData>, noHeader: Boolean): CommandReturn {
         fPrintln("Making HTML file $outFile", TERMC.green)
         val writer = FileWriter(outFile)
         val html = html {
@@ -102,39 +107,40 @@ object CreateModlist : AbstractCommand("CreateModlist") {
             }
 
             "body" {
-                "div" {
-                    val meta = MPJH.asWrapper!!.json.meta
-                    withId("header")
+                if(!noHeader)
                     "div" {
-                        withClass("img")
-                        meta.icon?.let {
-                            "img" {
-                                withSrc(it)
+                        val meta = MPJH.asWrapper!!.json.meta
+                        withId("header")
+                        "div" {
+                            withClass("img")
+                            meta.icon?.let {
+                                "img" {
+                                    withSrc(it)
+                                }
                             }
                         }
-                    }
-                    "div" {
-                        "p" {
-                            withHref(meta.website)
-                            "b"("Name")
+                        "div" {
+                            "p" {
+                                withHref(meta.website)
+                                "b"("Name")
+                            }
+                            "p"(meta.name ?: "")
                         }
-                        "p"(meta.name ?: "")
-                    }
-                    "div" {
-                        "p" {"b"("Contributors")}
-                        "ul" {
-                            for(con in meta.contributors)
-                                "li"(con.name) {
-                                    //for contributor colors
-                                    withClass("contributor_${con.roles.getOrElse(0) {""}}")
-                                }
+                        "div" {
+                            "p" {"b"("Contributors")}
+                            "ul" {
+                                for(con in meta.contributors)
+                                    "li"(con.name) {
+                                        //for contributor colors
+                                        withClass("contributor_${con.roles.getOrElse(0) {""}}")
+                                    }
+                            }
+                        }
+                        "div" {
+                            "p" {"b"("Description")}
+                            "p"(meta.description?.joinToString("\n") ?: "")
                         }
                     }
-                    "div" {
-                        "p" {"b"("Description")}
-                        "p"(meta.description?.joinToString("\n") ?: "")
-                    }
-                }
                 "table" {
                     "tr" {
                         "td"()
