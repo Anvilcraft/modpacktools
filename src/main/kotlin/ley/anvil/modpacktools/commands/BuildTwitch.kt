@@ -9,11 +9,11 @@ import ley.anvil.modpacktools.command.CommandReturn.Companion.fail
 import ley.anvil.modpacktools.command.CommandReturn.Companion.success
 import ley.anvil.modpacktools.command.LoadCommand
 import ley.anvil.modpacktools.util.FileToDownload
+import ley.anvil.modpacktools.util.addonscript.convertAStoManifest
 import ley.anvil.modpacktools.util.addonscript.installFile
 import ley.anvil.modpacktools.util.arg
 import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
-import ley.anvil.modpacktools.util.manifest.convertAStoManifest
 import ley.anvil.modpacktools.util.toZip
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.inf.ArgumentParser
