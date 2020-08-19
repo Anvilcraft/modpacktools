@@ -2,7 +2,9 @@ package ley.anvil.modpacktools.util.addonscript
 
 import ley.anvil.addonscript.curse.ManifestJSON
 import ley.anvil.addonscript.wrapper.ASWrapper
+import ley.anvil.addonscript.wrapper.IInstaller
 import ley.anvil.modpacktools.TERMC
+import ley.anvil.modpacktools.util.baseName
 import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.manifest.ManifestLinksPair
 import org.apache.commons.io.FileUtils
@@ -38,9 +40,9 @@ data class InstallFileSuccess(
  * @param file the file to install
  * @param outDir the directory to install the [file] to
  */
-fun installFile(installer: String, file: File, outDir: File): InstallFileSuccess {
-    when {
-        installer == "internal.override" -> {
+fun installFile(installer: IInstaller, file: File, outDir: File): InstallFileSuccess {
+    when(installer.installerID()) {
+        "internal.override" -> {
             when {
                 file.extension == "zip" -> {
                     TODO("unzip to ./.mpt/twitch/overrides")
@@ -56,12 +58,12 @@ fun installFile(installer: String, file: File, outDir: File): InstallFileSuccess
             }
         }
 
-        installer.startsWith("internal.dir") -> {
-            val (_, dir) = installer.split(":")
-            FileUtils.copyFile(file, File(outDir, dir).resolve(file))
+        "internal.dir" -> {
+            val (dir) = installer.arguments
+            FileUtils.copyFile(file, File(outDir, dir).resolve(file.baseName))
         }
 
-        installer.startsWith("internal.zip") -> {
+        "internal.zip" -> {
             TODO()
         }
 
@@ -150,3 +152,10 @@ fun convertAStoManifest(
 
     return ml
 }
+
+fun installFile(installer: String, file: File, outDir: File) =
+    installFile(
+        installer.split(':').let {IInstaller.create(it[0], it.slice(1 until it.size))!!},
+        file,
+        outDir
+    )

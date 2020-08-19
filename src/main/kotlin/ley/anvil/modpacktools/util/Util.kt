@@ -169,3 +169,9 @@ fun File.unzip(outputDir: File) {
 fun ArgumentParser.arg(vararg names: String, block: Argument.() -> Unit) {
     addArgument(*names).block()
 }
+
+/**
+ * Gets the base name of the file without the directory.
+ */
+val File.baseName
+    get() = this.toPath().fileName.toString()

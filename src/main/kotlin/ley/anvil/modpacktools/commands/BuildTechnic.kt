@@ -1,6 +1,8 @@
 package ley.anvil.modpacktools.commands
 
 import ley.anvil.addonscript.wrapper.FileOrLink
+import ley.anvil.addonscript.wrapper.IInstaller
+import ley.anvil.addonscript.wrapper.IInstaller.create
 import ley.anvil.modpacktools.CONFIG
 import ley.anvil.modpacktools.MPJH
 import ley.anvil.modpacktools.TERMC
@@ -38,7 +40,7 @@ object BuildTechnic : AbstractCommand("BuildTechnic") {
 
         val fileList = mutableListOf<FileOrLink>()
         //Map of File to Installer
-        val toDownload = mutableMapOf<FileToDownload, String>()
+        val toDownload = mutableMapOf<FileToDownload, IInstaller>()
 
         //RELATIONS
         fileList.addAll(
@@ -57,7 +59,7 @@ object BuildTechnic : AbstractCommand("BuildTechnic") {
                 File(download, "modpack.jar"),
                 forge.url
             )
-        ] = "internal.dir:bin"
+        ] = create("internal.dir", listOf("bin"))!!
 
         fileList.forEach {
             when {
@@ -74,7 +76,10 @@ object BuildTechnic : AbstractCommand("BuildTechnic") {
 
         downloadFiles(toDownload.keys.toList()) {
             if(it.downloadedFile != null) {
-                fPrintln("${it.responseCode} ${it.responseMessage} ${it.file.url} ${it.downloadedFile}", TERMC.brightBlue)
+                fPrintln(
+                    "${it.responseCode} ${it.responseMessage} ${it.file.url} ${it.downloadedFile}",
+                    TERMC.brightBlue
+                )
                 //Use map of file to installer to get installer for given file
                 installFile(toDownload[it.file]!!, it.downloadedFile, tmp).printf()
             } else if(it.exception != null) {

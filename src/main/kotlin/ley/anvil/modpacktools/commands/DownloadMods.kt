@@ -48,14 +48,12 @@ object DownloadMods : AbstractCommand("DownloadMods") {
             fileList
                 .filter {it.isURL}
                 .filter {
-                    val (installer, dir) = it.installer.split(':')
-
-                    installer == "internal.dir" && (args.getBoolean("all") || dir == "mods")
+                    it.installer.installerID() == "internal.dir" && (args.getBoolean("all") || it.installer.arguments[0] == "mods")
                 }
                 .map {
                     FileToDownload(
                         if(args.getBoolean("all"))
-                            File(args.get<File>("dir"), it.installer.split(':')[1])
+                            File(args.get<File>("dir"), it.installer.arguments[1])
                         else
                             args.get("dir"),
                         it.url,
