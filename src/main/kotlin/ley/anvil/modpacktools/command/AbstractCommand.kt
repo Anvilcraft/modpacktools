@@ -6,7 +6,7 @@ import net.sourceforge.argparse4j.inf.ArgumentParser
 /**
  * an implementation of [ICommand] meant to reduce boilerplate.
  * this automatically creates a base [ArgumentParser]
- * with the [helpMessage] as description and then applies [addArgs] to it
+ * with the [helpMessage] as description which can be modified by using [argParser]
  * and uses [displayName] as the name for the command in the help message.
  *
  * the [name] of the command will be a converted version of the [displayName] by default
@@ -21,18 +21,12 @@ constructor(
     val displayName: String,
     override val name: String = displayName.toLowerCase().replace(' ', '_')
 ) : ICommand {
-    override val parser: ArgumentParser by lazy {
-        ArgumentParsers.newFor(displayName)
+    protected fun argParser(block: ArgumentParser.() -> Unit) = lazy {
+        ArgumentParsers.newFor(this.displayName)
             .build()
-            .description(helpMessage)
-            .apply {addArgs()}
+            .description(this.helpMessage)
+            .apply(block)
     }
 
-    /**
-     * This will be called to add arguments to the [ArgumentParser] of this command.
-     * override this to add arguments.
-     *
-     * @receiver the [ArgumentParser] to add the args to
-     */
-    protected open fun ArgumentParser.addArgs() {}
+    override val parser: ArgumentParser by argParser {}
 }

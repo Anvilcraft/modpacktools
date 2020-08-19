@@ -12,7 +12,6 @@ import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
-import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import java.io.File
 
@@ -20,7 +19,7 @@ import java.io.File
 object DownloadMods : AbstractCommand("DownloadMods") {
     override val helpMessage: String = "Downloads all mods."
 
-    override fun ArgumentParser.addArgs() {
+    override val parser by argParser {
         arg("dir") {
             type(FileArgumentType().verifyCanCreate())
             help("the directory to download the mods to")

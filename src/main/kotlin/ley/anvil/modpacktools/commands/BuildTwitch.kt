@@ -16,7 +16,6 @@ import ley.anvil.modpacktools.util.downloadFiles
 import ley.anvil.modpacktools.util.fPrintln
 import ley.anvil.modpacktools.util.toZip
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
-import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -32,7 +31,7 @@ object BuildTwitch : AbstractCommand("BuildTwitch") {
     private val tmp: File by lazy {File(tempDir, "twitch")}
     private val downloadDir by lazy {File(tempDir, "download")}
 
-    override fun ArgumentParser.addArgs() {
+    override val parser by argParser {
         arg("-a", "--all") {
             help("Downloads all relations instead of just required ones")
             action(storeTrue())

@@ -20,7 +20,7 @@ import java.io.FileWriter
 object Import : AbstractCommand("Import") {
     override val helpMessage: String = "Converts a given manifest file to a modpackjson file"
 
-    override fun ArgumentParser.addArgs() {
+    override val parser: ArgumentParser by argParser {
         arg("manifest") {
             help("the manifest file to import")
             type(FileArgumentType().verifyIsFile())

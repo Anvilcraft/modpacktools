@@ -15,7 +15,7 @@ import net.sourceforge.argparse4j.inf.Namespace
 object ListRelations : AbstractCommand("ListRelations") {
     override val helpMessage: String = "Lists the relations of this mod pack"
 
-    override fun ArgumentParser.addArgs() {
+    override val parser: ArgumentParser by argParser {
         arg("-c", "--csv") {
             help("Doesn't format as a table but instead as csv (separated by ;)")
             action(storeTrue())

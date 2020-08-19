@@ -14,7 +14,6 @@ import ley.anvil.modpacktools.util.fPrintln
 import net.sourceforge.argparse4j.impl.Arguments.storeTrue
 import net.sourceforge.argparse4j.impl.type.CaseInsensitiveEnumNameArgumentType
 import net.sourceforge.argparse4j.impl.type.FileArgumentType
-import net.sourceforge.argparse4j.inf.ArgumentParser
 import net.sourceforge.argparse4j.inf.Namespace
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
@@ -28,7 +27,7 @@ import java.util.Comparator.comparing
 object CreateModlist : AbstractCommand("CreateModlist") {
     override val helpMessage: String = "This creates a modlist either as html or csv file."
 
-    override fun ArgumentParser.addArgs() {
+    override val parser by argParser {
         arg("type") {
             type(CaseInsensitiveEnumNameArgumentType(Format::class.java))
             help("What format the mod list should be made in")
