@@ -19,12 +19,16 @@ object Shell : AbstractCommand("Shell") {
     override fun execute(args: Namespace): CommandReturn {
         println("enter \'exit\' to exit the shell\n")
 
-        while(true) {
+        var continueLoop = true
+        while(continueLoop) {
             fPrint(">>>", TERMC.bold, TERMC.cyan)
-            val arg = readLine()!!.split(' ')
-            if(arg.getOrNull(0) == "exit")
-                break
-            runCommand(arg.toTypedArray())
+            readLine()?.let {
+                val arg = it.split(' ')
+                if(arg.getOrNull(0) == "exit")
+                    continueLoop = false
+                else
+                    runCommand(arg.toTypedArray())
+            } ?: run { continueLoop = false }
         }
         return success()
     }
