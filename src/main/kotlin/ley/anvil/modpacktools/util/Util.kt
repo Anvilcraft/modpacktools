@@ -130,8 +130,8 @@ fun Path.toZip(zStream: ZipOutputStream) {
             }
 
             override fun preVisitDirectory(dir: Path, attrs: BasicFileAttributes?): FileVisitResult {
-                zStream.putNextEntry(ZipEntry(this@toZip.relativize(dir).toString()))
-                zStream.closeEntry()
+                val path = this@toZip.relativize(dir).toString()
+                zStream.putNextEntry(ZipEntry("$path/")) // slash required to add directory entry
                 return FileVisitResult.CONTINUE
             }
         }
