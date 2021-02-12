@@ -128,6 +128,12 @@ fun Path.toZip(zStream: ZipOutputStream) {
                 zStream.closeEntry()
                 return FileVisitResult.CONTINUE
             }
+
+            override fun preVisitDirectory(dir: Path, attrs: BasicFileAttributes?): FileVisitResult {
+                zStream.putNextEntry(ZipEntry(this@toZip.relativize(dir).toString()))
+                zStream.closeEntry()
+                return FileVisitResult.CONTINUE
+            }
         }
     )
 }
